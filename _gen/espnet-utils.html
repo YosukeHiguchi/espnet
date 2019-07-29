@@ -1,0 +1,983 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>espnet.utils package &mdash; ESPnet 0.4.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.4.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="core tools" href="../apis/espnet_bin.html" />
+    <link rel="prev" title="espnet.tts package" href="espnet-tts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ESPnet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#execution-of-example-scripts">Execution of example scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#demonstration-using-pretrained-models">Demonstration using pretrained models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation-using-docker">Installation using Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#references">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="espnet-asr.html">espnet.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-lm.html">espnet.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-transform.html">espnet.transform package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-tts.html">espnet.tts package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">espnet.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-check-kwargs">espnet.utils.check_kwargs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-cli-utils">espnet.utils.cli_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-deterministic-utils">espnet.utils.deterministic_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-dynamic-import">espnet.utils.dynamic_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-io-utils">espnet.utils.io_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-spec-augment">espnet.utils.spec_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-training">espnet.utils.training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-training-batchfy">espnet.utils.training.batchfy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-training-iterators">espnet.utils.training.iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-training-tensorboard-logger">espnet.utils.training.tensorboard_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-utils-training-train-utils">espnet.utils.training.train_utils</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tool Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../apis/espnet_bin.html">core tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apis/utils_py.html">python utility tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apis/utils_sh.html">bash utility tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ESPnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>espnet.utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_gen/espnet-utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="espnet-utils-package">
+<h1>espnet.utils package<a class="headerlink" href="#espnet-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="espnet-utils-check-kwargs">
+<span id="id1"></span><h2>espnet.utils.check_kwargs<a class="headerlink" href="#espnet-utils-check-kwargs" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.check_kwargs"></span><dl class="function">
+<dt id="espnet.utils.check_kwargs.check_kwargs">
+<code class="descclassname">espnet.utils.check_kwargs.</code><code class="descname">check_kwargs</code><span class="sig-paren">(</span><em>func</em>, <em>kwargs</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.check_kwargs.check_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>check kwargs are valid for func</p>
+<p>If kwargs are invalid, raise TypeError as same as python default
+:param function func: function to be validated
+:param dict kwargs: keyword arguments for func
+:param str name: name used in TypeError (default is func name)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-cli-utils">
+<span id="id2"></span><h2>espnet.utils.cli_utils<a class="headerlink" href="#espnet-utils-cli-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.cli_utils"></span><dl class="class">
+<dt id="espnet.utils.cli_utils.FileReaderWrapper">
+<em class="property">class </em><code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">FileReaderWrapper</code><span class="sig-paren">(</span><em>rspecifier</em>, <em>filetype='mat'</em>, <em>return_shape=False</em>, <em>segments=None</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.FileReaderWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Read uttid and array in kaldi style</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rspecifier</strong> (<em>str</em>) – Give as “ark:feats.ark” or “scp:feats.scp”</li>
+<li><strong>filetype</strong> (<em>str</em>) – “mat” is kaldi-martix, “hdf5”: HDF5</li>
+<li><strong>return_shape</strong> (<em>bool</em>) – Return the shape of the matrix,
+instead of the matrix. This can reduce IO cost for HDF5.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Generator[Tuple[str, np.ndarray], None, None]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Read from kaldi-matrix ark file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">FileReaderWrapper</span><span class="p">(</span><span class="s1">&#39;ark:feats.ark&#39;</span><span class="p">,</span> <span class="s1">&#39;mat&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">array</span>
+</pre></div>
+</div>
+<p>Read from HDF5 file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">FileReaderWrapper</span><span class="p">(</span><span class="s1">&#39;ark:feats.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">array</span>
+</pre></div>
+</div>
+<p>This might be a bit confusing as “ark” is used for HDF5 to imitate kaldi.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.utils.cli_utils.FileWriterWrapper">
+<em class="property">class </em><code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">FileWriterWrapper</code><span class="sig-paren">(</span><em>wspecifier</em>, <em>filetype='mat'</em>, <em>write_num_frames=None</em>, <em>compress=False</em>, <em>compression_method=2</em>, <em>pcm_format='wav'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.FileWriterWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Write matrices in kaldi style</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wspecifier</strong> (<em>str</em>) – </li>
+<li><strong>filetype</strong> (<em>str</em>) – “mat” is kaldi-martix, “hdf5”: HDF5</li>
+<li><strong>write_num_frames</strong> (<em>str</em>) – e.g. ‘ark,t:num_frames.txt’</li>
+<li><strong>compress</strong> (<em>bool</em>) – Compress or not</li>
+<li><strong>compression_method</strong> (<em>int</em>) – Specify compression level</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Write in kaldi-matrix-ark with “kaldi-scp” file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">FileWriterWrapper</span><span class="p">(</span><span class="s1">&#39;ark,scp:out.ark,out.scp&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">f</span><span class="p">[</span><span class="s1">&#39;uttid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span>
+</pre></div>
+</div>
+<p>This “scp” has the following format:</p>
+<blockquote>
+<div>uttidA out.ark:1234
+uttidB out.ark:2222</div></blockquote>
+<p>where, 1234 and 2222 points the strating byte address of the matrix.
+(For detail, see official documentation of Kaldi)</p>
+<p>Write in HDF5 with “scp” file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">FileWriterWrapper</span><span class="p">(</span><span class="s1">&#39;ark,scp:out.h5,out.scp&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">f</span><span class="p">[</span><span class="s1">&#39;uttid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span>
+</pre></div>
+</div>
+<p>This “scp” file is created as:</p>
+<blockquote>
+<div>uttidA out.h5:uttidA
+uttidB out.h5:uttidB</div></blockquote>
+<p>HDF5 can be, unlike “kaldi-ark”, accessed to any keys,
+so originally “scp” is not required for random-reading.
+Nevertheless we create “scp” for HDF5 because it is useful
+for some use-case. e.g. Concatenation, Splitting.</p>
+<dl class="method">
+<dt id="espnet.utils.cli_utils.FileWriterWrapper.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.FileWriterWrapper.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.cli_utils.assert_scipy_wav_style">
+<code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">assert_scipy_wav_style</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.assert_scipy_wav_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.cli_utils.get_commandline_args">
+<code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">get_commandline_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.get_commandline_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.cli_utils.is_scipy_wav_style">
+<code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">is_scipy_wav_style</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.is_scipy_wav_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.cli_utils.strtobool">
+<code class="descclassname">espnet.utils.cli_utils.</code><code class="descname">strtobool</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.cli_utils.strtobool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-deterministic-utils">
+<span id="id3"></span><h2>espnet.utils.deterministic_utils<a class="headerlink" href="#espnet-utils-deterministic-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.deterministic_utils"></span><dl class="function">
+<dt id="espnet.utils.deterministic_utils.set_deterministic_chainer">
+<code class="descclassname">espnet.utils.deterministic_utils.</code><code class="descname">set_deterministic_chainer</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.deterministic_utils.set_deterministic_chainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures chainer produces deterministic results depending on the program arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.deterministic_utils.set_deterministic_pytorch">
+<code class="descclassname">espnet.utils.deterministic_utils.</code><code class="descname">set_deterministic_pytorch</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.deterministic_utils.set_deterministic_pytorch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures pytorch produces deterministic results depending on the program arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-dynamic-import">
+<span id="id4"></span><h2>espnet.utils.dynamic_import<a class="headerlink" href="#espnet-utils-dynamic-import" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.dynamic_import"></span><dl class="function">
+<dt id="espnet.utils.dynamic_import.dynamic_import">
+<code class="descclassname">espnet.utils.dynamic_import.</code><code class="descname">dynamic_import</code><span class="sig-paren">(</span><em>import_path</em>, <em>alias={}</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.dynamic_import.dynamic_import" title="Permalink to this definition">¶</a></dt>
+<dd><p>dynamic import module and class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>import_path</strong> (<em>str</em>) – syntax ‘module_name:class_name’
+e.g., ‘espnet.transform.add_deltas:AddDeltas’</li>
+<li><strong>alias</strong> (<em>dict</em>) – shortcut for registered class</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">imported class</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-io-utils">
+<span id="id5"></span><h2>espnet.utils.io_utils<a class="headerlink" href="#espnet-utils-io-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.io_utils"></span><dl class="class">
+<dt id="espnet.utils.io_utils.LoadInputsAndTargets">
+<em class="property">class </em><code class="descclassname">espnet.utils.io_utils.</code><code class="descname">LoadInputsAndTargets</code><span class="sig-paren">(</span><em>mode='asr'</em>, <em>preprocess_conf=None</em>, <em>load_input=True</em>, <em>load_output=True</em>, <em>sort_in_input_length=True</em>, <em>use_speaker_embedding=False</em>, <em>use_second_target=False</em>, <em>preprocess_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.LoadInputsAndTargets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a mini-batch from a list of dicts</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">batch</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;utt1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>          <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">feat</span><span class="o">=</span><span class="s1">&#39;some.ark:123&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                           <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;mat&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                           <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                           <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">80</span><span class="p">])],</span>
+<span class="gp">... </span>               <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">tokenid</span><span class="o">=</span><span class="s1">&#39;1 2 3 4&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;target1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                            <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">31</span><span class="p">])]]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">LoadInputsAndTargets</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feat</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">l</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">str mode: Specify the task mode, “asr” or “tts”</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">str preprocess_conf: The path of a json file for pre-processing</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">bool load_input: If False, not to load the input data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">bool load_output: If False, not to load the output data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">bool sort_in_input_length: Sort the mini-batch in descending order
+of the input length</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">bool use_speaker_embedding: Used for tts mode only</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">bool use_second_target: Used for tts mode only</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">dict preprocess_args: Set some optional arguments for preprocessing</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">Optional[dict] preprocess_args: Used for tts mode only</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.utils.io_utils.SoundHDF5File">
+<em class="property">class </em><code class="descclassname">espnet.utils.io_utils.</code><code class="descname">SoundHDF5File</code><span class="sig-paren">(</span><em>filepath</em>, <em>mode='r+'</em>, <em>format=None</em>, <em>dtype='int16'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Collecting sound files to a HDF5 file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">SoundHDF5File</span><span class="p">(</span><span class="s1">&#39;a.flac.h5&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">16000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">str filepath:</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">str mode:</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">str format: The type used when saving wav. flac, nist, htk, etc.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">str dtype:</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="espnet.utils.io_utils.SoundHDF5File.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.utils.io_utils.SoundHDF5File.create_dataset">
+<code class="descname">create_dataset</code><span class="sig-paren">(</span><em>name</em>, <em>shape=None</em>, <em>data=None</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File.create_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.utils.io_utils.SoundHDF5File.items">
+<code class="descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.utils.io_utils.SoundHDF5File.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.utils.io_utils.SoundHDF5File.values">
+<code class="descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.io_utils.SoundHDF5File.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-spec-augment">
+<span id="id6"></span><h2>espnet.utils.spec_augment<a class="headerlink" href="#espnet-utils-spec-augment" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.spec_augment"></span><p>This implementation is modified from <a class="reference external" href="https://github.com/zcaceres/spec_augment">https://github.com/zcaceres/spec_augment</a></p>
+<p>MIT License</p>
+<p>Copyright (c) 2019 Zach Caceres</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETjjHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="espnet.utils.spec_augment.apply_interpolation">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">apply_interpolation</code><span class="sig-paren">(</span><em>query_points</em>, <em>train_points</em>, <em>w</em>, <em>v</em>, <em>order</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.apply_interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply polyharmonic interpolation model to data.</p>
+<p>Given coefficients w and v for the interpolation model, we evaluate
+interpolated function values at query_points.
+Args:
+query_points: <cite>[b, m, d]</cite> x values to evaluate the interpolation at
+train_points: <cite>[b, n, d]</cite> x values that act as the interpolation centers</p>
+<blockquote>
+<div>( the c variables in the wikipedia article)</div></blockquote>
+<p>w: <cite>[b, n, k]</cite> weights on each interpolation center
+v: <cite>[b, d, k]</cite> weights on each input dimension
+order: order of the interpolation
+Returns:
+Polyharmonic interpolation evaluated at points defined in query_points.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.create_dense_flows">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">create_dense_flows</code><span class="sig-paren">(</span><em>flattened_flows</em>, <em>batch_size</em>, <em>image_height</em>, <em>image_width</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.create_dense_flows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.cross_squared_distance_matrix">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">cross_squared_distance_matrix</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.cross_squared_distance_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pairwise squared distance between two (batch) matrices’ rows (2nd dim).</p>
+<p>Computes the pairwise distances between rows of x and rows of y
+Args:
+x: [batch_size, n, d] float <cite>Tensor</cite>
+y: [batch_size, m, d] float <cite>Tensor</cite>
+Returns:
+squared_dists: [batch_size, n, m] float <cite>Tensor</cite>, where
+squared_dists[b,i,j] = ||x[b,i,:] - y[b,j,:]||^2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.dense_image_warp">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">dense_image_warp</code><span class="sig-paren">(</span><em>image</em>, <em>flow</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.dense_image_warp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Image warping using per-pixel flow vectors.</p>
+<p>Apply a non-linear warp to the image, where the warp is specified by a dense
+flow field of offset vectors that define the correspondences of pixel values
+in the output image back to locations in the  source image. Specifically, the
+pixel value at output[b, j, i, c] is
+images[b, j - flow[b, j, i, 0], i - flow[b, j, i, 1], c].
+The locations specified by this formula do not necessarily map to an int
+index. Therefore, the pixel value is obtained by bilinear
+interpolation of the 4 nearest pixels around
+(b, j - flow[b, j, i, 0], i - flow[b, j, i, 1]). For locations outside
+of the image, we use the nearest pixel values at the image boundary.
+Args:
+image: 4-D float <cite>Tensor</cite> with shape <cite>[batch, height, width, channels]</cite>.
+flow: A 4-D float <cite>Tensor</cite> with shape <cite>[batch, height, width, 2]</cite>.
+name: A name for the operation (optional).
+Note that image and flow can be of type tf.half, tf.float32, or tf.float64,
+and do not necessarily have to be the same type.
+Returns:
+A 4-D float <cite>Tensor</cite> with shape`[batch, height, width, channels]`
+and same type as input image.
+Raises:
+ValueError: if height &lt; 2 or width &lt; 2 or the inputs have the wrong number
+of dimensions.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.flatten_grid_locations">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">flatten_grid_locations</code><span class="sig-paren">(</span><em>grid_locations</em>, <em>image_height</em>, <em>image_width</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.flatten_grid_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.freq_mask">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">freq_mask</code><span class="sig-paren">(</span><em>spec</em>, <em>F=30</em>, <em>num_masks=1</em>, <em>replace_with_zero=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.freq_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frequency masking</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spec</strong> (<em>torch.Tensor</em>) – input tensor with shape (T, dim)</li>
+<li><strong>F</strong> (<em>int</em>) – maximum width of each mask</li>
+<li><strong>num_masks</strong> (<em>int</em>) – number of masks</li>
+<li><strong>replace_with_zero</strong> (<em>bool</em>) – if True, masked parts will be filled with 0, if False, filled with mean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.get_flat_grid_locations">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">get_flat_grid_locations</code><span class="sig-paren">(</span><em>image_height</em>, <em>image_width</em>, <em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.get_flat_grid_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.get_grid_locations">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">get_grid_locations</code><span class="sig-paren">(</span><em>image_height</em>, <em>image_width</em>, <em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.get_grid_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.interpolate_bilinear">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">interpolate_bilinear</code><span class="sig-paren">(</span><em>grid</em>, <em>query_points</em>, <em>name='interpolate_bilinear'</em>, <em>indexing='ij'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.interpolate_bilinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to Matlab’s interp2 function.</p>
+<p>Finds values for query points on a grid using bilinear interpolation.
+Args:
+grid: a 4-D float <cite>Tensor</cite> of shape <cite>[batch, height, width, channels]</cite>.
+query_points: a 3-D float <cite>Tensor</cite> of N points with shape <cite>[batch, N, 2]</cite>.
+name: a name for the operation (optional).
+indexing: whether the query points are specified as row and column (ij),</p>
+<blockquote>
+<div>or Cartesian coordinates (xy).</div></blockquote>
+<p>Returns:
+values: a 3-D <cite>Tensor</cite> with shape <cite>[batch, N, channels]</cite>
+Raises:
+ValueError: if the indexing mode is invalid, or if the shape of the inputs</p>
+<blockquote>
+<div>invalid.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.interpolate_spline">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">interpolate_spline</code><span class="sig-paren">(</span><em>train_points</em>, <em>train_values</em>, <em>query_points</em>, <em>order</em>, <em>regularization_weight=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.interpolate_spline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.phi">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">phi</code><span class="sig-paren">(</span><em>r</em>, <em>order</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate-wise nonlinearity used to define the order of the interpolation.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Polyharmonic_spline">https://en.wikipedia.org/wiki/Polyharmonic_spline</a> for the definition.
+Args:
+r: input op
+order: interpolation order
+Returns:
+phi_k evaluated coordinate-wise on r, for k = r</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.solve_interpolation">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">solve_interpolation</code><span class="sig-paren">(</span><em>train_points</em>, <em>train_values</em>, <em>order</em>, <em>regularization_weight</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.solve_interpolation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.sparse_image_warp">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">sparse_image_warp</code><span class="sig-paren">(</span><em>img_tensor</em>, <em>source_control_point_locations</em>, <em>dest_control_point_locations</em>, <em>interpolation_order=2</em>, <em>regularization_weight=0.0</em>, <em>num_boundaries_points=0</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.sparse_image_warp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.specaug">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">specaug</code><span class="sig-paren">(</span><em>spec</em>, <em>W=5</em>, <em>F=30</em>, <em>T=40</em>, <em>num_freq_masks=2</em>, <em>num_time_masks=2</em>, <em>replace_with_zero=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.specaug" title="Permalink to this definition">¶</a></dt>
+<dd><p>SpecAugment</p>
+<dl class="docutils">
+<dt>Reference: SpecAugment: A Simple Data Augmentation Method for Automatic Speech Recognition</dt>
+<dd>(<a class="reference external" href="https://arxiv.org/pdf/1904.08779.pdf">https://arxiv.org/pdf/1904.08779.pdf</a>)</dd>
+</dl>
+<p>This implementation modified from <a class="reference external" href="https://github.com/zcaceres/spec_augment">https://github.com/zcaceres/spec_augment</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spec</strong> (<em>torch.Tensor</em>) – input tensor with the shape (T, dim)</li>
+<li><strong>W</strong> (<em>int</em>) – time warp parameter</li>
+<li><strong>F</strong> (<em>int</em>) – maximum width of each freq mask</li>
+<li><strong>T</strong> (<em>int</em>) – maximum width of each time mask</li>
+<li><strong>num_freq_masks</strong> (<em>int</em>) – number of frequency masks</li>
+<li><strong>num_time_masks</strong> (<em>int</em>) – number of time masks</li>
+<li><strong>replace_with_zero</strong> (<em>bool</em>) – if True, masked parts will be filled with 0, if False, filled with mean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.time_mask">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">time_mask</code><span class="sig-paren">(</span><em>spec</em>, <em>T=40</em>, <em>num_masks=1</em>, <em>replace_with_zero=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.time_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time masking</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spec</strong> (<em>torch.Tensor</em>) – input tensor with shape (T, dim)</li>
+<li><strong>T</strong> (<em>int</em>) – maximum width of each mask</li>
+<li><strong>num_masks</strong> (<em>int</em>) – number of masks</li>
+<li><strong>replace_with_zero</strong> (<em>bool</em>) – if True, masked parts will be filled with 0, if False, filled with mean</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.spec_augment.time_warp">
+<code class="descclassname">espnet.utils.spec_augment.</code><code class="descname">time_warp</code><span class="sig-paren">(</span><em>spec</em>, <em>W=5</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.spec_augment.time_warp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time warping</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spec</strong> (<em>torch.Tensor</em>) – input tensor with shape (T, dim)</li>
+<li><strong>W</strong> (<em>int</em>) – time warp parameter</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-training">
+<span id="id7"></span><h2>espnet.utils.training<a class="headerlink" href="#espnet-utils-training" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.training"></span></div>
+<div class="section" id="espnet-utils-training-batchfy">
+<span id="id8"></span><h2>espnet.utils.training.batchfy<a class="headerlink" href="#espnet-utils-training-batchfy" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.training.batchfy"></span><dl class="function">
+<dt id="espnet.utils.training.batchfy.batchfy_by_bin">
+<code class="descclassname">espnet.utils.training.batchfy.</code><code class="descname">batchfy_by_bin</code><span class="sig-paren">(</span><em>sorted_data</em>, <em>batch_bins</em>, <em>num_batches=0</em>, <em>min_batch_size=1</em>, <em>shortest_first=False</em>, <em>ikey='input'</em>, <em>okey='output'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.batchfy.batchfy_by_bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make variably sized batch set, which maximizes the number of bins up to <cite>batch_bins</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Dict</strong><strong>[</strong><strong>str</strong><strong>, </strong><strong>Any</strong><strong>]</strong><strong>] </strong><strong>sorted_data</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em>) – dictionary loaded from data.json</li>
+<li><strong>batch_bins</strong> (<em>int</em>) – Maximum frames of a batch</li>
+<li><strong>num_batches</strong> (<em>int</em>) – # number of batches to use (for debug)</li>
+<li><strong>min_batch_size</strong> (<em>int</em>) – minimum batch size (for multi-gpu)</li>
+<li><strong>test</strong> (<em>int</em>) – Return only every <cite>test</cite> batches</li>
+<li><strong>shortest_first</strong> (<em>bool</em>) – Sort from batch with shortest samples to longest if true, otherwise reverse</li>
+<li><strong>ikey</strong> (<em>str</em>) – key to access input (for ASR ikey=”input”, for TTS ikey=”output”.)</li>
+<li><strong>okey</strong> (<em>str</em>) – key to access output (for ASR okey=”output”. for TTS okey=”input”.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List[Tuple[str, Dict[str, List[Dict[str, Any]]]] list of batches</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.training.batchfy.batchfy_by_frame">
+<code class="descclassname">espnet.utils.training.batchfy.</code><code class="descname">batchfy_by_frame</code><span class="sig-paren">(</span><em>sorted_data</em>, <em>max_frames_in</em>, <em>max_frames_out</em>, <em>max_frames_inout</em>, <em>num_batches=0</em>, <em>min_batch_size=1</em>, <em>shortest_first=False</em>, <em>ikey='input'</em>, <em>okey='output'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.batchfy.batchfy_by_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make variably sized batch set, which maximizes the number of frames to max_batch_frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Dict</strong><strong>[</strong><strong>str</strong><strong>, </strong><strong>Any</strong><strong>]</strong><strong>] </strong><strong>sorteddata</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em>) – dictionary loaded from data.json</li>
+<li><strong>max_frames_in</strong> (<em>int</em>) – Maximum input frames of a batch</li>
+<li><strong>max_frames_out</strong> (<em>int</em>) – Maximum output frames of a batch</li>
+<li><strong>max_frames_inout</strong> (<em>int</em>) – Maximum input+output frames of a batch</li>
+<li><strong>num_batches</strong> (<em>int</em>) – # number of batches to use (for debug)</li>
+<li><strong>min_batch_size</strong> (<em>int</em>) – minimum batch size (for multi-gpu)</li>
+<li><strong>test</strong> (<em>int</em>) – Return only every <cite>test</cite> batches</li>
+<li><strong>shortest_first</strong> (<em>bool</em>) – Sort from batch with shortest samples to longest if true, otherwise reverse</li>
+<li><strong>ikey</strong> (<em>str</em>) – key to access input (for ASR ikey=”input”, for TTS ikey=”output”.)</li>
+<li><strong>okey</strong> (<em>str</em>) – key to access output (for ASR okey=”output”. for TTS okey=”input”.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List[Tuple[str, Dict[str, List[Dict[str, Any]]]] list of batches</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.training.batchfy.batchfy_by_seq">
+<code class="descclassname">espnet.utils.training.batchfy.</code><code class="descname">batchfy_by_seq</code><span class="sig-paren">(</span><em>sorted_data</em>, <em>batch_size</em>, <em>max_length_in</em>, <em>max_length_out</em>, <em>min_batch_size=1</em>, <em>shortest_first=False</em>, <em>ikey='input'</em>, <em>okey='output'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.batchfy.batchfy_by_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make batch set from json dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Dict</strong><strong>[</strong><strong>str</strong><strong>, </strong><strong>Any</strong><strong>]</strong><strong>] </strong><strong>sorted_data</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em>) – dictionary loaded from data.json</li>
+<li><strong>batch_size</strong> (<em>int</em>) – batch size</li>
+<li><strong>max_length_in</strong> (<em>int</em>) – maximum length of input to decide adaptive batch size</li>
+<li><strong>max_length_out</strong> (<em>int</em>) – maximum length of output to decide adaptive batch size</li>
+<li><strong>min_batch_size</strong> (<em>int</em>) – mininum batch size (for multi-gpu)</li>
+<li><strong>shortest_first</strong> (<em>bool</em>) – Sort from batch with shortest samples to longest if true, otherwise reverse</li>
+<li><strong>ikey</strong> (<em>str</em>) – key to access input (for ASR ikey=”input”, for TTS ikey=”output”.)</li>
+<li><strong>okey</strong> (<em>str</em>) – key to access output (for ASR okey=”output”. for TTS okey=”input”.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List[List[Tuple[str, dict]]] list of batches</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.training.batchfy.batchfy_shuffle">
+<code class="descclassname">espnet.utils.training.batchfy.</code><code class="descname">batchfy_shuffle</code><span class="sig-paren">(</span><em>data</em>, <em>batch_size</em>, <em>min_batch_size</em>, <em>num_batches</em>, <em>shortest_first</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.batchfy.batchfy_shuffle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.training.batchfy.make_batchset">
+<code class="descclassname">espnet.utils.training.batchfy.</code><code class="descname">make_batchset</code><span class="sig-paren">(</span><em>data</em>, <em>batch_size=0</em>, <em>max_length_in=inf</em>, <em>max_length_out=inf</em>, <em>num_batches=0</em>, <em>min_batch_size=1</em>, <em>shortest_first=False</em>, <em>batch_sort_key='input'</em>, <em>swap_io=False</em>, <em>count='auto'</em>, <em>batch_bins=0</em>, <em>batch_frames_in=0</em>, <em>batch_frames_out=0</em>, <em>batch_frames_inout=0</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.batchfy.make_batchset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make batch set from json dictionary</p>
+<p>if utts have “category” value,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;utt1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;utt2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;utt3&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;utt4&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">make_batchset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batchsize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="go">[[(&#39;utt1&#39;, ...), (&#39;utt4&#39;, ...)], [(&#39;utt2&#39;, ...), (&#39;utt3&#39;: ...)]]</span>
+</pre></div>
+</div>
+<p>Note that if any utts doesn’t have “category”,
+perform as same as batchfy_by_{count}</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Dict</strong><strong>[</strong><strong>str</strong><strong>, </strong><strong>Any</strong><strong>]</strong><strong>] </strong><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em>) – dictionary loaded from data.json</li>
+<li><strong>batch_size</strong> (<em>int</em>) – maximum number of sequences in a minibatch.</li>
+<li><strong>batch_bins</strong> (<em>int</em>) – maximum number of bins (frames x dim) in a minibatch.</li>
+<li><strong>batch_frames_in</strong> (<em>int</em>) – maximum number of input frames in a minibatch.</li>
+<li><strong>batch_frames_out</strong> (<em>int</em>) – maximum number of output frames in a minibatch.</li>
+<li><strong>batch_frames_out</strong> – maximum number of input+output frames in a minibatch.</li>
+<li><strong>count</strong> (<em>str</em>) – strategy to count maximum size of batch.
+For choices, see espnet.asr.batchfy.BATCH_COUNT_CHOICES</li>
+<li><strong>max_length_in</strong> (<em>int</em>) – maximum length of input to decide adaptive batch size</li>
+<li><strong>max_length_out</strong> (<em>int</em>) – maximum length of output to decide adaptive batch size</li>
+<li><strong>num_batches</strong> (<em>int</em>) – # number of batches to use (for debug)</li>
+<li><strong>min_batch_size</strong> (<em>int</em>) – minimum batch size (for multi-gpu)</li>
+<li><strong>shortest_first</strong> (<em>bool</em>) – Sort from batch with shortest samples to longest if true, otherwise reverse
+:return: List[List[Tuple[str, dict]]] list of batches</li>
+<li><strong>batch_sort_key</strong> (<em>str</em>) – how to sort data before creating minibatches [“input”, “output”, “shuffle”]</li>
+<li><strong>swap_io</strong> (<em>bool</em>) – if True, use “input” as output and “output” as input in <cite>data</cite> dict</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-training-iterators">
+<span id="id9"></span><h2>espnet.utils.training.iterators<a class="headerlink" href="#espnet-utils-training-iterators" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.training.iterators"></span><dl class="class">
+<dt id="espnet.utils.training.iterators.ShufflingEnabler">
+<em class="property">class </em><code class="descclassname">espnet.utils.training.iterators.</code><code class="descname">ShufflingEnabler</code><span class="sig-paren">(</span><em>iterators</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.iterators.ShufflingEnabler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>An extension enabling shuffling on an Iterator</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.utils.training.iterators.ToggleableShufflingMultiprocessIterator">
+<em class="property">class </em><code class="descclassname">espnet.utils.training.iterators.</code><code class="descname">ToggleableShufflingMultiprocessIterator</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>repeat=True</em>, <em>shuffle=True</em>, <em>n_processes=None</em>, <em>n_prefetch=1</em>, <em>shared_mem=None</em>, <em>maxtasksperchild=20</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.iterators.ToggleableShufflingMultiprocessIterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.iterators.multiprocess_iterator.MultiprocessIterator</span></code></p>
+<p>A MultiprocessIterator that can have its shuffling property activated during training</p>
+<dl class="method">
+<dt id="espnet.utils.training.iterators.ToggleableShufflingMultiprocessIterator.start_shuffle">
+<code class="descname">start_shuffle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.iterators.ToggleableShufflingMultiprocessIterator.start_shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts shuffling (or reshuffles) the batches</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.utils.training.iterators.ToggleableShufflingSerialIterator">
+<em class="property">class </em><code class="descclassname">espnet.utils.training.iterators.</code><code class="descname">ToggleableShufflingSerialIterator</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>repeat=True</em>, <em>shuffle=True</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.iterators.ToggleableShufflingSerialIterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.iterators.serial_iterator.SerialIterator</span></code></p>
+<p>A SerialIterator that can have its shuffling property activated during training</p>
+<dl class="method">
+<dt id="espnet.utils.training.iterators.ToggleableShufflingSerialIterator.start_shuffle">
+<code class="descname">start_shuffle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.iterators.ToggleableShufflingSerialIterator.start_shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts shuffling (or reshuffles) the batches</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-training-tensorboard-logger">
+<span id="id10"></span><h2>espnet.utils.training.tensorboard_logger<a class="headerlink" href="#espnet-utils-training-tensorboard-logger" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.training.tensorboard_logger"></span><dl class="class">
+<dt id="espnet.utils.training.tensorboard_logger.TensorboardLogger">
+<em class="property">class </em><code class="descclassname">espnet.utils.training.tensorboard_logger.</code><code class="descname">TensorboardLogger</code><span class="sig-paren">(</span><em>logger</em>, <em>att_reporter=None</em>, <em>entries=None</em>, <em>epoch=0</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.tensorboard_logger.TensorboardLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>A tensorboard logger extension</p>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-utils-training-train-utils">
+<span id="id11"></span><h2>espnet.utils.training.train_utils<a class="headerlink" href="#espnet-utils-training-train-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.utils.training.train_utils"></span><dl class="function">
+<dt id="espnet.utils.training.train_utils.check_early_stop">
+<code class="descclassname">espnet.utils.training.train_utils.</code><code class="descname">check_early_stop</code><span class="sig-paren">(</span><em>trainer</em>, <em>epochs</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.train_utils.check_early_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the training was stopped by an early stopping trigger and warns the user if it’s the case</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>trainer</strong> – The trainer used for training</li>
+<li><strong>epochs</strong> – The maximum number of epochs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.utils.training.train_utils.set_early_stop">
+<code class="descclassname">espnet.utils.training.train_utils.</code><code class="descname">set_early_stop</code><span class="sig-paren">(</span><em>trainer</em>, <em>args</em>, <em>is_lm=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.utils.training.train_utils.set_early_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the early stop trigger given the program arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>trainer</strong> – The trainer used for training</li>
+<li><strong>args</strong> – The program arguments</li>
+<li><strong>is_lm</strong> – If the trainer is for a LM (epoch instead of epochs)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../apis/espnet_bin.html" class="btn btn-neutral float-right" title="core tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="espnet-tts.html" class="btn btn-neutral float-left" title="espnet.tts package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Shinji Watanabe
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

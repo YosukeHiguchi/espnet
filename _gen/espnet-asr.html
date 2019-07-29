@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>espnet.asr package &mdash; ESPnet 0.4.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.4.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="espnet.lm package" href="espnet-lm.html" />
+    <link rel="prev" title="Outline" href="../tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ESPnet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#execution-of-example-scripts">Execution of example scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#demonstration-using-pretrained-models">Demonstration using pretrained models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation-using-docker">Installation using Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#references">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">espnet.asr package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-asr-mix-utils">espnet.asr.asr_mix_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-asr-utils">espnet.asr.asr_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-chainer-backend">espnet.asr.chainer_backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-chainer-backend-asr">espnet.asr.chainer_backend.asr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend">espnet.asr.pytorch_backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr">espnet.asr.pytorch_backend.asr</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-lm.html">espnet.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-transform.html">espnet.transform package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet-utils.html">espnet.utils package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tool Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../apis/espnet_bin.html">core tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apis/utils_py.html">python utility tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apis/utils_sh.html">bash utility tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ESPnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>espnet.asr package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_gen/espnet-asr.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="espnet-asr-package">
+<h1>espnet.asr package<a class="headerlink" href="#espnet-asr-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="espnet-asr-asr-mix-utils">
+<span id="id1"></span><h2>espnet.asr.asr_mix_utils<a class="headerlink" href="#espnet-asr-asr-mix-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.asr_mix_utils"></span><dl class="class">
+<dt id="espnet.asr.asr_mix_utils.PlotAttentionReport">
+<em class="property">class </em><code class="descclassname">espnet.asr.asr_mix_utils.</code><code class="descname">PlotAttentionReport</code><span class="sig-paren">(</span><em>att_vis_fn</em>, <em>data</em>, <em>outdir</em>, <em>converter</em>, <em>device</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.PlotAttentionReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>Plot attention reporter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>att_vis_fn</strong> (<em>function</em>) – function of attention visualization</li>
+<li><strong>data</strong> (<em>list</em>) – list json utt key items</li>
+<li><strong>outdir</strong> (<em>str</em>) – directory to save figures</li>
+<li><strong>converter</strong> (<a class="reference internal" href="#espnet.asr.chainer_backend.asr.CustomConverter" title="espnet.asr.chainer_backend.asr.CustomConverter"><em>CustomConverter</em></a>) – function to convert data</li>
+<li><strong>| torch.device device</strong> (<em>int</em>) – device</li>
+<li><strong>reverse</strong> (<em>bool</em>) – If True, input and output length are reversed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="espnet.asr.asr_mix_utils.PlotAttentionReport.draw_attention_plot">
+<code class="descname">draw_attention_plot</code><span class="sig-paren">(</span><em>att_w</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.PlotAttentionReport.draw_attention_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_mix_utils.PlotAttentionReport.get_attention_weight">
+<code class="descname">get_attention_weight</code><span class="sig-paren">(</span><em>idx</em>, <em>att_w</em>, <em>spkr_idx</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.PlotAttentionReport.get_attention_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_mix_utils.PlotAttentionReport.get_attention_weights">
+<code class="descname">get_attention_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.PlotAttentionReport.get_attention_weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_mix_utils.PlotAttentionReport.log_attentions">
+<code class="descname">log_attentions</code><span class="sig-paren">(</span><em>logger</em>, <em>step</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.PlotAttentionReport.log_attentions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_mix_utils.add_results_to_json">
+<code class="descclassname">espnet.asr.asr_mix_utils.</code><code class="descname">add_results_to_json</code><span class="sig-paren">(</span><em>js</em>, <em>nbest_hyps_sd</em>, <em>char_list</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.add_results_to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to add N-best results to json</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>js</strong> (<em>dict</em>) – groundtruth utterance dict</li>
+<li><strong>nbest_hyps_sd</strong> (<em>list</em>) – list of hypothesis for multi_speakers: nutts x nspkrs</li>
+<li><strong>char_list</strong> (<em>list</em>) – list of characters</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">N-best results added utterance dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_mix_utils.make_batchset">
+<code class="descclassname">espnet.asr.asr_mix_utils.</code><code class="descname">make_batchset</code><span class="sig-paren">(</span><em>data</em>, <em>batch_size</em>, <em>max_length_in</em>, <em>max_length_out</em>, <em>num_batches=0</em>, <em>min_batch_size=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_mix_utils.make_batchset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make batch set from json dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Dict</strong><strong>[</strong><strong>str</strong><strong>, </strong><strong>Any</strong><strong>]</strong><strong>] </strong><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em>) – dictionary loaded from data.json</li>
+<li><strong>batch_size</strong> (<em>int</em>) – batch size</li>
+<li><strong>max_length_in</strong> (<em>int</em>) – maximum length of input to decide adaptive batch size</li>
+<li><strong>max_length_out</strong> (<em>int</em>) – maximum length of output to decide adaptive batch size</li>
+<li><strong>num_batches</strong> (<em>int</em>) – # number of batches to use (for debug)</li>
+<li><strong>min_batch_size</strong> (<em>int</em>) – mininum batch size (for multi-gpu)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List[Tuple[str, Dict[str, List[Dict[str, Any]]]] list of batches</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-asr-asr-utils">
+<span id="id2"></span><h2>espnet.asr.asr_utils<a class="headerlink" href="#espnet-asr-asr-utils" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.asr_utils"></span><dl class="class">
+<dt id="espnet.asr.asr_utils.AttributeDict">
+<em class="property">class </em><code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">AttributeDict</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.AttributeDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="espnet.asr.asr_utils.AttributeDict.fields">
+<code class="descname">fields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.AttributeDict.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils.AttributeDict.items">
+<code class="descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.AttributeDict.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils.AttributeDict.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.AttributeDict.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.asr_utils.CompareValueTrigger">
+<em class="property">class </em><code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">CompareValueTrigger</code><span class="sig-paren">(</span><em>key</em>, <em>compare_fn</em>, <em>trigger=(1</em>, <em>'epoch')</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.CompareValueTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Trigger invoked when key value getting bigger or lower than before</p>
+<p>:param str key : Key of value
+:param function compare_fn : Function to compare the values
+:param (int, str) trigger : Trigger that decide the comparison interval</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.asr_utils.PlotAttentionReport">
+<em class="property">class </em><code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">PlotAttentionReport</code><span class="sig-paren">(</span><em>att_vis_fn</em>, <em>data</em>, <em>outdir</em>, <em>converter</em>, <em>transform</em>, <em>device</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.PlotAttentionReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>Plot attention reporter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>att_vis_fn</strong> (<em>function</em>) – function of attention visualization</li>
+<li><strong>data</strong> (<em>list</em>) – list json utt key items</li>
+<li><strong>outdir</strong> (<em>str</em>) – directory to save figures</li>
+<li><strong>converter</strong> (<a class="reference internal" href="#espnet.asr.chainer_backend.asr.CustomConverter" title="espnet.asr.chainer_backend.asr.CustomConverter"><em>CustomConverter</em></a>) – function to convert data</li>
+<li><strong>| torch.device device</strong> (<em>int</em>) – device</li>
+<li><strong>reverse</strong> (<em>bool</em>) – If True, input and output length are reversed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="espnet.asr.asr_utils.PlotAttentionReport.draw_attention_plot">
+<code class="descname">draw_attention_plot</code><span class="sig-paren">(</span><em>att_w</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.PlotAttentionReport.draw_attention_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils.PlotAttentionReport.get_attention_weight">
+<code class="descname">get_attention_weight</code><span class="sig-paren">(</span><em>idx</em>, <em>att_w</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.PlotAttentionReport.get_attention_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils.PlotAttentionReport.get_attention_weights">
+<code class="descname">get_attention_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.PlotAttentionReport.get_attention_weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils.PlotAttentionReport.log_attentions">
+<code class="descname">log_attentions</code><span class="sig-paren">(</span><em>logger</em>, <em>step</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.PlotAttentionReport.log_attentions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.adadelta_eps_decay">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">adadelta_eps_decay</code><span class="sig-paren">(</span><em>eps_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.adadelta_eps_decay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to perform adadelta eps decay</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.add_gradient_noise">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">add_gradient_noise</code><span class="sig-paren">(</span><em>model</em>, <em>iteration</em>, <em>duration=100</em>, <em>eta=1.0</em>, <em>scale_factor=0.55</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.add_gradient_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds noise from a standard normal distribution to the gradients</p>
+<p>The standard deviation (<cite>sigma</cite>) is controlled by the three hyper-parameters below.
+<cite>sigma</cite> goes to zero (no noise) with more iterations.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>iteration (int): Number of iterations.
+duration (int) {100, 1000}: Number of durations to control the interval of the <cite>sigma</cite> change.
+eta (float) {0.01, 0.3, 1.0}: the magnitude of <cite>sigma</cite>
+scale_factor (float) {0.55}: the scale of <cite>sigma</cite></dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.add_results_to_json">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">add_results_to_json</code><span class="sig-paren">(</span><em>js</em>, <em>nbest_hyps</em>, <em>char_list</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.add_results_to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to add N-best results to json</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>js</strong> (<em>dict</em>) – groundtruth utterance dict</li>
+<li><strong>nbest_hyps</strong> (<em>list</em>) – list of hypothesis</li>
+<li><strong>char_list</strong> (<em>list</em>) – list of characters</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">N-best results added utterance dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.chainer_load">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">chainer_load</code><span class="sig-paren">(</span><em>path</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.chainer_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to load chainer model parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>str</em>) – model file or snapshot file to be loaded</li>
+<li><strong>model</strong> (<em>chainer.Chain</em>) – chainer model</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.get_model_conf">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">get_model_conf</code><span class="sig-paren">(</span><em>model_path</em>, <em>conf_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.get_model_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get model config information by reading a model config file (model.json)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_path</strong> (<em>str</em>) – model path</li>
+<li><strong>conf_path</strong> (<em>str</em>) – optional model config path</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.parse_hypothesis">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">parse_hypothesis</code><span class="sig-paren">(</span><em>hyp</em>, <em>char_list</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.parse_hypothesis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to parse hypothesis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hyp</strong> (<em>list</em>) – recognition hypothesis</li>
+<li><strong>char_list</strong> (<em>list</em>) – list of characters</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">recognition text string</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">recognition token string</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">recognition tokenid string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.plot_spectrogram">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">plot_spectrogram</code><span class="sig-paren">(</span><em>plt</em>, <em>spec</em>, <em>mode='db'</em>, <em>fs=None</em>, <em>frame_shift=None</em>, <em>bottom=True</em>, <em>left=True</em>, <em>right=True</em>, <em>top=False</em>, <em>labelbottom=True</em>, <em>labelleft=True</em>, <em>labelright=True</em>, <em>labeltop=False</em>, <em>cmap='inferno'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrogram using matplotlib</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plt</strong> (<em>matplotlib.pyplot</em>) – </li>
+<li><strong>spec</strong> (<em>np.ndarray</em>) – Input stft (Freq, Time)</li>
+<li><strong>mode</strong> (<em>str</em>) – db or linear.</li>
+<li><strong>fs</strong> (<em>int</em>) – Sample frequency. To convert y-axis to kHz unit.</li>
+<li><strong>frame_shift</strong> (<em>int</em>) – The frame shift of stft. To convert x-axis to second unit.</li>
+<li><strong>bottom</strong> (<em>bool</em>) – </li>
+<li><strong>left</strong> (<em>bool</em>) – </li>
+<li><strong>right</strong> (<em>bool</em>) – </li>
+<li><strong>top</strong> (<em>bool</em>) – </li>
+<li><strong>labelbottom</strong> (<em>bool</em>) – </li>
+<li><strong>labelleft</strong> (<em>bool</em>) – </li>
+<li><strong>labelright</strong> (<em>bool</em>) – </li>
+<li><strong>labeltop</strong> (<em>bool</em>) – </li>
+<li><strong>cmap</strong> (<em>str</em>) – colormap defined in matplotlib</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.restore_snapshot">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">restore_snapshot</code><span class="sig-paren">(</span><em>model</em>, <em>snapshot</em>, <em>load_fn=&lt;function load_npz&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.restore_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to restore snapshot</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.snapshot_object">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">snapshot_object</code><span class="sig-paren">(</span><em>target</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.snapshot_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a trainer extension to take snapshots of a given object.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">target: Object to serialize.
+filename (str): Name of the file into which the object is serialized.</p>
+<blockquote>
+<div>It can be a format string, where the trainer object is passed to
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">str.format()</span></code> method. For example,
+<code class="docutils literal notranslate"><span class="pre">'snapshot_{.updater.iteration}'</span></code> is converted to
+<code class="docutils literal notranslate"><span class="pre">'snapshot_10000'</span></code> at the 10,000th iteration.</div></blockquote>
+<dl class="last docutils">
+<dt>savefun: Function to save the object. It takes two arguments: the</dt>
+<dd>output file path and the object to serialize.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>An extension function.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.torch_load">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">torch_load</code><span class="sig-paren">(</span><em>path</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.torch_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to load torch model states</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>str</em>) – model file or snapshot file to be loaded</li>
+<li><strong>model</strong> (<em>torch.nn.Module</em>) – torch model</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.torch_resume">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">torch_resume</code><span class="sig-paren">(</span><em>snapshot_path</em>, <em>trainer</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.torch_resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to resume from snapshot for pytorch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snapshot_path</strong> (<em>str</em>) – snapshot file path</li>
+<li><strong>trainer</strong> (<em>instance</em>) – chainer trainer instance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.torch_save">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">torch_save</code><span class="sig-paren">(</span><em>path</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.torch_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to save torch model states</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>str</em>) – file path to be saved</li>
+<li><strong>model</strong> (<em>torch.nn.Module</em>) – torch model</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils.torch_snapshot">
+<code class="descclassname">espnet.asr.asr_utils.</code><code class="descname">torch_snapshot</code><span class="sig-paren">(</span><em>savefun=&lt;function save&gt;</em>, <em>filename='snapshot.ep.{.updater.epoch}'</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.asr_utils.torch_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a trainer extension to take snapshots of the trainer for pytorch.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-asr-chainer-backend">
+<span id="id3"></span><h2>espnet.asr.chainer_backend<a class="headerlink" href="#espnet-asr-chainer-backend" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.chainer_backend"></span></div>
+<div class="section" id="espnet-asr-chainer-backend-asr">
+<span id="id4"></span><h2>espnet.asr.chainer_backend.asr<a class="headerlink" href="#espnet-asr-chainer-backend-asr" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.chainer_backend.asr"></span><dl class="class">
+<dt id="espnet.asr.chainer_backend.asr.CustomConverter">
+<em class="property">class </em><code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">CustomConverter</code><span class="sig-paren">(</span><em>subsampling_factor=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.CustomConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Custom Converter</p>
+<p>:param int subsampling_factor : The subsampling factor</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.chainer_backend.asr.CustomParallelUpdater">
+<em class="property">class </em><code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">CustomParallelUpdater</code><span class="sig-paren">(</span><em>train_iters</em>, <em>optimizer</em>, <em>converter</em>, <em>devices</em>, <em>accum_grad=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.CustomParallelUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.updaters.multiprocess_parallel_updater.MultiprocessParallelUpdater</span></code></p>
+<p>Custom parallel updater for chainer</p>
+<dl class="method">
+<dt id="espnet.asr.chainer_backend.asr.CustomParallelUpdater.update_core">
+<code class="descname">update_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.CustomParallelUpdater.update_core" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.chainer_backend.asr.CustomUpdater">
+<em class="property">class </em><code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">CustomUpdater</code><span class="sig-paren">(</span><em>train_iter</em>, <em>optimizer</em>, <em>converter</em>, <em>device</em>, <em>accum_grad=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.CustomUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.updaters.standard_updater.StandardUpdater</span></code></p>
+<p>Custom updater for chainer</p>
+<dl class="method">
+<dt id="espnet.asr.chainer_backend.asr.CustomUpdater.update_core">
+<code class="descname">update_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.CustomUpdater.update_core" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.chainer_backend.asr.recog">
+<code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">recog</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.recog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode with the given args</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.chainer_backend.asr.sum_sqnorm">
+<code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">sum_sqnorm</code><span class="sig-paren">(</span><em>arr</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.sum_sqnorm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.chainer_backend.asr.train">
+<code class="descclassname">espnet.asr.chainer_backend.asr.</code><code class="descname">train</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.chainer_backend.asr.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train with the given args</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-asr-pytorch-backend">
+<span id="id5"></span><h2>espnet.asr.pytorch_backend<a class="headerlink" href="#espnet-asr-pytorch-backend" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.pytorch_backend"></span></div>
+<div class="section" id="espnet-asr-pytorch-backend-asr">
+<span id="id6"></span><h2>espnet.asr.pytorch_backend.asr<a class="headerlink" href="#espnet-asr-pytorch-backend-asr" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.pytorch_backend.asr"></span><dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr.CustomConverter">
+<em class="property">class </em><code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">CustomConverter</code><span class="sig-paren">(</span><em>subsampling_factor=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.CustomConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Custom batch converter for Pytorch</p>
+<p>:param int subsampling_factor : The subsampling factor</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr.CustomEvaluator">
+<em class="property">class </em><code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">CustomEvaluator</code><span class="sig-paren">(</span><em>model</em>, <em>iterator</em>, <em>target</em>, <em>converter</em>, <em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.CustomEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extensions.evaluator.Evaluator</span></code></p>
+<p>Custom Evaluator for Pytorch</p>
+<p>:param torch.nn.Module model : The model to evaluate
+:param chainer.dataset.Iterator : The train iterator
+:param target :
+:param CustomConverter converter : The batch converter
+:param torch.device device : The device used</p>
+<dl class="method">
+<dt id="espnet.asr.pytorch_backend.asr.CustomEvaluator.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.CustomEvaluator.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the model and returns a result dictionary.</p>
+<p>This method runs the evaluation loop over the validation dataset. It
+accumulates the reported values to <code class="xref py py-class docutils literal notranslate"><span class="pre">DictSummary</span></code> and
+returns a dictionary whose values are means computed by the summary.</p>
+<p>Note that this function assumes that the main iterator raises
+<code class="docutils literal notranslate"><span class="pre">StopIteration</span></code> or code in the evaluation loop raises an exception.
+So, if this assumption is not held, the function could be caught in
+an infinite loop.</p>
+<p>Users can override this method to customize the evaluation routine.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method encloses <code class="xref py py-attr docutils literal notranslate"><span class="pre">eval_func</span></code> calls with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">function.no_backprop_mode()</span></code> context, so all calculations
+using <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionNode</span></code>s inside
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">eval_func</span></code> do not make computational graphs. It is for
+reducing the memory consumption.</p>
+</div>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>dict: Result dictionary. This dictionary is further reported via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">report()</span></code> without specifying any observer.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr.CustomUpdater">
+<em class="property">class </em><code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">CustomUpdater</code><span class="sig-paren">(</span><em>model</em>, <em>grad_clip_threshold</em>, <em>train_iter</em>, <em>optimizer</em>, <em>converter</em>, <em>device</em>, <em>ngpu</em>, <em>grad_noise=False</em>, <em>accum_grad=1</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.CustomUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.updaters.standard_updater.StandardUpdater</span></code></p>
+<p>Custom Updater for Pytorch</p>
+<p>:param torch.nn.Module model : The model to update
+:param int grad_clip_threshold : The gradient clipping value to use
+:param chainer.dataset.Iterator train_iter : The training iterator
+:param torch.optim.optimizer optimizer: The training optimizer
+:param CustomConverter converter: The batch converter
+:param torch.device device : The device to use
+:param int ngpu : The number of gpus to use</p>
+<dl class="method">
+<dt id="espnet.asr.pytorch_backend.asr.CustomUpdater.update_core">
+<code class="descname">update_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.CustomUpdater.update_core" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr.enhance">
+<code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">enhance</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.enhance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumping enhanced speech and mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr.recog">
+<code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">recog</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.recog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode with the given args</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr.train">
+<code class="descclassname">espnet.asr.pytorch_backend.asr.</code><code class="descname">train</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#espnet.asr.pytorch_backend.asr.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train with the given args</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>Namespace</em>) – The program arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="espnet-lm.html" class="btn btn-neutral float-right" title="espnet.lm package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../tutorial.html" class="btn btn-neutral float-left" title="Outline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Shinji Watanabe
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1878 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>python utility tools &mdash; ESPnet 0.4.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.4.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bash utility tools" href="utils_sh.html" />
+    <link rel="prev" title="core tools" href="espnet_bin.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ESPnet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#execution-of-example-scripts">Execution of example scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#demonstration-using-pretrained-models">Demonstration using pretrained models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation-using-docker">Installation using Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#references">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-asr.html">espnet.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-lm.html">espnet.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-transform.html">espnet.transform package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-utils.html">espnet.utils package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tool Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="espnet_bin.html">core tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">python utility tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#addjson-py">addjson.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apply-cmvn-py">apply-cmvn.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#average-checkpoints-py">average_checkpoints.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#change-yaml-py">change_yaml.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compute-cmvn-stats-py">compute-cmvn-stats.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compute-fbank-feats-py">compute-fbank-feats.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compute-stft-feats-py">compute-stft-feats.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#concatjson-py">concatjson.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#convert-fbank-to-wav-py">convert_fbank_to_wav.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#copy-feats-py">copy-feats.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dump-pcm-py">dump-pcm.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#eval-perm-free-error-py">eval_perm_free_error.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#eval-source-separation-py">eval-source-separation.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#feat-to-shape-py">feat-to-shape.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#filt-py">filt.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#get-yaml-py">get_yaml.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json2sctm-py">json2sctm.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json2text-py">json2text.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json2trn-mt-py">json2trn_mt.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json2trn-py">json2trn.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mergejson-py">mergejson.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#merge-scp2json-py">merge_scp2json.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mix-mono-wav-scp-py">mix-mono-wav-scp.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#result2json-py">result2json.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scp2json-py">scp2json.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#splitjson-py">splitjson.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#text2token-py">text2token.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#text2vocabulary-py">text2vocabulary.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#trn2ctm-py">trn2ctm.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#trn2stm-py">trn2stm.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils_sh.html">bash utility tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ESPnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>python utility tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apis/utils_py.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="python-utility-tools">
+<span id="id1"></span><h1>python utility tools<a class="headerlink" href="#python-utility-tools" title="Permalink to this headline">¶</a></h1>
+<p>ESPnet provides several command-line python tools under <code class="docutils literal notranslate"><span class="pre">utils/</span></code></p>
+<ul class="simple">
+<li><a class="reference internal" href="#addjson-py"><span class="std std-ref">addjson.py</span></a>: add multiple json values to an input or output value</li>
+<li><a class="reference internal" href="#apply-cmvn-py"><span class="std std-ref">apply-cmvn.py</span></a>: apply mean-variance normalization to files</li>
+<li><a class="reference internal" href="#average-checkpoints-py"><span class="std std-ref">average_checkpoints.py</span></a>: average models from snapshot</li>
+<li><a class="reference internal" href="#change-yaml-py"><span class="std std-ref">change_yaml.py</span></a>: change specified attributes of a YAML file</li>
+<li><a class="reference internal" href="#compute-cmvn-stats-py"><span class="std std-ref">compute-cmvn-stats.py</span></a>: Compute cepstral mean and variance normalization statisticsIf wspecifier provided: per-utterance by default, or per-speaker ifspk2utt option provided; if wxfilename: global</li>
+<li><a class="reference internal" href="#compute-fbank-feats-py"><span class="std std-ref">compute-fbank-feats.py</span></a>: compute FBANK feature from WAV</li>
+<li><a class="reference internal" href="#compute-stft-feats-py"><span class="std std-ref">compute-stft-feats.py</span></a>: compute STFT feature from WAV</li>
+<li><a class="reference internal" href="#concatjson-py"><span class="std std-ref">concatjson.py</span></a>: concatenate json files</li>
+<li><a class="reference internal" href="#convert-fbank-to-wav-py"><span class="std std-ref">convert_fbank_to_wav.py</span></a>: convert FBANK to WAV using Griffin-Lim algorithm</li>
+<li><a class="reference internal" href="#copy-feats-py"><span class="std std-ref">copy-feats.py</span></a>: copy feature with preprocessing</li>
+<li><a class="reference internal" href="#dump-pcm-py"><span class="std std-ref">dump-pcm.py</span></a>: dump PCM files from a WAV scp file</li>
+<li><a class="reference internal" href="#eval-perm-free-error-py"><span class="std std-ref">eval_perm_free_error.py</span></a>: evaluate permutation-free error</li>
+<li><a class="reference internal" href="#eval-source-separation-py"><span class="std std-ref">eval-source-separation.py</span></a>: Evaluate enhanced speech. e.g. ../doc/argparse2rst.py –ref ref.scp –enh enh.scp –outdir outputdiror ../doc/argparse2rst.py –ref ref.scp ref2.scp –enh enh.scp enh2.scp –outdir outputdir</li>
+<li><a class="reference internal" href="#feat-to-shape-py"><span class="std std-ref">feat-to-shape.py</span></a>: convert feature to its shape</li>
+<li><a class="reference internal" href="#filt-py"><span class="std std-ref">filt.py</span></a>: filter words in a text file</li>
+<li><a class="reference internal" href="#get-yaml-py"><span class="std std-ref">get_yaml.py</span></a>: get a specified attribute from a YAML file</li>
+<li><a class="reference internal" href="#json2sctm-py"><span class="std std-ref">json2sctm.py</span></a>: convert json to sctm</li>
+<li><a class="reference internal" href="#json2text-py"><span class="std std-ref">json2text.py</span></a>: convert ASR recognized json to text</li>
+<li><a class="reference internal" href="#json2trn-mt-py"><span class="std std-ref">json2trn_mt.py</span></a>: convert json to machine translation transcription</li>
+<li><a class="reference internal" href="#json2trn-py"><span class="std std-ref">json2trn.py</span></a>: convert a json to a transcription file with a token dictionary</li>
+<li><a class="reference internal" href="#mergejson-py"><span class="std std-ref">mergejson.py</span></a>: merge json files</li>
+<li><a class="reference internal" href="#merge-scp2json-py"><span class="std std-ref">merge_scp2json.py</span></a>: Given each file paths with such format as &lt;key&gt;:&lt;file&gt;:&lt;type&gt;. type&gt; can be omitted and the default is “str”. e.g. ../doc/argparse2rst.py –input-scps feat:data/feats.scp shape:data/utt2feat_shape:shape –input-scps feat:data/feats2.scp shape:data/utt2feat2_shape:shape –output-scps text:data/text shape:data/utt2text_shape:shape –scps utt2spk:data/utt2spk</li>
+<li><a class="reference internal" href="#mix-mono-wav-scp-py"><span class="std std-ref">mix-mono-wav-scp.py</span></a>: Mixing wav.scp files into a multi-channel wav.scp using sox.</li>
+<li><a class="reference internal" href="#result2json-py"><span class="std std-ref">result2json.py</span></a>: convert sclite’s result.txt file to json</li>
+<li><a class="reference internal" href="#scp2json-py"><span class="std std-ref">scp2json.py</span></a>: convert scp to json</li>
+<li><a class="reference internal" href="#splitjson-py"><span class="std std-ref">splitjson.py</span></a>: split a json file for parallel processing</li>
+<li><a class="reference internal" href="#text2token-py"><span class="std std-ref">text2token.py</span></a>: convert raw text to tokenized text</li>
+<li><a class="reference internal" href="#text2vocabulary-py"><span class="std std-ref">text2vocabulary.py</span></a>: create a vocabulary file from text files</li>
+<li><a class="reference internal" href="#trn2ctm-py"><span class="std std-ref">trn2ctm.py</span></a>: convert trn to ctm</li>
+<li><a class="reference internal" href="#trn2stm-py"><span class="std std-ref">trn2stm.py</span></a>: convert trn to stm</li>
+</ul>
+<div class="section" id="addjson-py">
+<span id="id2"></span><h2>addjson.py<a class="headerlink" href="#addjson-py" title="Permalink to this headline">¶</a></h2>
+<p>add multiple json values to an input or output value</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">addjson</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">IS_INPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="n">jsons</span> <span class="p">[</span><span class="n">jsons</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>jsons</kbd></td>
+<td>json files</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-i, --is-input</kbd></td>
+<td><p class="first">If true, add to input. If false, add to output</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="apply-cmvn-py">
+<span id="id3"></span><h2>apply-cmvn.py<a class="headerlink" href="#apply-cmvn-py" title="Permalink to this headline">¶</a></h2>
+<p>apply mean-variance normalization to files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">apply</span><span class="o">-</span><span class="n">cmvn</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="ow">in</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">stats</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">npy</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">norm</span><span class="o">-</span><span class="n">means</span> <span class="n">NORM_MEANS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">norm</span><span class="o">-</span><span class="nb">vars</span> <span class="n">NORM_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reverse</span> <span class="n">REVERSE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">spk2utt</span> <span class="n">SPK2UTT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">utt2spk</span> <span class="n">UTT2SPK</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">num</span><span class="o">-</span><span class="n">frames</span> <span class="n">WRITE_NUM_FRAMES</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="n">COMPRESS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="o">-</span><span class="n">method</span> <span class="n">COMPRESSION_METHOD</span><span class="p">]</span>
+                     <span class="n">stats_rspecifier_or_rxfilename</span> <span class="n">rspecifier</span> <span class="n">wspecifier</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>stats_rspecifier_or_rxfilename</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Input stats. e.g. ark:stats.ark or stats.mat</td></tr>
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>Read specifier id. e.g. ark:some.ark</td></tr>
+<tr><td class="option-group">
+<kbd>wspecifier</kbd></td>
+<td>Write specifier id. e.g. ark:some.ark</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--in-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--stats-filetype</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: mat, hdf5, npy</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--out-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5</p>
+<p>Specify the file format for the wspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--norm-means</kbd></td>
+<td><p class="first">Do variance normalization or not.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--norm-vars</kbd></td>
+<td><p class="first">Do variance normalization or not.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--reverse</kbd></td>
+<td><p class="first">Do reverse mode or not</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--spk2utt</kbd></td>
+<td>A text file of speaker to utterance-list map. (Don’t give rspecifier format, such as “ark:spk2utt”)</td></tr>
+<tr><td class="option-group">
+<kbd>--utt2spk</kbd></td>
+<td>A text file of utterance to speaker map. (Don’t give rspecifier format, such as “ark:utt2spk”)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--write-num-frames</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify wspecifer for utt2num_frames</td></tr>
+<tr><td class="option-group">
+<kbd>--compress</kbd></td>
+<td><p class="first">Save in compressed format</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--compression-method</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Specify the method(if mat) or gzip-level(if hdf5)</p>
+<p class="last">Default: 2</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="average-checkpoints-py">
+<span id="id4"></span><h2>average_checkpoints.py<a class="headerlink" href="#average-checkpoints-py" title="Permalink to this headline">¶</a></h2>
+<p>average models from snapshot</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">average_checkpoints</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">snapshots</span> <span class="n">SNAPSHOTS</span> <span class="p">[</span><span class="n">SNAPSHOTS</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">out</span>
+                              <span class="n">OUT</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span> <span class="n">NUM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="n">BACKEND</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="p">[</span><span class="n">LOG</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--snapshots</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>--out</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>--num</kbd></td>
+<td>Default: 10</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td>Default: “chainer”</td></tr>
+<tr><td class="option-group">
+<kbd>--log</kbd></td>
+<td></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="change-yaml-py">
+<span id="id5"></span><h2>change_yaml.py<a class="headerlink" href="#change-yaml-py" title="Permalink to this headline">¶</a></h2>
+<p>change specified attributes of a YAML file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">change_yaml</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTYAML</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ARG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DELETE</span><span class="p">]</span> <span class="p">[</span><span class="n">inyaml</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>inyaml</kbd></td>
+<td></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-o, --outyaml</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>-a, --arg</kbd></td>
+<td><p class="first">e.g -a a.b.c=4 -&gt; {‘a’: {‘b’: {‘c’: 4}}}</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-d, --delete</kbd></td>
+<td><p class="first">e.g -d a -&gt; “a” is removed from the input yaml</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="compute-cmvn-stats-py">
+<span id="id6"></span><h2>compute-cmvn-stats.py<a class="headerlink" href="#compute-cmvn-stats-py" title="Permalink to this headline">¶</a></h2>
+<p>Compute cepstral mean and variance normalization statisticsIf wspecifier provided: per-utterance by default, or per-speaker ifspk2utt option provided; if wxfilename: global</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">compute</span><span class="o">-</span><span class="n">cmvn</span><span class="o">-</span><span class="n">stats</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spk2utt</span> <span class="n">SPK2UTT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="ow">in</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">npy</span><span class="p">}]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                             <span class="n">rspecifier</span> <span class="n">wspecifier_or_wxfilename</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>Read specifier for feats. e.g. ark:some.ark</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>wspecifier_or_wxfilename</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Write specifier. e.g. ark:some.ark</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--spk2utt</kbd></td>
+<td>A text file of speaker to utterance-list map. (Don’t give rspecifier format, such as “ark:utt2spk”)</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--in-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--out-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, npy</p>
+<p>Specify the file format for the wspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="compute-fbank-feats-py">
+<span id="id7"></span><h2>compute-fbank-feats.py<a class="headerlink" href="#compute-fbank-feats-py" title="Permalink to this headline">¶</a></h2>
+<p>compute FBANK feature from WAV</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">compute</span><span class="o">-</span><span class="n">fbank</span><span class="o">-</span><span class="n">feats</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span> <span class="n">FS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fmax</span> <span class="p">[</span><span class="n">FMAX</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">fmin</span> <span class="p">[</span><span class="n">FMIN</span><span class="p">]]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">n_mels</span> <span class="n">N_MELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n_fft</span> <span class="n">N_FFT</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">n_shift</span> <span class="n">N_SHIFT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">win_length</span> <span class="p">[</span><span class="n">WIN_LENGTH</span><span class="p">]]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">window</span> <span class="p">{</span><span class="n">hann</span><span class="p">,</span><span class="n">hamming</span><span class="p">}]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">num</span><span class="o">-</span><span class="n">frames</span> <span class="n">WRITE_NUM_FRAMES</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="n">COMPRESS</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="o">-</span><span class="n">method</span> <span class="n">COMPRESSION_METHOD</span><span class="p">]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">32</span><span class="p">}]</span>
+                              <span class="p">[</span><span class="o">--</span><span class="n">segments</span> <span class="n">SEGMENTS</span><span class="p">]</span>
+                              <span class="n">rspecifier</span> <span class="n">wspecifier</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>WAV scp file</td></tr>
+<tr><td class="option-group">
+<kbd>wspecifier</kbd></td>
+<td>Write specifier</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--fs</kbd></td>
+<td>Sampling frequency</td></tr>
+<tr><td class="option-group">
+<kbd>--fmax</kbd></td>
+<td>Maximum frequency</td></tr>
+<tr><td class="option-group">
+<kbd>--fmin</kbd></td>
+<td>Minimum frequency</td></tr>
+<tr><td class="option-group">
+<kbd>--n_mels</kbd></td>
+<td><p class="first">Number of mel basis</p>
+<p class="last">Default: 80</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--n_fft</kbd></td>
+<td><p class="first">FFT length in point</p>
+<p class="last">Default: 1024</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--n_shift</kbd></td>
+<td><p class="first">Shift length in point</p>
+<p class="last">Default: 512</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--win_length</kbd></td>
+<td>Analisys window length in point</td></tr>
+<tr><td class="option-group">
+<kbd>--window</kbd></td>
+<td><p class="first">Possible choices: hann, hamming</p>
+<p>Type of window</p>
+<p class="last">Default: “hann”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--write-num-frames</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify wspecifer for utt2num_frames</td></tr>
+<tr><td class="option-group">
+<kbd>--filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5</p>
+<p>Specify the file format for output. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compress</kbd></td>
+<td><p class="first">Save in compressed format</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--compression-method</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Specify the method(if mat) or gzip-level(if hdf5)</p>
+<p class="last">Default: 2</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--normalize</kbd></td>
+<td><p class="first">Possible choices: 1, 16, 24, 32</p>
+<p class="last">Give the bit depth of the PCM, then normalizes data to scale in [-1,1]</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--segments</kbd></td>
+<td>segments-file format: each line is either&lt;segment-id&gt; &lt;recording-id&gt; &lt;start-time&gt; &lt;end-time&gt;e.g. call-861225-A-0050-0065 call-861225-A 5.0 6.5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="compute-stft-feats-py">
+<span id="id8"></span><h2>compute-stft-feats.py<a class="headerlink" href="#compute-stft-feats-py" title="Permalink to this headline">¶</a></h2>
+<p>compute STFT feature from WAV</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">compute</span><span class="o">-</span><span class="n">stft</span><span class="o">-</span><span class="n">feats</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n_fft</span> <span class="n">N_FFT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n_shift</span> <span class="n">N_SHIFT</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">win_length</span> <span class="p">[</span><span class="n">WIN_LENGTH</span><span class="p">]]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">window</span> <span class="p">{</span><span class="n">hann</span><span class="p">,</span><span class="n">hamming</span><span class="p">}]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">num</span><span class="o">-</span><span class="n">frames</span> <span class="n">WRITE_NUM_FRAMES</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="n">COMPRESS</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="o">-</span><span class="n">method</span> <span class="n">COMPRESSION_METHOD</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">32</span><span class="p">}]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">segments</span> <span class="n">SEGMENTS</span><span class="p">]</span>
+                             <span class="n">rspecifier</span> <span class="n">wspecifier</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>WAV scp file</td></tr>
+<tr><td class="option-group">
+<kbd>wspecifier</kbd></td>
+<td>Write specifier</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--n_fft</kbd></td>
+<td><p class="first">FFT length in point</p>
+<p class="last">Default: 1024</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--n_shift</kbd></td>
+<td><p class="first">Shift length in point</p>
+<p class="last">Default: 512</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--win_length</kbd></td>
+<td>Analisys window length in point</td></tr>
+<tr><td class="option-group">
+<kbd>--window</kbd></td>
+<td><p class="first">Possible choices: hann, hamming</p>
+<p>Type of window</p>
+<p class="last">Default: “hann”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--write-num-frames</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify wspecifer for utt2num_frames</td></tr>
+<tr><td class="option-group">
+<kbd>--filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5</p>
+<p>Specify the file format. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compress</kbd></td>
+<td><p class="first">Save in compressed format</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--compression-method</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Specify the method(if mat) or gzip-level(if hdf5)</p>
+<p class="last">Default: 2</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--normalize</kbd></td>
+<td><p class="first">Possible choices: 1, 16, 24, 32</p>
+<p class="last">Give the bit depth of the PCM, then normalizes data to scale in [-1,1]</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--segments</kbd></td>
+<td>segments-file format: each line is either&lt;segment-id&gt; &lt;recording-id&gt; &lt;start-time&gt; &lt;end-time&gt;e.g. call-861225-A-0050-0065 call-861225-A 5.0 6.5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="concatjson-py">
+<span id="id9"></span><h2>concatjson.py<a class="headerlink" href="#concatjson-py" title="Permalink to this headline">¶</a></h2>
+<p>concatenate json files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">concatjson</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">jsons</span> <span class="p">[</span><span class="n">jsons</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>jsons</kbd></td>
+<td>json files</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="convert-fbank-to-wav-py">
+<span id="id10"></span><h2>convert_fbank_to_wav.py<a class="headerlink" href="#convert-fbank-to-wav-py" title="Permalink to this headline">¶</a></h2>
+<p>convert FBANK to WAV using Griffin-Lim algorithm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">convert_fbank_to_wav</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span> <span class="n">FS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fmax</span> <span class="p">[</span><span class="n">FMAX</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">fmin</span> <span class="p">[</span><span class="n">FMIN</span><span class="p">]]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">n_fft</span> <span class="n">N_FFT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n_shift</span> <span class="n">N_SHIFT</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">win_length</span> <span class="p">[</span><span class="n">WIN_LENGTH</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">n_mels</span> <span class="p">[</span><span class="n">N_MELS</span><span class="p">]]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">window</span> <span class="p">{</span><span class="n">hann</span><span class="p">,</span><span class="n">hamming</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">iters</span> <span class="n">ITERS</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">}]</span>
+                               <span class="n">rspecifier</span> <span class="n">outdir</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>Input feature</td></tr>
+<tr><td class="option-group">
+<kbd>outdir</kbd></td>
+<td>Output directory</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--fs</kbd></td>
+<td><p class="first">Sampling frequency</p>
+<p class="last">Default: 22050</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--fmax</kbd></td>
+<td>Maximum frequency</td></tr>
+<tr><td class="option-group">
+<kbd>--fmin</kbd></td>
+<td>Minimum frequency</td></tr>
+<tr><td class="option-group">
+<kbd>--n_fft</kbd></td>
+<td><p class="first">FFT length in point</p>
+<p class="last">Default: 1024</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--n_shift</kbd></td>
+<td><p class="first">Shift length in point</p>
+<p class="last">Default: 512</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--win_length</kbd></td>
+<td>Analisys window length in point</td></tr>
+<tr><td class="option-group">
+<kbd>--n_mels</kbd></td>
+<td>Number of mel basis</td></tr>
+<tr><td class="option-group">
+<kbd>--window</kbd></td>
+<td><p class="first">Possible choices: hann, hamming</p>
+<p>Type of window</p>
+<p class="last">Default: “hann”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--iters</kbd></td>
+<td><p class="first">Number of iterations in Grriffin Lim</p>
+<p class="last">Default: 100</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="copy-feats-py">
+<span id="id11"></span><h2>copy-feats.py<a class="headerlink" href="#copy-feats-py" title="Permalink to this headline">¶</a></h2>
+<p>copy feature with preprocessing</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">copy</span><span class="o">-</span><span class="n">feats</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="ow">in</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">num</span><span class="o">-</span><span class="n">frames</span> <span class="n">WRITE_NUM_FRAMES</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="n">COMPRESS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="o">-</span><span class="n">method</span> <span class="n">COMPRESSION_METHOD</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                     <span class="n">rspecifier</span> <span class="n">wspecifier</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>Read specifier for feats. e.g. ark:some.ark</td></tr>
+<tr><td class="option-group">
+<kbd>wspecifier</kbd></td>
+<td>Write specifier. e.g. ark:some.ark</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--in-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--out-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for the wspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--write-num-frames</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify wspecifer for utt2num_frames</td></tr>
+<tr><td class="option-group">
+<kbd>--compress</kbd></td>
+<td><p class="first">Save in compressed format</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--compression-method</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Specify the method(if mat) or gzip-level(if hdf5)</p>
+<p class="last">Default: 2</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="dump-pcm-py">
+<span id="id12"></span><h2>dump-pcm.py<a class="headerlink" href="#dump-pcm-py" title="Permalink to this headline">¶</a></h2>
+<p>dump PCM files from a WAV scp file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">dump</span><span class="o">-</span><span class="n">pcm</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">num</span><span class="o">-</span><span class="n">frames</span> <span class="n">WRITE_NUM_FRAMES</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="n">COMPRESS</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="o">-</span><span class="n">method</span> <span class="n">COMPRESSION_METHOD</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">32</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">length</span> <span class="n">KEEP_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">segments</span> <span class="n">SEGMENTS</span><span class="p">]</span>
+                   <span class="n">rspecifier</span> <span class="n">wspecifier</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>WAV scp file</td></tr>
+<tr><td class="option-group">
+<kbd>wspecifier</kbd></td>
+<td>Write specifier</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--write-num-frames</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify wspecifer for utt2num_frames</td></tr>
+<tr><td class="option-group">
+<kbd>--filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for output. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--format</kbd></td>
+<td>The file format for output pcm. This option is only valid when “–filetype” is “sound.hdf5” or “sound”</td></tr>
+<tr><td class="option-group">
+<kbd>--compress</kbd></td>
+<td><p class="first">Save in compressed format</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--compression-method</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Specify the method(if mat) or gzip-level(if hdf5)</p>
+<p class="last">Default: 2</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--normalize</kbd></td>
+<td><p class="first">Possible choices: 1, 16, 24, 32</p>
+<p class="last">Give the bit depth of the PCM, then normalizes data to scale in [-1,1]</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group">
+<kbd>--keep-length</kbd></td>
+<td><p class="first">Truncating or zero padding if the output length is changed from the input by preprocessing</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--segments</kbd></td>
+<td>segments-file format: each line is either&lt;segment-id&gt; &lt;recording-id&gt; &lt;start-time&gt; &lt;end-time&gt;e.g. call-861225-A-0050-0065 call-861225-A 5.0 6.5</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="eval-perm-free-error-py">
+<span id="id13"></span><h2>eval_perm_free_error.py<a class="headerlink" href="#eval-perm-free-error-py" title="Permalink to this headline">¶</a></h2>
+<p>evaluate permutation-free error</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">eval_perm_free_error</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="n">NUM_SPKRS</span><span class="p">]</span>
+                               <span class="n">results</span> <span class="p">[</span><span class="n">results</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>results</kbd></td>
+<td>the scores between references and hypotheses, in ascending order of references (1st) and hypotheses (2nd), e.g. [r1h1, r1h2, r2h1, r2h2] in 2-speaker-mix case.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--num-spkrs</kbd></td>
+<td><p class="first">number of mixed speakers.</p>
+<p class="last">Default: 2</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="eval-source-separation-py">
+<span id="id14"></span><h2>eval-source-separation.py<a class="headerlink" href="#eval-source-separation-py" title="Permalink to this headline">¶</a></h2>
+<p>Evaluate enhanced speech. e.g. /home/travis/build/espnet/espnet/tools/venv/bin/travis-sphinx –ref ref.scp –enh enh.scp –outdir outputdiror /home/travis/build/espnet/espnet/tools/venv/bin/travis-sphinx –ref ref.scp ref2.scp –enh enh.scp enh2.scp –outdir outputdir</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="nb">eval</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">separation</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="o">--</span><span class="n">ref</span> <span class="n">REFFILES</span>
+                                 <span class="p">[</span><span class="n">REFFILES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">enh</span> <span class="n">ENHFILES</span> <span class="p">[</span><span class="n">ENHFILES</span> <span class="o">...</span><span class="p">]</span>
+                                 <span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span> <span class="p">[</span><span class="o">--</span><span class="n">keylist</span> <span class="n">KEYLIST</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">evaltypes</span> <span class="p">{</span><span class="n">SDR</span><span class="p">,</span><span class="n">STOI</span><span class="p">,</span><span class="n">ESTOI</span><span class="p">,</span><span class="n">PESQ</span><span class="p">}</span> <span class="p">[{</span><span class="n">SDR</span><span class="p">,</span><span class="n">STOI</span><span class="p">,</span><span class="n">ESTOI</span><span class="p">,</span><span class="n">PESQ</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">permutation</span> <span class="n">PERMUTATION</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">bss</span><span class="o">-</span><span class="nb">eval</span><span class="o">-</span><span class="n">images</span> <span class="n">BSS_EVAL_IMAGES</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">bss</span><span class="o">-</span><span class="nb">eval</span><span class="o">-</span><span class="n">version</span> <span class="p">{</span><span class="n">v3</span><span class="p">,</span><span class="n">v4</span><span class="p">}]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--ref</kbd></td>
+<td>WAV file lists for reference</td></tr>
+<tr><td class="option-group">
+<kbd>--enh</kbd></td>
+<td>WAV files lists for enhanced</td></tr>
+<tr><td class="option-group">
+<kbd>--outdir</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>--keylist</kbd></td>
+<td>Specify the target samples. By default, using all keys in the first reference file</td></tr>
+<tr><td class="option-group">
+<kbd>--evaltypes</kbd></td>
+<td><p class="first">Possible choices: SDR, STOI, ESTOI, PESQ</p>
+<p class="last">Default: [‘SDR’, ‘STOI’, ‘ESTOI’, ‘PESQ’]</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--permutation</kbd></td>
+<td><p class="first">Compute all permutations or use the pair of input order</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--bss-eval-images</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Use bss_eval_images or bss_eval_sources. For more detail, see museval source codes.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--bss-eval-version</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: v3, v4</p>
+<p>Specify bss-eval-version: v3 or v4</p>
+<p class="last">Default: “v3”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="feat-to-shape-py">
+<span id="id15"></span><h2>feat-to-shape.py<a class="headerlink" href="#feat-to-shape-py" title="Permalink to this headline">¶</a></h2>
+<p>convert feature to its shape</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">feat</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">shape</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                        <span class="n">rspecifier</span> <span class="p">[</span><span class="n">out</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>rspecifier</kbd></td>
+<td>Read specifier for feats. e.g. ark:some.ark</td></tr>
+<tr><td class="option-group">
+<kbd>out</kbd></td>
+<td><p class="first">The output filename. If omitted, then output to sys.stdout</p>
+<p class="last">Default: &lt;_io.TextIOWrapper name=’&lt;stdout&gt;’ mode=’w’ encoding=’UTF-8’&gt;</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for the rspecifier. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “mat”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="filt-py">
+<span id="id16"></span><h2>filt.py<a class="headerlink" href="#filt-py" title="Permalink to this headline">¶</a></h2>
+<p>filter words in a text file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">filt</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span><span class="p">]</span> <span class="n">filt</span> <span class="n">infile</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>filt</kbd></td>
+<td>filter list</td></tr>
+<tr><td class="option-group">
+<kbd>infile</kbd></td>
+<td>input file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--exclude, -v</kbd></td>
+<td><p class="first">exclude filter words</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="get-yaml-py">
+<span id="id17"></span><h2>get_yaml.py<a class="headerlink" href="#get-yaml-py" title="Permalink to this headline">¶</a></h2>
+<p>get a specified attribute from a YAML file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">get_yaml</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">inyaml</span> <span class="n">attr</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>inyaml</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>attr</kbd></td>
+<td>foo.bar will access yaml.load(inyaml)[“foo”][“bar”]</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="json2sctm-py">
+<span id="id18"></span><h2>json2sctm.py<a class="headerlink" href="#json2sctm-py" title="Permalink to this headline">¶</a></h2>
+<p>convert json to sctm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">json2sctm</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="p">[</span><span class="n">NUM_SPKRS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">refs</span> <span class="p">[</span><span class="n">REFS</span> <span class="p">[</span><span class="n">REFS</span> <span class="o">...</span><span class="p">]]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">hyps</span> <span class="p">[</span><span class="n">HYPS</span> <span class="p">[</span><span class="n">HYPS</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">orig</span><span class="o">-</span><span class="n">stm</span> <span class="p">[</span><span class="n">ORIG_STM</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">stm</span> <span class="n">STM</span> <span class="p">[</span><span class="n">STM</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctm</span> <span class="n">CTM</span> <span class="p">[</span><span class="n">CTM</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">bpe</span> <span class="p">[</span><span class="n">BPE</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="n">json</span><span class="p">]</span> <span class="nb">dict</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>json</kbd></td>
+<td>input trn</td></tr>
+<tr><td class="option-group">
+<kbd>dict</kbd></td>
+<td>dict</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--num-spkrs</kbd></td>
+<td><p class="first">number of speakers</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--refs</kbd></td>
+<td>ref for all speakers</td></tr>
+<tr><td class="option-group">
+<kbd>--hyps</kbd></td>
+<td>hyp for all outputs</td></tr>
+<tr><td class="option-group">
+<kbd>--orig-stm</kbd></td>
+<td>orig stm</td></tr>
+<tr><td class="option-group">
+<kbd>--stm</kbd></td>
+<td>output stm</td></tr>
+<tr><td class="option-group">
+<kbd>--ctm</kbd></td>
+<td>output ctm</td></tr>
+<tr><td class="option-group">
+<kbd>--bpe</kbd></td>
+<td>BPE model if applicable</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="json2text-py">
+<span id="id19"></span><h2>json2text.py<a class="headerlink" href="#json2text-py" title="Permalink to this headline">¶</a></h2>
+<p>convert ASR recognized json to text</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">json2text</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">json</span> <span class="nb">dict</span> <span class="n">ref</span> <span class="n">hyp</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>json</kbd></td>
+<td>json files</td></tr>
+<tr><td class="option-group">
+<kbd>dict</kbd></td>
+<td>dict</td></tr>
+<tr><td class="option-group">
+<kbd>ref</kbd></td>
+<td>ref</td></tr>
+<tr><td class="option-group">
+<kbd>hyp</kbd></td>
+<td>hyp</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="json2trn-mt-py">
+<span id="id20"></span><h2>json2trn_mt.py<a class="headerlink" href="#json2trn-mt-py" title="Permalink to this headline">¶</a></h2>
+<p>convert json to machine translation transcription</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">json2trn_mt</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">refs</span> <span class="n">REFS</span> <span class="p">[</span><span class="n">REFS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">hyps</span> <span class="n">HYPS</span> <span class="p">[</span><span class="n">HYPS</span> <span class="o">...</span><span class="p">]]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">srcs</span> <span class="n">SRCS</span> <span class="p">[</span><span class="n">SRCS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="nb">dict</span><span class="o">-</span><span class="n">src</span> <span class="p">[</span><span class="n">DICT_SRC</span><span class="p">]]</span>
+                      <span class="n">json</span> <span class="nb">dict</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>json</kbd></td>
+<td>json files</td></tr>
+<tr><td class="option-group">
+<kbd>dict</kbd></td>
+<td>dict for target language</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--refs</kbd></td>
+<td>ref for all speakers</td></tr>
+<tr><td class="option-group">
+<kbd>--hyps</kbd></td>
+<td>hyp for all outputs</td></tr>
+<tr><td class="option-group">
+<kbd>--srcs</kbd></td>
+<td>src for all outputs</td></tr>
+<tr><td class="option-group">
+<kbd>--dict-src</kbd></td>
+<td><p class="first">dict for source language</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="json2trn-py">
+<span id="id21"></span><h2>json2trn.py<a class="headerlink" href="#json2trn-py" title="Permalink to this headline">¶</a></h2>
+<p>convert a json to a transcription file with a token dictionary</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">json2trn</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="n">NUM_SPKRS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">refs</span> <span class="n">REFS</span> <span class="p">[</span><span class="n">REFS</span> <span class="o">...</span><span class="p">]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">hyps</span> <span class="n">HYPS</span> <span class="p">[</span><span class="n">HYPS</span> <span class="o">...</span><span class="p">]]</span>
+                   <span class="n">json</span> <span class="nb">dict</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>json</kbd></td>
+<td>json files</td></tr>
+<tr><td class="option-group">
+<kbd>dict</kbd></td>
+<td>dict</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--num-spkrs</kbd></td>
+<td><p class="first">number of speakers</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--refs</kbd></td>
+<td>ref for all speakers</td></tr>
+<tr><td class="option-group">
+<kbd>--hyps</kbd></td>
+<td>hyp for all outputs</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="mergejson-py">
+<span id="id22"></span><h2>mergejson.py<a class="headerlink" href="#mergejson-py" title="Permalink to this headline">¶</a></h2>
+<p>merge json files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mergejson</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">jsons</span> <span class="n">INPUT_JSONS</span> <span class="p">[</span><span class="n">INPUT_JSONS</span> <span class="o">...</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">jsons</span> <span class="n">OUTPUT_JSONS</span> <span class="p">[</span><span class="n">OUTPUT_JSONS</span> <span class="o">...</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">jsons</span> <span class="n">JSONS</span> <span class="p">[</span><span class="n">JSONS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">O</span> <span class="n">OUTPUT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--input-jsons</kbd></td>
+<td><p class="first">Json files for the inputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--output-jsons</kbd></td>
+<td><p class="first">Json files for the outputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--jsons</kbd></td>
+<td><p class="first">The json files except for the input and outputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-O</kbd></td>
+<td>Output json file</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="merge-scp2json-py">
+<span id="id23"></span><h2>merge_scp2json.py<a class="headerlink" href="#merge-scp2json-py" title="Permalink to this headline">¶</a></h2>
+<p>Given each file paths with such format as &lt;key&gt;:&lt;file&gt;:&lt;type&gt;. type&gt; can be omitted and the default is “str”. e.g. /home/travis/build/espnet/espnet/tools/venv/bin/travis-sphinx –input-scps feat:data/feats.scp shape:data/utt2feat_shape:shape –input-scps feat:data/feats2.scp shape:data/utt2feat2_shape:shape –output-scps text:data/text shape:data/utt2text_shape:shape –scps utt2spk:data/utt2spk</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">merge_scp2json</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">input</span><span class="o">-</span><span class="n">scps</span> <span class="p">[</span><span class="n">INPUT_SCPS</span> <span class="p">[</span><span class="n">INPUT_SCPS</span> <span class="o">...</span><span class="p">]]]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">scps</span> <span class="p">[</span><span class="n">OUTPUT_SCPS</span> <span class="p">[</span><span class="n">OUTPUT_SCPS</span> <span class="o">...</span><span class="p">]]]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">scps</span> <span class="n">SCPS</span> <span class="p">[</span><span class="n">SCPS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">allow</span><span class="o">-</span><span class="n">one</span><span class="o">-</span><span class="n">column</span> <span class="n">ALLOW_ONE_COLUMN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span> <span class="n">OUT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--input-scps</kbd></td>
+<td><p class="first">Json files for the inputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--output-scps</kbd></td>
+<td><p class="first">Json files for the outputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--scps</kbd></td>
+<td><p class="first">The json files except for the input and outputs</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--allow-one-column</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Allow one column in input scp files. In this case, the value will be empty string.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--out, -O</kbd></td>
+<td>The output filename. If omitted, then output to sys.stdout</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="mix-mono-wav-scp-py">
+<span id="id24"></span><h2>mix-mono-wav-scp.py<a class="headerlink" href="#mix-mono-wav-scp-py" title="Permalink to this headline">¶</a></h2>
+<p>Mixing wav.scp files into a multi-channel wav.scp using sox.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mix</span><span class="o">-</span><span class="n">mono</span><span class="o">-</span><span class="n">wav</span><span class="o">-</span><span class="n">scp</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">scp</span> <span class="p">[</span><span class="n">scp</span> <span class="o">...</span><span class="p">]</span> <span class="p">[</span><span class="n">out</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>scp</kbd></td>
+<td>Give wav.scp</td></tr>
+<tr><td class="option-group">
+<kbd>out</kbd></td>
+<td><p class="first">The output filename. If omitted, then output to sys.stdout</p>
+<p class="last">Default: &lt;encodings.utf_8.StreamWriter object at 0x7f61fbeba0f0&gt;</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="result2json-py">
+<span id="id25"></span><h2>result2json.py<a class="headerlink" href="#result2json-py" title="Permalink to this headline">¶</a></h2>
+<p>convert sclite’s result.txt file to json</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">result2json</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">key</span> <span class="n">KEY</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--key, -k</kbd></td>
+<td>key</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="scp2json-py">
+<span id="id26"></span><h2>scp2json.py<a class="headerlink" href="#scp2json-py" title="Permalink to this headline">¶</a></h2>
+<p>convert scp to json</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scp2json</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">key</span> <span class="n">KEY</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--key, -k</kbd></td>
+<td>key</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="splitjson-py">
+<span id="id27"></span><h2>splitjson.py<a class="headerlink" href="#splitjson-py" title="Permalink to this headline">¶</a></h2>
+<p>split a json file for parallel processing</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">splitjson</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">parts</span> <span class="n">PARTS</span><span class="p">]</span> <span class="n">json</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>json</kbd></td>
+<td>json file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--parts, -p</kbd></td>
+<td><p class="first">Number of subparts to be prepared</p>
+<p class="last">Default: 0</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="text2token-py">
+<span id="id28"></span><h2>text2token.py<a class="headerlink" href="#text2token-py" title="Permalink to this headline">¶</a></h2>
+<p>convert raw text to tokenized text</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">text2token</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nchar</span> <span class="n">NCHAR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">ncols</span> <span class="n">SKIP_NCOLS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">space</span> <span class="n">SPACE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">non</span><span class="o">-</span><span class="n">lang</span><span class="o">-</span><span class="n">syms</span> <span class="n">NON_LANG_SYMS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">trans_type</span> <span class="p">{</span><span class="n">char</span><span class="p">,</span><span class="n">phn</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="n">text</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>text</kbd></td>
+<td><p class="first">input text</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--nchar, -n</kbd></td>
+<td><p class="first">number of characters to split, i.e.,                         aabb -&gt; a a b b with -n 1 and aa bb with -n 2</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--skip-ncols, -s</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">skip first n columns</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--space</kbd></td>
+<td><p class="first">space symbol</p>
+<p class="last">Default: “&lt;space&gt;”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--non-lang-syms, -l</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>list of non-linguistic symobles, e.g., &lt;NOISE&gt; etc.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--trans_type, -t</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: char, phn</p>
+<dl class="docutils">
+<dt>Transcript type. char/phn. e.g., for TIMIT FADG0_SI1279 -</dt>
+<dd>If trans_type is char,
+read from SI1279.WRD file -&gt; “bricks are an alternative”
+Else if trans_type is phn,
+read from SI1279.PHN file -&gt; “sil b r ih sil k s aa r er n aa l
+sil t er n ih sil t ih v sil”</dd>
+</dl>
+<p class="last">Default: “char”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="text2vocabulary-py">
+<span id="id29"></span><h2>text2vocabulary.py<a class="headerlink" href="#text2vocabulary-py" title="Permalink to this headline">¶</a></h2>
+<p>create a vocabulary file from text files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">text2vocabulary</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cutoff</span> <span class="n">CUTOFF</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">vocabsize</span> <span class="n">VOCABSIZE</span><span class="p">]</span>
+                          <span class="p">[</span><span class="n">text_files</span> <span class="p">[</span><span class="n">text_files</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>text_files</kbd></td>
+<td>input text files</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--output, -o</kbd></td>
+<td><p class="first">output a vocabulary file</p>
+<p class="last">Default: “”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--cutoff, -c</kbd></td>
+<td><p class="first">cut-off frequency</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--vocabsize, -s</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">vocabulary size</p>
+<p class="last">Default: 20000</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="trn2ctm-py">
+<span id="id30"></span><h2>trn2ctm.py<a class="headerlink" href="#trn2ctm-py" title="Permalink to this headline">¶</a></h2>
+<p>convert trn to ctm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">trn2ctm</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">trn</span><span class="p">]</span> <span class="p">[</span><span class="n">ctm</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>trn</kbd></td>
+<td>input trn</td></tr>
+<tr><td class="option-group">
+<kbd>ctm</kbd></td>
+<td>output ctm</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="trn2stm-py">
+<span id="id31"></span><h2>trn2stm.py<a class="headerlink" href="#trn2stm-py" title="Permalink to this headline">¶</a></h2>
+<p>convert trn to stm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">trn2stm</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">orig</span><span class="o">-</span><span class="n">stm</span> <span class="p">[</span><span class="n">ORIG_STM</span><span class="p">]]</span> <span class="p">[</span><span class="n">trn</span><span class="p">]</span> <span class="p">[</span><span class="n">stm</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>trn</kbd></td>
+<td>input trn</td></tr>
+<tr><td class="option-group">
+<kbd>stm</kbd></td>
+<td>output stm</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--orig-stm</kbd></td>
+<td>Original stm file to add additional information to the generated one</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils_sh.html" class="btn btn-neutral float-right" title="bash utility tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="espnet_bin.html" class="btn btn-neutral float-left" title="core tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Shinji Watanabe
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

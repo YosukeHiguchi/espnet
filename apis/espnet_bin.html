@@ -1,0 +1,1660 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>core tools &mdash; ESPnet 0.4.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.4.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="python utility tools" href="utils_py.html" />
+    <link rel="prev" title="espnet.utils package" href="../_gen/espnet-utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ESPnet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#execution-of-example-scripts">Execution of example scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#demonstration-using-pretrained-models">Demonstration using pretrained models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#installation-using-docker">Installation using Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html#references">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-asr.html">espnet.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-lm.html">espnet.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-transform.html">espnet.transform package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet-utils.html">espnet.utils package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tool Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">core tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#asr-enhance-py">asr_enhance.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#asr-recog-py">asr_recog.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#asr-train-py">asr_train.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lm-train-py">lm_train.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tts-decode-py">tts_decode.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tts-train-py">tts_train.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils_py.html">python utility tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils_sh.html">bash utility tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ESPnet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>core tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apis/espnet_bin.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="core-tools">
+<span id="id1"></span><h1>core tools<a class="headerlink" href="#core-tools" title="Permalink to this headline">¶</a></h1>
+<p>ESPnet provides several command-line tools for training and evaluating neural networks (NN) under <code class="docutils literal notranslate"><span class="pre">espnet/bin</span></code>:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#asr-enhance-py"><span class="std std-ref">asr_enhance.py</span></a>: Enhance noisy speech for speech recognition</li>
+<li><a class="reference internal" href="#asr-recog-py"><span class="std std-ref">asr_recog.py</span></a>: Transcribe text from speech using a speech recognition model on one CPU or GPU</li>
+<li><a class="reference internal" href="#asr-train-py"><span class="std std-ref">asr_train.py</span></a>: Train an automatic speech recognition (ASR) model on one CPU, one or multiple GPUs</li>
+<li><a class="reference internal" href="#lm-train-py"><span class="std std-ref">lm_train.py</span></a>: Train a new language model on one CPU or one GPU</li>
+<li><a class="reference internal" href="#tts-decode-py"><span class="std std-ref">tts_decode.py</span></a>: Synthesize speech from text using a TTS model on one CPU</li>
+<li><a class="reference internal" href="#tts-train-py"><span class="std std-ref">tts_train.py</span></a>: Train a new text-to-speech (TTS) model on one CPU, one or multiple GPUs</li>
+</ul>
+<div class="section" id="asr-enhance-py">
+<span id="id2"></span><h2>asr_enhance.py<a class="headerlink" href="#asr-enhance-py" title="Permalink to this headline">¶</a></h2>
+<p>Enhance noisy speech for speech recognition</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">asr_enhance</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">batchsize</span> <span class="n">BATCHSIZE</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">recog</span><span class="o">-</span><span class="n">json</span> <span class="n">RECOG_JSON</span><span class="p">]</span> <span class="o">--</span><span class="n">model</span> <span class="n">MODEL</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">conf</span> <span class="n">MODEL_CONF</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">enh</span><span class="o">-</span><span class="n">wspecifier</span> <span class="n">ENH_WSPECIFIER</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">enh</span><span class="o">-</span><span class="n">filetype</span> <span class="p">{</span><span class="n">mat</span><span class="p">,</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">hdf5</span><span class="p">,</span><span class="n">sound</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span> <span class="n">FS</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">length</span> <span class="n">KEEP_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">dir</span> <span class="n">IMAGE_DIR</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">images</span> <span class="n">NUM_IMAGES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">apply</span><span class="o">-</span><span class="n">istft</span> <span class="n">APPLY_ISTFT</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">istft</span><span class="o">-</span><span class="n">win</span><span class="o">-</span><span class="n">length</span> <span class="n">ISTFT_WIN_LENGTH</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">istft</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="n">shift</span> <span class="n">ISTFT_N_SHIFT</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">istft</span><span class="o">-</span><span class="n">window</span> <span class="n">ISTFT_WINDOW</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>second config file path that overwrites the settings in <cite>–config</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “chainer”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batchsize</kbd></td>
+<td><p class="first">Batch size for beam search (0: means no batch processing)</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group">
+<kbd>--recog-json</kbd></td>
+<td>Filename of recognition data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--model</kbd></td>
+<td>Model file parameters to read</td></tr>
+<tr><td class="option-group">
+<kbd>--model-conf</kbd></td>
+<td>Model config file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--enh-wspecifier</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify the output way for enhanced speech.e.g. ark,scp:outdir,wav.scp</td></tr>
+<tr><td class="option-group">
+<kbd>--enh-filetype</kbd></td>
+<td><p class="first">Possible choices: mat, hdf5, sound.hdf5, sound</p>
+<p>Specify the file format for enhanced speech. “mat” is the matrix format in kaldi</p>
+<p class="last">Default: “sound”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--fs</kbd></td>
+<td><p class="first">The sample frequency</p>
+<p class="last">Default: 16000</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--keep-length</kbd></td>
+<td><p class="first">Adjust the output length to match with the input for enhanced speech</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--image-dir</kbd></td>
+<td>The directory saving the images.</td></tr>
+<tr><td class="option-group">
+<kbd>--num-images</kbd></td>
+<td><p class="first">The number of images files to be saved. If negative, all samples are to be saved.</p>
+<p class="last">Default: 20</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--apply-istft</kbd></td>
+<td><p class="first">Apply istft to the output from the network</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--istft-win-length</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">The window length for istft. This option is ignored if stft is found in the preprocess-conf</p>
+<p class="last">Default: 512</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--istft-n-shift</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">The window type for istft. This option is ignored if stft is found in the preprocess-conf</p>
+<p class="last">Default: 256</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--istft-window</kbd></td>
+<td><p class="first">The window type for istft. This option is ignored if stft is found in the preprocess-conf</p>
+<p class="last">Default: “hann”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="asr-recog-py">
+<span id="id3"></span><h2>asr_recog.py<a class="headerlink" href="#asr-recog-py" title="Permalink to this headline">¶</a></h2>
+<p>Transcribe text from speech using a speech recognition model on one CPU or GPU</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">asr_recog</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">batchsize</span> <span class="n">BATCHSIZE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">recog</span><span class="o">-</span><span class="n">json</span> <span class="n">RECOG_JSON</span><span class="p">]</span> <span class="o">--</span><span class="n">result</span><span class="o">-</span><span class="n">label</span> <span class="n">RESULT_LABEL</span>
+                    <span class="o">--</span><span class="n">model</span> <span class="n">MODEL</span> <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">conf</span> <span class="n">MODEL_CONF</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">nbest</span> <span class="n">NBEST</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">beam</span><span class="o">-</span><span class="n">size</span> <span class="n">BEAM_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">penalty</span> <span class="n">PENALTY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">maxlenratio</span> <span class="n">MAXLENRATIO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">minlenratio</span> <span class="n">MINLENRATIO</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">ctc</span><span class="o">-</span><span class="n">weight</span> <span class="n">CTC_WEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span> <span class="n">RNNLM</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">RNNLM_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="n">rnnlm</span> <span class="n">WORD_RNNLM</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">WORD_RNNLM_CONF</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="nb">dict</span> <span class="n">WORD_DICT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lm</span><span class="o">-</span><span class="n">weight</span> <span class="n">LM_WEIGHT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">mode</span> <span class="p">{</span><span class="n">window</span><span class="p">,</span><span class="n">segment</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">window</span> <span class="n">STREAMING_WINDOW</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">blank</span><span class="o">-</span><span class="n">dur</span> <span class="n">STREAMING_MIN_BLANK_DUR</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">onset</span><span class="o">-</span><span class="n">margin</span> <span class="n">STREAMING_ONSET_MARGIN</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="n">margin</span> <span class="n">STREAMING_OFFSET_MARGIN</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>Config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>Second config file path that overwrites the settings in <cite>–config</cite></td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>Third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite></td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “chainer”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batchsize</kbd></td>
+<td><p class="first">Batch size for beam search (0: means no batch processing)</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group">
+<kbd>--recog-json</kbd></td>
+<td>Filename of recognition data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--result-label</kbd></td>
+<td>Filename of result label data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--model</kbd></td>
+<td>Model file parameters to read</td></tr>
+<tr><td class="option-group">
+<kbd>--model-conf</kbd></td>
+<td>Model config file</td></tr>
+<tr><td class="option-group">
+<kbd>--num-spkrs</kbd></td>
+<td><p class="first">Possible choices: 1, 2</p>
+<p>Number of speakers in the speech</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--nbest</kbd></td>
+<td><p class="first">Output N-best hypotheses</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--beam-size</kbd></td>
+<td><p class="first">Beam size</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--penalty</kbd></td>
+<td><p class="first">Incertion penalty</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--maxlenratio</kbd></td>
+<td><dl class="first docutils">
+<dt>Input length ratio to obtain max output length.</dt>
+<dd>If maxlenratio=0.0 (default), it uses a end-detect function
+to automatically find maximum hypothesis lengths</dd>
+</dl>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--minlenratio</kbd></td>
+<td><p class="first">Input length ratio to obtain min output length</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--ctc-weight</kbd></td>
+<td><p class="first">CTC weight in joint decoding</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--rnnlm</kbd></td>
+<td>RNNLM model file to read</td></tr>
+<tr><td class="option-group">
+<kbd>--rnnlm-conf</kbd></td>
+<td>RNNLM model config file to read</td></tr>
+<tr><td class="option-group">
+<kbd>--word-rnnlm</kbd></td>
+<td>Word RNNLM model file to read</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--word-rnnlm-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Word RNNLM model config file to read</td></tr>
+<tr><td class="option-group">
+<kbd>--word-dict</kbd></td>
+<td>Word list to read</td></tr>
+<tr><td class="option-group">
+<kbd>--lm-weight</kbd></td>
+<td><p class="first">RNNLM weight</p>
+<p class="last">Default: 0.1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--streaming-mode</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: window, segment</p>
+<dl class="last docutils">
+<dt>Use streaming recognizer for inference.</dt>
+<dd><cite>–batchsize</cite> must be set to 0 to enable this mode</dd>
+</dl>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--streaming-window</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Window size</p>
+<p class="last">Default: 10</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--streaming-min-blank-dur</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Minimum blank duration threshold</p>
+<p class="last">Default: 10</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--streaming-onset-margin</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Onset margin</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--streaming-offset-margin</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Offset margin</p>
+<p class="last">Default: 1</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="asr-train-py">
+<span id="id4"></span><h2>asr_train.py<a class="headerlink" href="#asr-train-py" title="Permalink to this headline">¶</a></h2>
+<p>Train an automatic speech recognition (ASR) model on one CPU, one or multiple GPUs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">asr_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span> <span class="o">--</span><span class="nb">dict</span> <span class="n">DICT</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">debugdir</span> <span class="n">DEBUGDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">resume</span> <span class="p">[</span><span class="n">RESUME</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">minibatches</span> <span class="n">MINIBATCHES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">tensorboard</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">TENSORBOARD_DIR</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">train</span><span class="o">-</span><span class="n">json</span> <span class="n">TRAIN_JSON</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">valid</span><span class="o">-</span><span class="n">json</span> <span class="n">VALID_JSON</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">module</span> <span class="n">MODEL_MODULE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">etype</span> <span class="p">{</span><span class="n">lstm</span><span class="p">,</span><span class="n">blstm</span><span class="p">,</span><span class="n">lstmp</span><span class="p">,</span><span class="n">blstmp</span><span class="p">,</span><span class="n">vgglstmp</span><span class="p">,</span><span class="n">vggblstmp</span><span class="p">,</span><span class="n">vgglstm</span><span class="p">,</span><span class="n">vggblstm</span><span class="p">,</span><span class="n">gru</span><span class="p">,</span><span class="n">bgru</span><span class="p">,</span><span class="n">grup</span><span class="p">,</span><span class="n">bgrup</span><span class="p">,</span><span class="n">vgggrup</span><span class="p">,</span><span class="n">vggbgrup</span><span class="p">,</span><span class="n">vgggru</span><span class="p">,</span><span class="n">vggbgru</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">elayers</span><span class="o">-</span><span class="n">sd</span> <span class="n">ELAYERS_SD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">elayers</span> <span class="n">ELAYERS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">eunits</span> <span class="n">EUNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">eprojs</span> <span class="n">EPROJS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">subsample</span> <span class="n">SUBSAMPLE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctc_type</span> <span class="p">{</span><span class="n">builtin</span><span class="p">,</span><span class="n">warpctc</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">atype</span> <span class="p">{</span><span class="n">noatt</span><span class="p">,</span><span class="n">dot</span><span class="p">,</span><span class="n">add</span><span class="p">,</span><span class="n">location</span><span class="p">,</span><span class="n">coverage</span><span class="p">,</span><span class="n">coverage_location</span><span class="p">,</span><span class="n">location2d</span><span class="p">,</span><span class="n">location_recurrent</span><span class="p">,</span><span class="n">multi_head_dot</span><span class="p">,</span><span class="n">multi_head_add</span><span class="p">,</span><span class="n">multi_head_loc</span><span class="p">,</span><span class="n">multi_head_multi_res_loc</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">adim</span> <span class="n">ADIM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">awin</span> <span class="n">AWIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">aheads</span> <span class="n">AHEADS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">aconv</span><span class="o">-</span><span class="n">chans</span> <span class="n">ACONV_CHANS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">aconv</span><span class="o">-</span><span class="n">filts</span> <span class="n">ACONV_FILTS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">spa</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dtype</span> <span class="p">{</span><span class="n">lstm</span><span class="p">,</span><span class="n">gru</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">dlayers</span> <span class="n">DLAYERS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">dunits</span> <span class="n">DUNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mtlalpha</span> <span class="n">MTLALPHA</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">lsm</span><span class="o">-</span><span class="nb">type</span> <span class="p">[{,</span><span class="n">unigram</span><span class="p">}]]</span> <span class="p">[</span><span class="o">--</span><span class="n">lsm</span><span class="o">-</span><span class="n">weight</span> <span class="n">LSM_WEIGHT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">sampling</span><span class="o">-</span><span class="n">probability</span> <span class="n">SAMPLING_PROBABILITY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">cer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">wer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nbest</span> <span class="n">NBEST</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">beam</span><span class="o">-</span><span class="n">size</span> <span class="n">BEAM_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">penalty</span> <span class="n">PENALTY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">maxlenratio</span> <span class="n">MAXLENRATIO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">minlenratio</span> <span class="n">MINLENRATIO</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">ctc</span><span class="o">-</span><span class="n">weight</span> <span class="n">CTC_WEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span> <span class="n">RNNLM</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">RNNLM_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lm</span><span class="o">-</span><span class="n">weight</span> <span class="n">LM_WEIGHT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">sym</span><span class="o">-</span><span class="n">space</span> <span class="n">SYM_SPACE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sym</span><span class="o">-</span><span class="n">blank</span> <span class="n">SYM_BLANK</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">dropout</span><span class="o">-</span><span class="n">rate</span> <span class="n">DROPOUT_RATE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">dropout</span><span class="o">-</span><span class="n">rate</span><span class="o">-</span><span class="n">decoder</span> <span class="n">DROPOUT_RATE_DECODER</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">sortagrad</span> <span class="p">[</span><span class="n">SORTAGRAD</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">count</span> <span class="p">{</span><span class="n">auto</span><span class="p">,</span><span class="n">seq</span><span class="p">,</span><span class="nb">bin</span><span class="p">,</span><span class="n">frame</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="n">BATCH_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">bins</span> <span class="n">BATCH_BINS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="ow">in</span> <span class="n">BATCH_FRAMES_IN</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">out</span> <span class="n">BATCH_FRAMES_OUT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">inout</span> <span class="n">BATCH_FRAMES_INOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="ow">in</span> <span class="n">ML</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="n">out</span> <span class="n">ML</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="nb">iter</span><span class="o">-</span><span class="n">processes</span> <span class="n">N_ITER_PROCESSES</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="p">[</span><span class="n">PREPROCESS_CONF</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">opt</span> <span class="p">{</span><span class="n">adadelta</span><span class="p">,</span><span class="n">adam</span><span class="p">,</span><span class="n">noam</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">accum</span><span class="o">-</span><span class="n">grad</span> <span class="n">ACCUM_GRAD</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">eps</span> <span class="n">EPS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">eps</span><span class="o">-</span><span class="n">decay</span> <span class="n">EPS_DECAY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">weight</span><span class="o">-</span><span class="n">decay</span> <span class="n">WEIGHT_DECAY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">criterion</span> <span class="p">{</span><span class="n">loss</span><span class="p">,</span><span class="n">acc</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">threshold</span> <span class="n">THRESHOLD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epochs</span> <span class="n">EPOCHS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">early</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">criterion</span> <span class="p">[</span><span class="n">EARLY_STOP_CRITERION</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">patience</span> <span class="p">[</span><span class="n">PATIENCE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">grad</span><span class="o">-</span><span class="n">clip</span> <span class="n">GRAD_CLIP</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">save</span><span class="o">-</span><span class="n">attention</span> <span class="n">NUM_SAVE_ATTENTION</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">grad</span><span class="o">-</span><span class="n">noise</span> <span class="n">GRAD_NOISE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">context</span><span class="o">-</span><span class="n">residual</span> <span class="p">[</span><span class="n">CONTEXT_RESIDUAL</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">frontend</span> <span class="n">USE_FRONTEND</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">wpe</span> <span class="n">USE_WPE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">wtype</span> <span class="p">{</span><span class="n">lstm</span><span class="p">,</span><span class="n">blstm</span><span class="p">,</span><span class="n">lstmp</span><span class="p">,</span><span class="n">blstmp</span><span class="p">,</span><span class="n">vgglstmp</span><span class="p">,</span><span class="n">vggblstmp</span><span class="p">,</span><span class="n">vgglstm</span><span class="p">,</span><span class="n">vggblstm</span><span class="p">,</span><span class="n">gru</span><span class="p">,</span><span class="n">bgru</span><span class="p">,</span><span class="n">grup</span><span class="p">,</span><span class="n">bgrup</span><span class="p">,</span><span class="n">vgggrup</span><span class="p">,</span><span class="n">vggbgrup</span><span class="p">,</span><span class="n">vgggru</span><span class="p">,</span><span class="n">vggbgru</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">wlayers</span> <span class="n">WLAYERS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wunits</span> <span class="n">WUNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wprojs</span> <span class="n">WPROJS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">wdropout</span><span class="o">-</span><span class="n">rate</span> <span class="n">WDROPOUT_RATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wpe</span><span class="o">-</span><span class="n">taps</span> <span class="n">WPE_TAPS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">wpe</span><span class="o">-</span><span class="n">delay</span> <span class="n">WPE_DELAY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">dnn</span><span class="o">-</span><span class="n">mask</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">wpe</span> <span class="n">USE_DNN_MASK_FOR_WPE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">beamformer</span> <span class="n">USE_BEAMFORMER</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">btype</span> <span class="p">{</span><span class="n">lstm</span><span class="p">,</span><span class="n">blstm</span><span class="p">,</span><span class="n">lstmp</span><span class="p">,</span><span class="n">blstmp</span><span class="p">,</span><span class="n">vgglstmp</span><span class="p">,</span><span class="n">vggblstmp</span><span class="p">,</span><span class="n">vgglstm</span><span class="p">,</span><span class="n">vggblstm</span><span class="p">,</span><span class="n">gru</span><span class="p">,</span><span class="n">bgru</span><span class="p">,</span><span class="n">grup</span><span class="p">,</span><span class="n">bgrup</span><span class="p">,</span><span class="n">vgggrup</span><span class="p">,</span><span class="n">vggbgrup</span><span class="p">,</span><span class="n">vgggru</span><span class="p">,</span><span class="n">vggbgru</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">blayers</span> <span class="n">BLAYERS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">bunits</span> <span class="n">BUNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">bprojs</span> <span class="n">BPROJS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">badim</span> <span class="n">BADIM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ref</span><span class="o">-</span><span class="n">channel</span> <span class="n">REF_CHANNEL</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">bdropout</span><span class="o">-</span><span class="n">rate</span> <span class="n">BDROPOUT_RATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stats</span><span class="o">-</span><span class="n">file</span> <span class="n">STATS_FILE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">apply</span><span class="o">-</span><span class="n">uttmvn</span> <span class="n">APPLY_UTTMVN</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">uttmvn</span><span class="o">-</span><span class="n">norm</span><span class="o">-</span><span class="n">means</span> <span class="n">UTTMVN_NORM_MEANS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">uttmvn</span><span class="o">-</span><span class="n">norm</span><span class="o">-</span><span class="nb">vars</span> <span class="n">UTTMVN_NORM_VARS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fs</span> <span class="n">FBANK_FS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">mels</span> <span class="n">N_MELS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fmin</span> <span class="n">FBANK_FMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fmax</span> <span class="n">FBANK_FMAX</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>second config file path that overwrites the settings in <cite>–config</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “chainer”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--outdir</kbd></td>
+<td>Output directory</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dict</kbd></td>
+<td>Dictionary</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--debugdir</kbd></td>
+<td>Output directory for debugging</td></tr>
+<tr><td class="option-group">
+<kbd>--resume, -r</kbd></td>
+<td><p class="first">Resume the training from snapshot</p>
+<p class="last">Default: “”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--minibatches, -N</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Process only N minibatches (for debug)</p>
+<p class="last">Default: -1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--tensorboard-dir</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Tensorboard log dir path</td></tr>
+<tr><td class="option-group">
+<kbd>--train-json</kbd></td>
+<td>Filename of train label data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--valid-json</kbd></td>
+<td>Filename of validation label data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--model-module</kbd></td>
+<td>model defined module (default: espnet.nets.xxx_backend.e2e_asr:E2E)</td></tr>
+<tr><td class="option-group">
+<kbd>--num-spkrs</kbd></td>
+<td><p class="first">Possible choices: 1, 2</p>
+<p>Number of speakers in the speech.</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--etype</kbd></td>
+<td><p class="first">Possible choices: lstm, blstm, lstmp, blstmp, vgglstmp, vggblstmp, vgglstm, vggblstm, gru, bgru, grup, bgrup, vgggrup, vggbgrup, vgggru, vggbgru</p>
+<p>Type of encoder network architecture</p>
+<p class="last">Default: “blstmp”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--elayers-sd</kbd></td>
+<td><p class="first">Number of encoder layers for speaker differentiate part. (multi-speaker asr mode only)</p>
+<p class="last">Default: 4</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--elayers</kbd></td>
+<td><p class="first">Number of encoder layers (for shared recognition part in multi-speaker asr mode)</p>
+<p class="last">Default: 4</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--eunits, -u</kbd></td>
+<td><p class="first">Number of encoder hidden units</p>
+<p class="last">Default: 300</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--eprojs</kbd></td>
+<td><p class="first">Number of encoder projection units</p>
+<p class="last">Default: 320</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--subsample</kbd></td>
+<td><p class="first">Subsample input frames x_y_z means subsample every x frame at 1st layer, every y frame at 2nd layer etc.</p>
+<p class="last">Default: “1”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--ctc_type</kbd></td>
+<td><p class="first">Possible choices: builtin, warpctc</p>
+<p>Type of CTC implementation to calculate loss.</p>
+<p class="last">Default: “warpctc”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--atype</kbd></td>
+<td><p class="first">Possible choices: noatt, dot, add, location, coverage, coverage_location, location2d, location_recurrent, multi_head_dot, multi_head_add, multi_head_loc, multi_head_multi_res_loc</p>
+<p>Type of attention architecture</p>
+<p class="last">Default: “dot”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--adim</kbd></td>
+<td><p class="first">Number of attention transformation dimensions</p>
+<p class="last">Default: 320</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--awin</kbd></td>
+<td><p class="first">Window size for location2d attention</p>
+<p class="last">Default: 5</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--aheads</kbd></td>
+<td><p class="first">Number of heads for multi head attention</p>
+<p class="last">Default: 4</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--aconv-chans</kbd></td>
+<td><p class="first">Number of attention convolution channels                         (negative value indicates no location-aware attention)</p>
+<p class="last">Default: -1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--aconv-filts</kbd></td>
+<td><p class="first">Number of attention convolution filters                         (negative value indicates no location-aware attention)</p>
+<p class="last">Default: 100</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--spa</kbd></td>
+<td><p class="first">Enable speaker parallel attention.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dtype</kbd></td>
+<td><p class="first">Possible choices: lstm, gru</p>
+<p>Type of decoder network architecture</p>
+<p class="last">Default: “lstm”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dlayers</kbd></td>
+<td><p class="first">Number of decoder layers</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dunits</kbd></td>
+<td><p class="first">Number of decoder hidden units</p>
+<p class="last">Default: 320</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--mtlalpha</kbd></td>
+<td><p class="first">Multitask learning coefficient, alpha: alpha*ctc_loss + (1-alpha)*att_loss</p>
+<p class="last">Default: 0.5</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--lsm-type</kbd></td>
+<td><p class="first">Possible choices: , unigram</p>
+<p>Apply label smoothing with a specified distribution type</p>
+<p class="last">Default: “”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--lsm-weight</kbd></td>
+<td><p class="first">Label smoothing weight</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sampling-probability</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Ratio of predicted labels fed back to decoder</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--report-cer</kbd></td>
+<td><p class="first">Compute CER on development set</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--report-wer</kbd></td>
+<td><p class="first">Compute WER on development set</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--nbest</kbd></td>
+<td><p class="first">Output N-best hypotheses</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--beam-size</kbd></td>
+<td><p class="first">Beam size</p>
+<p class="last">Default: 4</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--penalty</kbd></td>
+<td><p class="first">Incertion penalty</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--maxlenratio</kbd></td>
+<td><dl class="first docutils">
+<dt>Input length ratio to obtain max output length.</dt>
+<dd>If maxlenratio=0.0 (default), it uses a end-detect function
+to automatically find maximum hypothesis lengths</dd>
+</dl>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--minlenratio</kbd></td>
+<td><p class="first">Input length ratio to obtain min output length</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--ctc-weight</kbd></td>
+<td><p class="first">CTC weight in joint decoding</p>
+<p class="last">Default: 0.3</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--rnnlm</kbd></td>
+<td>RNNLM model file to read</td></tr>
+<tr><td class="option-group">
+<kbd>--rnnlm-conf</kbd></td>
+<td>RNNLM model config file to read</td></tr>
+<tr><td class="option-group">
+<kbd>--lm-weight</kbd></td>
+<td><p class="first">RNNLM weight.</p>
+<p class="last">Default: 0.1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sym-space</kbd></td>
+<td><p class="first">Space symbol</p>
+<p class="last">Default: “&lt;space&gt;”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sym-blank</kbd></td>
+<td><p class="first">Blank symbol</p>
+<p class="last">Default: “&lt;blank&gt;”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dropout-rate</kbd></td>
+<td><p class="first">Dropout rate for the encoder</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--dropout-rate-decoder</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Dropout rate for the decoder</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sortagrad</kbd></td>
+<td><p class="first">How many epochs to use sortagrad for. 0 = deactivated, -1 = all epochs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batch-count</kbd></td>
+<td><p class="first">Possible choices: auto, seq, bin, frame</p>
+<p>How to count batch_size. The default (auto) will find how to count by args.</p>
+<p class="last">Default: “auto”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-size, --batch-seqs, -b</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum seqs in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batch-bins</kbd></td>
+<td><p class="first">Maximum bins in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-in</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum input frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-out</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum output frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-inout</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum input+output frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--maxlen-in, --batch-seq-maxlen-in</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">When –batch-count=seq, batch size is reduced if the input sequence length &gt; ML.</p>
+<p class="last">Default: 800</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--maxlen-out, --batch-seq-maxlen-out</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">When –batch-count=seq, batch size is reduced if the output sequence length &gt; ML</p>
+<p class="last">Default: 150</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--n-iter-processes</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of processes of iterator</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group">
+<kbd>--opt</kbd></td>
+<td><p class="first">Possible choices: adadelta, adam, noam</p>
+<p>Optimizer</p>
+<p class="last">Default: “adadelta”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--accum-grad</kbd></td>
+<td><p class="first">Number of gradient accumuration</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--eps</kbd></td>
+<td><p class="first">Epsilon constant for optimizer</p>
+<p class="last">Default: 1e-08</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--eps-decay</kbd></td>
+<td><p class="first">Decaying ratio of epsilon</p>
+<p class="last">Default: 0.01</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--weight-decay</kbd></td>
+<td><p class="first">Weight decay ratio</p>
+<p class="last">Default: 0.0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--criterion</kbd></td>
+<td><p class="first">Possible choices: loss, acc</p>
+<p>Criterion to perform epsilon decay</p>
+<p class="last">Default: “acc”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--threshold</kbd></td>
+<td><p class="first">Threshold to stop iteration</p>
+<p class="last">Default: 0.0001</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--epochs, -e</kbd></td>
+<td><p class="first">Maximum number of epochs</p>
+<p class="last">Default: 30</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--early-stop-criterion</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Value to monitor to trigger an early stopping of the training</p>
+<p class="last">Default: “validation/main/acc”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--patience</kbd></td>
+<td><p class="first">Number of epochs to wait without improvement before stopping the training</p>
+<p class="last">Default: 3</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--grad-clip</kbd></td>
+<td><p class="first">Gradient norm threshold to clip</p>
+<p class="last">Default: 5</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--num-save-attention</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of samples of attention to be saved</p>
+<p class="last">Default: 3</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--grad-noise</kbd></td>
+<td><p class="first">The flag to switch to use noise injection to gradients during training</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--context-residual</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">The flag to switch to use context vector residual in the decoder network</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--use-frontend</kbd></td>
+<td><p class="first">The flag to switch to use frontend system.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--use-wpe</kbd></td>
+<td><p class="first">Apply Weighted Prediction Error</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--wtype</kbd></td>
+<td><p class="first">Possible choices: lstm, blstm, lstmp, blstmp, vgglstmp, vggblstmp, vgglstm, vggblstm, gru, bgru, grup, bgrup, vgggrup, vggbgrup, vgggru, vggbgru</p>
+<p>Type of encoder network architecture of the mask estimator for WPE.</p>
+<p class="last">Default: “blstmp”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--wlayers</kbd></td>
+<td>Default: 2</td></tr>
+<tr><td class="option-group">
+<kbd>--wunits</kbd></td>
+<td>Default: 300</td></tr>
+<tr><td class="option-group">
+<kbd>--wprojs</kbd></td>
+<td>Default: 300</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--wdropout-rate</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Default: 0.0</td></tr>
+<tr><td class="option-group">
+<kbd>--wpe-taps</kbd></td>
+<td>Default: 5</td></tr>
+<tr><td class="option-group">
+<kbd>--wpe-delay</kbd></td>
+<td>Default: 3</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--use-dnn-mask-for-wpe</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Use DNN to estimate the power spectrogram. This option is experimental.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--use-beamformer</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Default: True</td></tr>
+<tr><td class="option-group">
+<kbd>--btype</kbd></td>
+<td><p class="first">Possible choices: lstm, blstm, lstmp, blstmp, vgglstmp, vggblstmp, vgglstm, vggblstm, gru, bgru, grup, bgrup, vgggrup, vggbgrup, vgggru, vggbgru</p>
+<p>Type of encoder network architecture of the mask estimator for Beamformer.</p>
+<p class="last">Default: “blstmp”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--blayers</kbd></td>
+<td>Default: 2</td></tr>
+<tr><td class="option-group">
+<kbd>--bunits</kbd></td>
+<td>Default: 300</td></tr>
+<tr><td class="option-group">
+<kbd>--bprojs</kbd></td>
+<td>Default: 300</td></tr>
+<tr><td class="option-group">
+<kbd>--badim</kbd></td>
+<td>Default: 320</td></tr>
+<tr><td class="option-group">
+<kbd>--ref-channel</kbd></td>
+<td><p class="first">The reference channel used for beamformer. By default, the channel is estimated by DNN.</p>
+<p class="last">Default: -1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--bdropout-rate</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Default: 0.0</td></tr>
+<tr><td class="option-group">
+<kbd>--stats-file</kbd></td>
+<td>The stats file for the feature normalization</td></tr>
+<tr><td class="option-group">
+<kbd>--apply-uttmvn</kbd></td>
+<td><p class="first">Apply utterance level mean variance normalization.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--uttmvn-norm-means</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Default: True</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--uttmvn-norm-vars</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Default: False</td></tr>
+<tr><td class="option-group">
+<kbd>--fbank-fs</kbd></td>
+<td><p class="first">The sample frequency used for the mel-fbank creation.</p>
+<p class="last">Default: 16000</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--n-mels</kbd></td>
+<td><p class="first">The number of mel-frequency bins.</p>
+<p class="last">Default: 80</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--fbank-fmin</kbd></td>
+<td>Default: 0.0</td></tr>
+<tr><td class="option-group">
+<kbd>--fbank-fmax</kbd></td>
+<td></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="lm-train-py">
+<span id="id5"></span><h2>lm_train.py<a class="headerlink" href="#lm-train-py" title="Permalink to this headline">¶</a></h2>
+<p>Train a new language model on one CPU or one GPU</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lm_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span> <span class="o">--</span><span class="nb">dict</span> <span class="n">DICT</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">resume</span> <span class="p">[</span><span class="n">RESUME</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">tensorboard</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">TENSORBOARD_DIR</span><span class="p">]]</span> <span class="o">--</span><span class="n">train</span><span class="o">-</span><span class="n">label</span>
+                   <span class="n">TRAIN_LABEL</span> <span class="o">--</span><span class="n">valid</span><span class="o">-</span><span class="n">label</span> <span class="n">VALID_LABEL</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">label</span> <span class="n">TEST_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">opt</span> <span class="p">{</span><span class="n">sgd</span><span class="p">,</span><span class="n">adam</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">sortagrad</span> <span class="p">[</span><span class="n">SORTAGRAD</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">batchsize</span> <span class="n">BATCHSIZE</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">early</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">criterion</span> <span class="p">[</span><span class="n">EARLY_STOP_CRITERION</span><span class="p">]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">patience</span> <span class="p">[</span><span class="n">PATIENCE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gradclip</span> <span class="n">GRADCLIP</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="nb">type</span> <span class="p">[{</span><span class="n">lstm</span><span class="p">,</span><span class="n">gru</span><span class="p">}]]</span> <span class="p">[</span><span class="o">--</span><span class="n">layer</span> <span class="n">LAYER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unit</span> <span class="n">UNIT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">dropout</span><span class="o">-</span><span class="n">rate</span> <span class="n">DROPOUT_RATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span> <span class="n">MAXLEN</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>second config file path that overwrites the settings in <cite>–config</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “chainer”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--outdir</kbd></td>
+<td>Output directory</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dict</kbd></td>
+<td>Dictionary</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--resume, -r</kbd></td>
+<td><p class="first">Resume the training from snapshot</p>
+<p class="last">Default: “”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--tensorboard-dir</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Tensorboard log dir path</td></tr>
+<tr><td class="option-group">
+<kbd>--train-label</kbd></td>
+<td>Filename of train label data</td></tr>
+<tr><td class="option-group">
+<kbd>--valid-label</kbd></td>
+<td>Filename of validation label data</td></tr>
+<tr><td class="option-group">
+<kbd>--test-label</kbd></td>
+<td>Filename of test label data</td></tr>
+<tr><td class="option-group">
+<kbd>--opt</kbd></td>
+<td><p class="first">Possible choices: sgd, adam</p>
+<p>Optimizer</p>
+<p class="last">Default: “sgd”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sortagrad</kbd></td>
+<td><p class="first">How many epochs to use sortagrad for. 0 = deactivated, -1 = all epochs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batchsize, -b</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of examples in each mini-batch</p>
+<p class="last">Default: 300</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--epoch, -e</kbd></td>
+<td><p class="first">Number of sweeps over the dataset to train</p>
+<p class="last">Default: 20</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--early-stop-criterion</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Value to monitor to trigger an early stopping of the training</p>
+<p class="last">Default: “validation/main/loss”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--patience</kbd></td>
+<td><p class="first">Number of epochs to wait without improvement before stopping the training</p>
+<p class="last">Default: 3</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--gradclip, -c</kbd></td>
+<td><p class="first">Gradient norm threshold to clip</p>
+<p class="last">Default: 5</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--type</kbd></td>
+<td><p class="first">Possible choices: lstm, gru</p>
+<p>Which type of RNN to use</p>
+<p class="last">Default: “lstm”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--layer, -l</kbd></td>
+<td><p class="first">Number of hidden layers</p>
+<p class="last">Default: 2</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--unit, -u</kbd></td>
+<td><p class="first">Number of hidden units</p>
+<p class="last">Default: 650</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--dropout-rate</kbd></td>
+<td><p class="first">dropout probability</p>
+<p class="last">Default: 0.5</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--maxlen</kbd></td>
+<td><p class="first">Batch size is reduced if the input sequence &gt; ML</p>
+<p class="last">Default: 40</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="tts-decode-py">
+<span id="id6"></span><h2>tts_decode.py<a class="headerlink" href="#tts-decode-py" title="Permalink to this headline">¶</a></h2>
+<p>Synthesize speech from text using a TTS model on one CPU</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">tts_decode</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span> <span class="o">--</span><span class="n">out</span> <span class="n">OUT</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span> <span class="o">--</span><span class="n">json</span> <span class="n">JSON</span> <span class="o">--</span><span class="n">model</span>
+                     <span class="n">MODEL</span> <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">conf</span> <span class="n">MODEL_CONF</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">maxlenratio</span> <span class="n">MAXLENRATIO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">minlenratio</span> <span class="n">MINLENRATIO</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">threshold</span> <span class="n">THRESHOLD</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>second config file path that overwrites the settings in <cite>–config</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “pytorch”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--out</kbd></td>
+<td>Output filename</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group">
+<kbd>--json</kbd></td>
+<td>Filename of train label data (json)</td></tr>
+<tr><td class="option-group">
+<kbd>--model</kbd></td>
+<td>Model file parameters to read</td></tr>
+<tr><td class="option-group">
+<kbd>--model-conf</kbd></td>
+<td>Model config file</td></tr>
+<tr><td class="option-group">
+<kbd>--maxlenratio</kbd></td>
+<td><p class="first">Maximum length ratio in decoding</p>
+<p class="last">Default: 5</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--minlenratio</kbd></td>
+<td><p class="first">Minimum length ratio in decoding</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--threshold</kbd></td>
+<td><p class="first">Threshold value in decoding</p>
+<p class="last">Default: 0.5</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="tts-train-py">
+<span id="id7"></span><h2>tts_train.py<a class="headerlink" href="#tts-train-py" title="Permalink to this headline">¶</a></h2>
+<p>Train a new text-to-speech (TTS) model on one CPU, one or multiple GPUs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">tts_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">resume</span> <span class="p">[</span><span class="n">RESUME</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">minibatches</span> <span class="n">MINIBATCHES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">tensorboard</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">TENSORBOARD_DIR</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">save</span><span class="o">-</span><span class="n">interval</span><span class="o">-</span><span class="n">epochs</span> <span class="n">SAVE_INTERVAL_EPOCHS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">interval</span><span class="o">-</span><span class="n">iters</span> <span class="n">REPORT_INTERVAL_ITERS</span><span class="p">]</span>
+                    <span class="o">--</span><span class="n">train</span><span class="o">-</span><span class="n">json</span> <span class="n">TRAIN_JSON</span> <span class="o">--</span><span class="n">valid</span><span class="o">-</span><span class="n">json</span> <span class="n">VALID_JSON</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">module</span> <span class="n">MODEL_MODULE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sortagrad</span> <span class="p">[</span><span class="n">SORTAGRAD</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">sort</span><span class="o">-</span><span class="n">key</span> <span class="p">[{</span><span class="n">shuffle</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="nb">input</span><span class="p">}]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">count</span> <span class="p">{</span><span class="n">auto</span><span class="p">,</span><span class="n">seq</span><span class="p">,</span><span class="nb">bin</span><span class="p">,</span><span class="n">frame</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="n">BATCH_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">bins</span> <span class="n">BATCH_BINS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="ow">in</span> <span class="n">BATCH_FRAMES_IN</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">out</span> <span class="n">BATCH_FRAMES_OUT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">inout</span> <span class="n">BATCH_FRAMES_INOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="ow">in</span> <span class="n">ML</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="n">out</span> <span class="n">ML</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="nb">iter</span><span class="o">-</span><span class="n">processes</span> <span class="n">NUM_ITER_PROCESSES</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">speaker</span><span class="o">-</span><span class="n">embedding</span> <span class="n">USE_SPEAKER_EMBEDDING</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">second</span><span class="o">-</span><span class="n">target</span> <span class="n">USE_SECOND_TARGET</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">opt</span> <span class="p">{</span><span class="n">adam</span><span class="p">,</span><span class="n">noam</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">accum</span><span class="o">-</span><span class="n">grad</span> <span class="n">ACCUM_GRAD</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lr</span> <span class="n">LR</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">eps</span> <span class="n">EPS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">weight</span><span class="o">-</span><span class="n">decay</span> <span class="n">WEIGHT_DECAY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">epochs</span> <span class="n">EPOCHS</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">early</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">criterion</span> <span class="p">[</span><span class="n">EARLY_STOP_CRITERION</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">patience</span> <span class="p">[</span><span class="n">PATIENCE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">grad</span><span class="o">-</span><span class="n">clip</span> <span class="n">GRAD_CLIP</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">save</span><span class="o">-</span><span class="n">attention</span> <span class="n">NUM_SAVE_ATTENTION</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>config file path</td></tr>
+<tr><td class="option-group">
+<kbd>--config2</kbd></td>
+<td>second config file path that overwrites the settings in <cite>–config</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--config3</kbd></td>
+<td>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</td></tr>
+<tr><td class="option-group">
+<kbd>--ngpu</kbd></td>
+<td><p class="first">Number of GPUs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--backend</kbd></td>
+<td><p class="first">Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p class="last">Default: “pytorch”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--outdir</kbd></td>
+<td>Output directory</td></tr>
+<tr><td class="option-group">
+<kbd>--debugmode</kbd></td>
+<td><p class="first">Debugmode</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--seed</kbd></td>
+<td><p class="first">Random seed</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--resume, -r</kbd></td>
+<td><p class="first">Resume the training from snapshot</p>
+<p class="last">Default: “”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--minibatches, -N</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Process only N minibatches (for debug)</p>
+<p class="last">Default: -1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verbose, -V</kbd></td>
+<td><p class="first">Verbose option</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--tensorboard-dir</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Tensorboard log directory path</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--save-interval-epochs</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Save interval epochs</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--report-interval-iters</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Report interval iterations</p>
+<p class="last">Default: 100</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--train-json</kbd></td>
+<td>Filename of training json</td></tr>
+<tr><td class="option-group">
+<kbd>--valid-json</kbd></td>
+<td>Filename of validation json</td></tr>
+<tr><td class="option-group">
+<kbd>--model-module</kbd></td>
+<td><p class="first">model defined module</p>
+<p class="last">Default: “espnet.nets.pytorch_backend.e2e_tts_tacotron2:Tacotron2”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sortagrad</kbd></td>
+<td><p class="first">How many epochs to use sortagrad for. 0 = deactivated, -1 = all epochs</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-sort-key</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: shuffle, output, input</p>
+<p>Batch sorting key. “shuffle” only work with –batch-count “seq”.</p>
+<p class="last">Default: “shuffle”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batch-count</kbd></td>
+<td><p class="first">Possible choices: auto, seq, bin, frame</p>
+<p>How to count batch_size. The default (auto) will find how to count by args.</p>
+<p class="last">Default: “auto”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-size, --batch-seqs, -b</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum seqs in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--batch-bins</kbd></td>
+<td><p class="first">Maximum bins in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-in</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum input frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-out</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum output frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--batch-frames-inout</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Maximum input+output frames in a minibatch (0 to disable)</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--maxlen-in, --batch-seq-maxlen-in</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">When –batch-count=seq, batch size is reduced if the input sequence length &gt; ML.</p>
+<p class="last">Default: 100</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--maxlen-out, --batch-seq-maxlen-out</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">When –batch-count=seq, batch size is reduced if the output sequence length &gt; ML</p>
+<p class="last">Default: 200</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--num-iter-processes</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of processes of iterator</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--preprocess-conf</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The configuration file for the pre-processing</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--use-speaker-embedding</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Whether to use speaker embedding</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--use-second-target</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Whether to use second target</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--opt</kbd></td>
+<td><p class="first">Possible choices: adam, noam</p>
+<p>Optimizer</p>
+<p class="last">Default: “adam”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--accum-grad</kbd></td>
+<td><p class="first">Number of gradient accumuration</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--lr</kbd></td>
+<td><p class="first">Learning rate for optimizer</p>
+<p class="last">Default: 0.001</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--eps</kbd></td>
+<td><p class="first">Epsilon for optimizer</p>
+<p class="last">Default: 1e-06</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--weight-decay</kbd></td>
+<td><p class="first">Weight decay coefficient for optimizer</p>
+<p class="last">Default: 1e-06</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--epochs, -e</kbd></td>
+<td><p class="first">Number of maximum epochs</p>
+<p class="last">Default: 30</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--early-stop-criterion</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Value to monitor to trigger an early stopping of the training</p>
+<p class="last">Default: “validation/main/loss”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--patience</kbd></td>
+<td><p class="first">Number of epochs to wait without improvement before stopping the training</p>
+<p class="last">Default: 3</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--grad-clip</kbd></td>
+<td><p class="first">Gradient norm threshold to clip</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--num-save-attention</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of samples of attention to be saved</p>
+<p class="last">Default: 5</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils_py.html" class="btn btn-neutral float-right" title="python utility tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../_gen/espnet-utils.html" class="btn btn-neutral float-left" title="espnet.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Shinji Watanabe
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
