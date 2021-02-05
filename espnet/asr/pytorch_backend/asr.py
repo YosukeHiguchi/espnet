@@ -764,6 +764,23 @@ def train(args):
             file_name="cer.png",
         )
     )
+    if args.maskctc_dynamic_length_prediction_weight > 0:
+        trainer.extend(
+            extensions.PlotReport(
+                ["main/loss_dlp", "validation/main/loss_dlp"]
+                + ([] if args.num_encs == 1 else report_keys_loss_ctc),
+                "epoch",
+                file_name="loss_dlp.png",
+            )
+        )
+        trainer.extend(
+            extensions.PlotReport(
+                ["main/acc_dlp", "validation/main/acc_dlp"]
+                + ([] if args.num_encs == 1 else report_keys_loss_ctc),
+                "epoch",
+                file_name="acc_dlp.png",
+            )
+        )
 
     # Save best models
     trainer.extend(
@@ -869,6 +886,11 @@ def train(args):
         report_keys.append("validation/main/cer")
     if args.report_wer:
         report_keys.append("validation/main/wer")
+    if args.maskctc_dynamic_length_prediction_weight > 0:
+        report_keys.append("main/loss_dlp")
+        report_keys.append("validation/main/loss_dlp")
+        report_keys.append("main/acc_dlp")
+        report_keys.append("validation/main/acc_dlp")
     trainer.extend(
         extensions.PrintReport(report_keys),
         trigger=(args.report_interval_iters, "iteration"),
