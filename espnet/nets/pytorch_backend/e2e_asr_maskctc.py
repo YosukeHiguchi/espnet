@@ -314,6 +314,7 @@ class E2E(E2ETransformer):
         :rtype: list
         """
         if self.dlp_weight > 0:
+            logging.info("shrink-and-expand decoding based on dynamic length prediction")
             return self.recognize_dlp(x, recog_args, char_list, rnnlm)
 
         def num2str(char_list, mask_token, mask_char="_"):
@@ -399,6 +400,7 @@ class E2E(E2ETransformer):
         ctc_probs, ctc_ids = torch.exp(self.ctc.log_softmax(h)).max(dim=-1)
         y_hat = torch.stack([x[0] for x in groupby(ctc_ids[0])])
         y_idx = torch.nonzero(y_hat != 0).squeeze(-1)
+        logging.info("ctc:{}".format(n2s(y_hat[y_idx].tolist())))
 
         # calculate token-level ctc probabilities by taking
         # the maximum probability of consecutive frames with
@@ -413,20 +415,32 @@ class E2E(E2ETransformer):
                 cnt += 1
         probs_hat = torch.from_numpy(numpy.array(probs_hat))
 
-        # # mask ctc outputs based on ctc probabilities
-        # p_thres = recog_args.maskctc_probability_threshold
-        # mask_idx = torch.nonzero(probs_hat[y_idx] < p_thres).squeeze(-1)
-        # confident_idx = torch.nonzero(probs_hat[y_idx] >= p_thres).squeeze(-1)
-        # mask_num = len(mask_idx)
+        # filtering
+        p_thres = recog_args.maskctc_probability_threshold
+        if recog_args.maskctc_filter_ctc_probability:
+            mask_idx = torch.nonzero(probs_hat[y_idx] < p_thres).squeeze(-1)
+            confident_idx = torch.nonzero(probs_hat[y_idx] >= p_thres).squeeze(-1)
+            mask_num = len(mask_idx)
 
-        # y_in = torch.zeros(1, len(y_idx), dtype=torch.long) + self.mask_token
-        # y_in[0][confident_idx] = y_hat[y_idx][confident_idx]
+            y_in = torch.zeros(1, len(y_idx), dtype=torch.long) + self.mask_token
+            y_in[0][confident_idx] = y_hat[y_idx][confident_idx]
+        else:
+            y_in = torch.zeros(1, len(y_idx), dtype=torch.long) + self.mask_token
+            y_in[0] = y_hat[y_idx]
 
-        # mask ctc outputs based on decoder probabilities
-        y_in = torch.zeros(1, len(y_idx), dtype=torch.long) + self.mask_token
-        y_in[0] = y_hat[y_idx]
-
-        logging.info("ctc:{}".format(n2s(y_in[0].tolist())))
+            # there are some empty samples in TEDLIUM2
+            if len(y_in[0]) > 0:
+                pred, _ = self.decoder(y_in, None, h, None)
+                pred = self.decoder_output_layer(pred)
+                pred_probs = pred[0].softmax(dim=-1)
+                pred_score = pred_probs.gather(1, y_in[0].unsqueeze(-1)).squeeze(-1)
+                mask_idx = torch.nonzero(pred_score < p_thres).squeeze(-1)
+                y_in[0][mask_idx] = self.mask_token
+                mask_num = len(mask_idx)
+            else:
+                mask_idx = torch.nonzero(y_in[0] == self.mask_token).squeeze(-1)
+                mask_num = len(mask_idx) # should be 0
+        logging.info("fil:{}".format(n2s(y_in[0].tolist())))
 
         # shrink and expand decoding
         K = recog_args.maskctc_n_iterations
@@ -434,7 +448,7 @@ class E2E(E2ETransformer):
             pred_num = max(mask_num // K, 1)
         else:
             pred_num = 1
-        logging.info("msk:{}".format(pred_num))
+        logging.info("predict {} tokens in each iteration".format(pred_num))
 
         while len(mask_idx) > 0:
             y_tmp = torch.arange(y_in.size(1)).to(y_in)
@@ -445,11 +459,11 @@ class E2E(E2ETransformer):
             logging.info("shr:{}".format(n2s(y_in[0].tolist())))
 
             pred, _ = self.decoder(y_in, None, h, None)
-            pred_l = self.length_predictor(pred)
-            _, pred_len = pred_l[0].max(dim=-1)
-            y_exp = [numpy.array([self.mask_token] * f.item()) if i in mask_idx else y_in[0][i].numpy() for i, f in enumerate(pred_len)]
-            y_exp = torch.tensor(numpy.hstack(y_exp)).unsqueeze(0)
-            y_in = y_exp.long()
+            pred_dlp = self.dlp_layer(pred)
+            _, pred_len = pred_dlp[0].max(dim=-1)
+            y_tmp = [numpy.array([self.mask_token] * f.item()) if i in mask_idx else y_in[0][i].numpy() for i, f in enumerate(pred_len)]
+            y_tmp = torch.tensor(numpy.hstack(y_tmp)).unsqueeze(0)
+            y_in = y_tmp.long()
             mask_idx = torch.nonzero(y_in[0] == self.mask_token).squeeze(-1)
             logging.info("exp:{}".format(n2s(y_in[0].tolist())))
 
@@ -459,12 +473,15 @@ class E2E(E2ETransformer):
             pred, _ = self.decoder(y_in, None, h, None)
             pred_y = self.decoder_output_layer(pred)
             pred_y_score, pred_y_id = pred_y[0][mask_idx].max(dim=-1)
-            cand = torch.topk(pred_y_score, min(pred_num, len(mask_idx)), -1)[1] # only one
+            _, cand = torch.topk(pred_y_score, min(pred_num, len(mask_idx)), -1) # #mask can be reduced after expanding
             y_in[0][mask_idx[cand]] = pred_y_id[cand]
             mask_idx = torch.nonzero(y_in[0] == self.mask_token).squeeze(-1)
             logging.info("pre:{}".format(n2s(y_in[0].tolist())))
 
+        logging.info("------------")
+        logging.info("ctc:{}".format(n2s(y_hat[y_idx].tolist())))
         logging.info("msk:{}".format(n2s(y_in[0].tolist())))
+        logging.info("------------")
 
         ret = y_in.tolist()[0]
         hyp = {"score": 0.0, "yseq": [self.sos] + ret + [self.eos]}

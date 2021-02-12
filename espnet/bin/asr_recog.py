@@ -252,10 +252,16 @@ def get_parser():
         "For Mask CTC, set 0 to predict 1 mask/iter.",
     )
     parser.add_argument(
+        "--maskctc-filter-ctc-probability",
+        type=strtobool,
+        default=True,
+        help="Threshold probability for CTC output",
+    )
+    parser.add_argument(
         "--maskctc-probability-threshold",
         type=float,
         default=0.999,
-        help="Threshold probability for CTC output",
+        help="Threshold probability",
     )
 
     return parser
