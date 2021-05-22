@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set bash to 'debug' mode, it will exit on :
 # -e 'error', -u 'undefined variable', -o ... 'error in pipeline', -x 'print commands',
@@ -93,7 +93,7 @@ inference_config= # Config for decoding.
 inference_args=   # Arguments for decoding, e.g., "--lm_weight 0.1".
                   # Note that it will overwrite args in inference config.
 inference_lm=valid.loss.ave.pth       # Language modle path for decoding.
-inference_asr_model=valid.acc.ave.pth # ASR model path for decoding.
+inference_asr_model=valid.acc.best.pth # ASR model path for decoding.
                                       # e.g.
                                       # inference_asr_model=train.loss.best.pth
                                       # inference_asr_model=3epoch.pth
@@ -113,6 +113,8 @@ nlsyms_txt=none  # Non-linguistic symbol list if existing.
 cleaner=none     # Text cleaner.
 g2p=none         # g2p method (needed if token_type=phn).
 lang=noinfo      # The language type of corpus.
+score_opts=                # The options given to sclite scoring
+local_score_opts=          # The options given to local/score.sh.
 asr_speech_fold_length=800 # fold_length for speech data during ASR training.
 asr_text_fold_length=150   # fold_length for text data during ASR training.
 lm_fold_length=150         # fold_length for LM training.
@@ -209,6 +211,8 @@ Options:
     --cleaner       # Text cleaner (default="${cleaner}").
     --g2p           # g2p method (default="${g2p}").
     --lang          # The language type of corpus (default=${lang}).
+    --score_opts             # The options given to sclite scoring (default="{score_opts}").
+    --local_score_opts       # The options given to local/score.sh (default="{local_score_opts}").
     --asr_speech_fold_length # fold_length for speech data during ASR training (default="${asr_speech_fold_length}").
     --asr_text_fold_length   # fold_length for text data during ASR training (default="${asr_text_fold_length}").
     --lm_fold_length         # fold_length for LM training (default="${lm_fold_length}").
@@ -440,7 +444,7 @@ if ! "${skip_data_prep}"; then
                     _suf=""
                 fi
                 utils/copy_data_dir.sh --validate_opts --non-print data/"${dset}" "${data_feats}${_suf}/${dset}"
-                rm -f ${data_feats}${_suf}/${dset}/{segments,wav.scp,reco2file_and_channel}
+                rm -f ${data_feats}${_suf}/${dset}/{segments,wav.scp,reco2file_and_channel,reco2dur}
                 _opts=
                 if [ -e data/"${dset}"/segments ]; then
                     # "segments" is used for splitting wav files which are written in "wav".scp
@@ -1266,6 +1270,7 @@ if ! "${skip_eval}"; then
                 fi
 
                 sclite \
+		    ${score_opts} \
                     -r "${_scoredir}/ref.trn" trn \
                     -h "${_scoredir}/hyp.trn" trn \
                     -i rm -o all stdout > "${_scoredir}/result.txt"
@@ -1275,7 +1280,7 @@ if ! "${skip_eval}"; then
             done
         done
 
-        [ -f local/score.sh ] && local/score.sh "${asr_exp}"
+        [ -f local/score.sh ] && local/score.sh ${local_score_opts} "${asr_exp}"
 
         # Show results in Markdown syntax
         scripts/utils/show_asr_result.sh "${asr_exp}" > "${asr_exp}"/RESULTS.md
@@ -1305,11 +1310,15 @@ if ! "${skip_upload}"; then
         if [ "${token_type}" = bpe ]; then
             _opts+="--option ${bpemodel} "
         fi
+        if [ "${nlsyms_txt}" != none ]; then
+            _opts+="--option ${nlsyms_txt} "
+        fi
         # shellcheck disable=SC2086
         ${python} -m espnet2.bin.pack asr \
             --asr_train_config "${asr_exp}"/config.yaml \
             --asr_model_file "${asr_exp}"/"${inference_asr_model}" \
             ${_opts} \
+            --option "${asr_exp}"/RESULTS.md \
             --option "${asr_exp}"/RESULTS.md \
             --option "${asr_exp}"/images \
             --outpath "${packed_model}"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Set bash to 'debug' mode, it will exit on :
 # -e 'error', -u 'undefined variable', -o ... 'error in pipeline', -x 'print commands',
 set -e
@@ -70,5 +70,6 @@ inference_config=conf/decode_asr.yaml
     --valid_set "${train_dev}" \
     --test_sets "${test_set}" \
     --nlsyms_txt "${nlsyms_txt}" \
-    --lm_train_text "data/${train_set}/text" "$@"
+    --lm_train_text "data/${train_set}/text" \
+    --local_score_opts "--score_lang_id ${lid}" "$@"
 

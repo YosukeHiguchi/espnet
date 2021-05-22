@@ -28,6 +28,7 @@ from espnet2.fileio.rand_gen_dataset import FloatRandomGenerateDataset
 from espnet2.fileio.rand_gen_dataset import IntRandomGenerateDataset
 from espnet2.fileio.read_text import load_num_sequence_text
 from espnet2.fileio.read_text import read_2column_text
+from espnet2.fileio.rttm import RttmReader
 from espnet2.fileio.sound_scp import SoundScpReader
 from espnet2.utils.sized_dict import SizedDict
 
@@ -56,7 +57,7 @@ class AdapterForSoundScpReader(collections.abc.Mapping):
             if isinstance(retval[0], int) and isinstance(retval[1], np.ndarray):
                 # sound scp case
                 rate, array = retval
-            elif isinstance(retval[0], int) and isinstance(retval[1], np.ndarray):
+            elif isinstance(retval[1], int) and isinstance(retval[0], np.ndarray):
                 # Extended ark format case
                 array, rate = retval
             else:
@@ -239,6 +240,17 @@ DATA_TYPES = {
         "\n\n"
         "   utterance_id_A 3,4\n"
         "   utterance_id_B 10,4\n"
+        "   ...",
+    ),
+    "rttm": dict(
+        func=RttmReader,
+        kwargs=[],
+        help="rttm file loader, currently support for speaker diarization"
+        "\n\n"
+        "    SPEAKER file1 1 0 1023 <NA> <NA> spk1 <NA>"
+        "    SPEAKER file1 2 4000 3023 <NA> <NA> spk2 <NA>"
+        "    SPEAKER file1 3 500 4023 <NA> <NA> spk1 <NA>"
+        "    END     file1 <NA> 4023 <NA> <NA> <NA> <NA>"
         "   ...",
     ),
 }

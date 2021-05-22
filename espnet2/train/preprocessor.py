@@ -82,12 +82,10 @@ def detect_non_silence(
 
     Args:
         x: (Channel, Time)
-
     >>> x = np.random.randn(1000)
     >>> detect = detect_non_silence(x)
     >>> assert x.shape == detect.shape
     >>> assert detect.dtype == np.bool
-
     """
     if x.shape[-1] < frame_length:
         return np.full(x.shape, fill_value=True, dtype=np.bool)
@@ -251,7 +249,7 @@ class CommonPreprocessor(AbsPreprocessor):
                 # 2. Add Noise
                 if (
                     self.noises is not None
-                    and self.rir_apply_prob >= np.random.random()
+                    and self.noise_apply_prob >= np.random.random()
                 ):
                     noise_path = np.random.choice(self.noises)
                     if noise_path is not None:

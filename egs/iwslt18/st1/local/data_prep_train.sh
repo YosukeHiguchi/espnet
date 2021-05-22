@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Copyright 2018 Kyoto University (Hirofumi Inaguma)
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
@@ -47,6 +47,11 @@ n_de=$(cat ${de} | wc -l)
 [ ${n} -ne ${n_de} ] && echo "Warning: expected ${n} data files, found ${n_de}" && exit 1;
 
 
+# downloads reclist (for removing noisy training utterances)
+if [ ! -d data/local/downloads ]; then
+    download_from_google_drive.sh https://drive.google.com/open?id=1agQOUEm47LIeLZAFF8RTZ5qx6OsOFGTM data/local
+fi
+
 # (1a) Transcriptions and translations preparation
 # make basic transcription file (add segments info)
 cp ${yml} ${dst}/.yaml0
@@ -80,7 +85,7 @@ for lang in en de; do
     cp ${dst}/${lang}.norm ${dst}/${lang}.norm.tc
 
     # remove punctuation
-    local/remove_punctuation.pl < ${dst}/${lang}.norm.lc > ${dst}/${lang}.norm.lc.rm
+    remove_punctuation.pl < ${dst}/${lang}.norm.lc > ${dst}/${lang}.norm.lc.rm
 
     # tokenization
     tokenizer.perl -l ${lang} -q < ${dst}/${lang}.norm.tc > ${dst}/${lang}.norm.tc.tok
