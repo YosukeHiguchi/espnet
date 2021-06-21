@@ -32,7 +32,7 @@ def mask_uniform(ys_pad, mask_token, eos, ignore_id):
     ys_in = [y.clone() for y in ys]
     for i in range(len(ys)):
         num_samples = numpy.random.randint(1, len(ys[i]) + 1)
-        idx = numpy.random.choice(len(ys[i]), num_samples)
+        idx = numpy.random.choice(len(ys[i]), num_samples, replace=False)
 
         ys_in[i][idx] = mask_token
         ys_out[i][idx] = ys[i][idx]
