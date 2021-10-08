@@ -91,6 +91,7 @@ class Encoder(torch.nn.Module):
         zero_triu=False,
         cnn_module_kernel=31,
         padding_idx=-1,
+        return_posemb=False,
         stochastic_depth_rate=0.0,
         intermediate_layers=None,
     ):
@@ -134,6 +135,10 @@ class Encoder(torch.nn.Module):
             self.embed = torch.nn.Sequential(
                 torch.nn.Embedding(idim, attention_dim, padding_idx=padding_idx),
                 pos_enc_class(attention_dim, positional_dropout_rate),
+            )
+        elif input_layer == "identity":
+            self.embed = torch.nn.Sequential(
+                torch.nn.Identity()
             )
         elif isinstance(input_layer, torch.nn.Module):
             self.embed = torch.nn.Sequential(
@@ -227,6 +232,7 @@ class Encoder(torch.nn.Module):
         if self.normalize_before:
             self.after_norm = LayerNorm(attention_dim)
 
+        self.return_posemb = return_posemb
         self.intermediate_layers = intermediate_layers
 
     def forward(self, xs, masks):
@@ -241,13 +247,20 @@ class Encoder(torch.nn.Module):
             torch.Tensor: Mask tensor (#batch, time).
 
         """
+        posemb = None
+        if isinstance(xs, tuple):
+            xs, posemb = xs
+
         if isinstance(self.embed, (Conv2dSubsampling, VGG2L)):
             xs, masks = self.embed(xs, masks)
         else:
             xs = self.embed(xs)
 
         if self.intermediate_layers is None:
-            xs, masks = self.encoders(xs, masks)
+            if posemb is not None:
+                xs, masks = self.encoders((xs, posemb), masks)
+            else:
+                xs, masks = self.encoders(xs, masks)
         else:
             intermediate_outputs = []
             for layer_idx, encoder_layer in enumerate(self.encoders):
@@ -266,11 +279,15 @@ class Encoder(torch.nn.Module):
                     intermediate_outputs.append(encoder_output)
 
         if isinstance(xs, tuple):
-            xs = xs[0]
+            xs, posemb = xs
 
         if self.normalize_before:
             xs = self.after_norm(xs)
 
         if self.intermediate_layers is not None:
             return xs, masks, intermediate_outputs
-        return xs, masks
+
+        if self.return_posemb:
+            return xs, posemb, masks
+        else:
+            return xs, masks

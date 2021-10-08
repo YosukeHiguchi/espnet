@@ -118,6 +118,10 @@ class Decoder(BatchScorerInterface, torch.nn.Module):
             self.embed = torch.nn.Sequential(
                 input_layer, pos_enc_class(attention_dim, positional_dropout_rate)
             )
+        elif input_layer == "identity":
+            self.embed = torch.nn.Sequential(
+                torch.nn.Identity()
+            )
         else:
             raise NotImplementedError("only `embed` or torch.nn.Module is supported.")
         self.normalize_before = normalize_before

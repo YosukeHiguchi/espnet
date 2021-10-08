@@ -599,15 +599,26 @@ def main(cmd_args):
 
     # load dictionary for debug log
     if args.dict is not None:
-        with open(args.dict, "rb") as f:
-            dictionary = f.readlines()
-        char_list = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
-        char_list.insert(0, "<blank>")
-        char_list.append("<eos>")
-        # for non-autoregressive maskctc model
-        if "maskctc" in args.model_module:
-            char_list.append("<mask>")
-        args.char_list = char_list
+        if "," in args.dict:
+            args.char_list = []
+            dict_list = args.dict.split(",")
+            for d in dict_list[:-1]:
+                with open(d, "rb") as f:
+                    dictionary = f.readlines()
+                cl = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
+                cl.insert(0, "<blank>")
+                cl.append("<eos>")
+                args.char_list.append(cl)
+        else:
+            with open(args.dict, "rb") as f:
+                dictionary = f.readlines()
+            char_list = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
+            char_list.insert(0, "<blank>")
+            char_list.append("<eos>")
+            # for non-autoregressive maskctc model
+            if "maskctc" in args.model_module:
+                char_list.append("<mask>")
+            args.char_list = char_list
     else:
         args.char_list = None
 

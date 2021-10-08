@@ -143,6 +143,10 @@ class Encoder(torch.nn.Module):
                 torch.nn.Embedding(idim, attention_dim, padding_idx=padding_idx),
                 pos_enc_class(attention_dim, positional_dropout_rate),
             )
+        elif input_layer == "identity":
+            self.embed = torch.nn.Sequential(
+                torch.nn.Identity()
+            )
         elif isinstance(input_layer, torch.nn.Module):
             self.embed = torch.nn.Sequential(
                 input_layer,

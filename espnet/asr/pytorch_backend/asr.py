@@ -310,6 +310,50 @@ class CustomConverter(object):
         return xs_pad, ilens, ys_pad
 
 
+class CustomConverterHierASR(object):
+    def __init__(self, subsampling_factor=1, dtype=torch.float32):
+        """Construct a CustomConverter object."""
+        self.subsampling_factor = subsampling_factor
+        self.ignore_id = -1
+        self.dtype = dtype
+
+    def __call__(self, batch, device=torch.device("cpu")):
+        # batch should be located in list
+        assert len(batch) == 1
+        xs = batch[0][0]
+        yss = batch[0][1:]
+
+        # perform subsampling
+        if self.subsampling_factor > 1:
+            xs = [x[:: self.subsampling_factor, :] for x in xs]
+
+        # get batch of lengths of input sequences
+        ilens = np.array([x.shape[0] for x in xs])
+
+        # perform padding and convert to tensor
+        xs_pad = pad_list([torch.from_numpy(x).float() for x in xs], 0).to(
+            device, dtype=self.dtype
+        )
+
+        ilens = torch.from_numpy(ilens).to(device)
+        # NOTE: this is for multi-output (e.g., speech translation)
+        yss_pad = []
+        for ys in yss:
+            yss_pad.append(
+                pad_list(
+                    [
+                        torch.from_numpy(
+                            np.array(y[0][:]) if isinstance(y, tuple) else y
+                        ).long()
+                        for y in ys
+                    ],
+                    self.ignore_id,
+                ).to(device)
+            )
+
+        return xs_pad, ilens, yss_pad
+
+
 class CustomConverterMulEnc(object):
     """Custom batch converter for Pytorch in multi-encoder case.
 
@@ -400,10 +444,13 @@ def train(args):
     idim_list = [
         int(valid_json[utts[0]]["input"][i]["shape"][-1]) for i in range(args.num_encs)
     ]
-    odim = int(valid_json[utts[0]]["output"][0]["shape"][-1])
+    num_out = len(valid_json[utts[0]]["output"])
+    odim_list = [
+        int(valid_json[utts[0]]["output"][i]["shape"][-1]) for i in range(num_out)
+    ]
     for i in range(args.num_encs):
         logging.info("stream{}: input dims : {}".format(i + 1, idim_list[i]))
-    logging.info("#output dims: " + str(odim))
+    logging.info("#output dims: " + str(odim_list))
 
     # specify attention, CTC, hybrid mode
     if "transducer" in args.model_module:
@@ -426,11 +473,17 @@ def train(args):
         logging.info("Multitask learning mode")
 
     if (args.enc_init is not None or args.dec_init is not None) and args.num_encs == 1:
-        model = load_trained_modules(idim_list[0], odim, args)
+        model = load_trained_modules(
+            idim_list[0],
+            odim_list[0] if num_out == 1 else odim_list,
+            args
+        )
     else:
         model_class = dynamic_import(args.model_module)
         model = model_class(
-            idim_list[0] if args.num_encs == 1 else idim_list, odim, args
+            idim_list[0] if args.num_encs == 1 else idim_list,
+            odim_list[0] if num_out == 1 else odim_list,
+            args
         )
     assert isinstance(model, ASRInterface)
     total_subsampling_factor = model.get_total_subsampling_factor()
@@ -456,7 +509,11 @@ def train(args):
         logging.info("writing a model config file to " + model_conf)
         f.write(
             json.dumps(
-                (idim_list[0] if args.num_encs == 1 else idim_list, odim, vars(args)),
+                (
+                    idim_list[0] if args.num_encs == 1 else idim_list,
+                    odim_list[0] if num_out == 1 else odim_list,
+                    vars(args)
+                ),
                 indent=4,
                 ensure_ascii=False,
                 sort_keys=True,
@@ -568,7 +625,10 @@ def train(args):
 
     # Setup a converter
     if args.num_encs == 1:
-        converter = CustomConverter(subsampling_factor=model.subsample[0], dtype=dtype)
+        if num_out == 1:
+            converter = CustomConverter(subsampling_factor=model.subsample[0], dtype=dtype)
+        else:
+            converter = CustomConverterHierASR(subsampling_factor=model.subsample[0], dtype=dtype)
     else:
         converter = CustomConverterMulEnc(
             [i[0] for i in model.subsample_list], dtype=dtype
@@ -685,6 +745,8 @@ def train(args):
     is_attn_plot = (
         "transformer" in args.model_module
         or "conformer" in args.model_module
+        or "hierctc" in args.model_module
+        or "paractc" in args.model_module
         or mtl_mode in ["att", "mtl", "custom_transducer"]
     )
 
@@ -799,6 +861,36 @@ def train(args):
                 file_name="loss.png",
             )
         )
+    elif "hierctc" in args.model_module or "paractc" in args.model_module:
+        trainer.extend(
+            extensions.PlotReport(
+                ["main/loss"]
+                + ["main/loss_ctc{}".format(i) for i in range(num_out)]
+                + ["validation/main/loss_ctc{}".format(i) for i in range(num_out)],
+                "epoch",
+                file_name="loss.png",
+            )
+        )
+        trainer.extend(
+            extensions.PlotReport(
+                ["main/cer_ctc{}".format(i) for i in range(num_out)]
+                + ["validation/main/cer_ctc{}".format(i) for i in range(num_out)],
+                "epoch",
+                file_name="cer.png",
+            )
+        )
+        if "hierctc_ar" in args.model_module:
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/loss_att", "validation/main/loss_att"], "epoch", file_name="loss_att.png"
+                )
+            )
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/acc", "validation/main/acc"], "epoch", file_name="acc.png"
+                )
+            )
+
     else:
         trainer.extend(
             extensions.PlotReport(
@@ -914,6 +1006,25 @@ def train(args):
             + transducer_keys
             + ["elapsed_time"]
         )
+    elif "hierctc" in args.model_module or "paractc" in args.model_module:
+        report_keys = [
+            "epoch", "iteration", "main/loss", "elapsed_time"
+        ] + [
+            "main/loss_ctc{}".format(i) for i in range(num_out)
+        ] + [
+            "validation/main/loss_ctc{}".format(i) for i in range(num_out)
+        ] + [
+            "main/cer_ctc{}".format(i) for i in range(num_out)
+        ] + [
+            "validation/main/cer_ctc{}".format(i) for i in range(num_out)
+        ]
+        if "hierctc_ar" in args.model_module:
+            report_keys += [
+                "main/loss_att",
+                "validation/main/loss_att",
+                "main/acc",
+                "validation/main/acc",
+            ]
     else:
         report_keys = [
             "epoch",
@@ -1162,9 +1273,15 @@ def recog(args):
                     nbest_hyps = model.recognize(
                         feat, args, train_args.char_list, rnnlm
                     )
-                new_js[name] = add_results_to_json(
-                    js[name], nbest_hyps, train_args.char_list
-                )
+
+                if "hierctc" in train_args.model_module or "multctc" in train_args.model_module:
+                    new_js[name] = add_results_to_json(
+                        js[name], nbest_hyps, train_args.char_list[-1]
+                    )
+                else:
+                    new_js[name] = add_results_to_json(
+                        js[name], nbest_hyps, train_args.char_list
+                    )
 
     else:
 

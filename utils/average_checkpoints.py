@@ -33,8 +33,12 @@ def main():
                 if "validation/main/cer" in log.keys():
                     val_scores += [[log["epoch"], -log["validation/main/cer"]]]
             elif args.metric == "cer_ctc":
-                if "validation/main/cer_ctc" in log.keys():
-                    val_scores += [[log["epoch"], -log["validation/main/cer_ctc"]]]
+                if args.ctc_index < 0:
+                    if "validation/main/cer_ctc" in log.keys():
+                        val_scores += [[log["epoch"], -log["validation/main/cer_ctc"]]]
+                else:
+                    if "validation/main/cer_ctc{}".format(args.ctc_index) in log.keys():
+                        val_scores += [[log["epoch"], -log["validation/main/cer_ctc{}".format(args.ctc_index)]]]
             else:
                 # Keep original order for compatibility
                 if "validation/main/acc" in log.keys():
@@ -129,6 +133,7 @@ def get_parser():
         type=int,
         nargs="?",
     )
+    parser.add_argument("--ctc-index", default=-1, type=int, nargs="?")
     return parser
 
 
