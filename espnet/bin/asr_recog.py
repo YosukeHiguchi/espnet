@@ -299,6 +299,11 @@ def get_parser():
         default=False,
         help="Quantize lm model",
     )
+    parser.add_argument(
+        "--ctc-index",
+        type=int,
+        default=False,
+    )
     return parser
 
 

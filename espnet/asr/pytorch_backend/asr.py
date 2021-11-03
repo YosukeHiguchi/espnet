@@ -1274,9 +1274,13 @@ def recog(args):
                         feat, args, train_args.char_list, rnnlm
                     )
 
-                if "hierctc" in train_args.model_module or "multctc" in train_args.model_module:
+                if "hierctc" in train_args.model_module:
                     new_js[name] = add_results_to_json(
                         js[name], nbest_hyps, train_args.char_list[-1]
+                    )
+                elif "paractc" in train_args.model_module:
+                    new_js[name] = add_results_to_json(
+                        js[name], nbest_hyps, train_args.char_list[args.ctc_index]
                     )
                 else:
                     new_js[name] = add_results_to_json(
