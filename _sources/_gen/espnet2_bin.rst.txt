@@ -152,8 +152,9 @@ asr_inference.py
                             [--maxlenratio MAXLENRATIO]
                             [--minlenratio MINLENRATIO] [--ctc_weight CTC_WEIGHT]
                             [--lm_weight LM_WEIGHT] [--ngram_weight NGRAM_WEIGHT]
-                            [--streaming STREAMING] [--token_type {char,bpe,None}]
-                            [--bpemodel BPEMODEL]
+                            [--streaming STREAMING]
+                            [--transducer_conf TRANSDUCER_CONF]
+                            [--token_type {char,bpe,None}] [--bpemodel BPEMODEL]
     
     ASR Decoding
     
@@ -217,125 +218,16 @@ asr_inference.py
       --ngram_weight NGRAM_WEIGHT
                             ngram weight (default: 0.9)
       --streaming STREAMING
-    
-    Text converter related:
-      --token_type {char,bpe,None}
-                            The token type for ASR model. If not given, refers
-                            from the training args (default: None)
-      --bpemodel BPEMODEL   The model path of sentencepiece. If not given, refers
-                            from the training args (default: None)
-.. _asr_inference_k2.py:
-
-asr_inference_k2.py
-~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: none
-
-    usage: asr_inference_k2.py [-h] [--config CONFIG]
-                               [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
-                               --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
-                               [--dtype {float16,float32,float64}]
-                               [--num_workers NUM_WORKERS]
-                               --data_path_and_name_and_type
-                               DATA_PATH_AND_NAME_AND_TYPE [--key_file KEY_FILE]
-                               [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
-                               [--asr_train_config ASR_TRAIN_CONFIG]
-                               [--asr_model_file ASR_MODEL_FILE]
-                               [--lm_train_config LM_TRAIN_CONFIG]
-                               [--lm_file LM_FILE]
-                               [--word_lm_train_config WORD_LM_TRAIN_CONFIG]
-                               [--word_lm_file WORD_LM_FILE]
-                               [--model_tag MODEL_TAG] [--batch_size BATCH_SIZE]
-                               [--nbest NBEST] [--beam_size BEAM_SIZE]
-                               [--penalty PENALTY] [--maxlenratio MAXLENRATIO]
-                               [--minlenratio MINLENRATIO]
-                               [--ctc_weight CTC_WEIGHT] [--lm_weight LM_WEIGHT]
-                               [--streaming STREAMING]
-                               [--token_type {char,bpe,None}]
-                               [--bpemodel BPEMODEL]
-                               [--is_ctc_decoding IS_CTC_DECODING]
-                               [--use_nbest_rescoring USE_NBEST_RESCORING]
-                               [--num_paths NUM_PATHS]
-                               [--nbest_batch_size NBEST_BATCH_SIZE]
-                               [--nll_batch_size NLL_BATCH_SIZE]
-                               [--k2_config K2_CONFIG]
-    
-    ASR Decoding
-    
-    optional arguments:
-      --config CONFIG       Give config file in yaml format (default: None)
-      --log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
-                            The verbose level of logging (default: INFO)
-      --output_dir OUTPUT_DIR
-      --ngpu NGPU           The number of gpus. 0 indicates CPU mode (default: 0)
-      --seed SEED           Random seed (default: 0)
-      --dtype {float16,float32,float64}
-                            Data type (default: float32)
-      --num_workers NUM_WORKERS
-                            The number of workers used for DataLoader (default: 1)
-    
-    Input data related:
-      --data_path_and_name_and_type DATA_PATH_AND_NAME_AND_TYPE
-      --key_file KEY_FILE
-      --allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS
-    
-    The model configuration related:
-      --asr_train_config ASR_TRAIN_CONFIG
-                            ASR training configuration (default: None)
-      --asr_model_file ASR_MODEL_FILE
-                            ASR model parameter file (default: None)
-      --lm_train_config LM_TRAIN_CONFIG
-                            LM training configuration (default: None)
-      --lm_file LM_FILE     LM parameter file (default: None)
-      --word_lm_train_config WORD_LM_TRAIN_CONFIG
-                            Word LM training configuration (default: None)
-      --word_lm_file WORD_LM_FILE
-                            Word LM parameter file (default: None)
-      --model_tag MODEL_TAG
-                            Pretrained model tag. If specify this option,
-                            *_train_config and *_file will be overwritten
+      --transducer_conf TRANSDUCER_CONF
+                            The keyword arguments for transducer beam search.
                             (default: None)
     
-    Beam-search related:
-      --batch_size BATCH_SIZE
-                            The batch size for inference (default: 1)
-      --nbest NBEST         Output N-best hypotheses (default: 1)
-      --beam_size BEAM_SIZE
-                            Beam size (default: 20)
-      --penalty PENALTY     Insertion penalty (default: 0.0)
-      --maxlenratio MAXLENRATIO
-                            Input length ratio to obtain max output length. If
-                            maxlenratio=0.0 (default), it uses a end-detect
-                            function to automatically find maximum hypothesis
-                            lengths (default: 0.0)
-      --minlenratio MINLENRATIO
-                            Input length ratio to obtain min output length
-                            (default: 0.0)
-      --ctc_weight CTC_WEIGHT
-                            CTC weight in joint decoding (default: 0.5)
-      --lm_weight LM_WEIGHT
-                            RNNLM weight (default: 1.0)
-      --streaming STREAMING
-    
     Text converter related:
       --token_type {char,bpe,None}
                             The token type for ASR model. If not given, refers
                             from the training args (default: None)
       --bpemodel BPEMODEL   The model path of sentencepiece. If not given, refers
                             from the training args (default: None)
-      --is_ctc_decoding IS_CTC_DECODING
-                            Use ctc topology as decoding graph (default: True)
-      --use_nbest_rescoring USE_NBEST_RESCORING
-      --num_paths NUM_PATHS
-                            The third argument for k2.random_paths (default: 1000)
-      --nbest_batch_size NBEST_BATCH_SIZE
-                            batchify nbest list when computing am/lm scores to
-                            avoid OOM (default: 500)
-      --nll_batch_size NLL_BATCH_SIZE
-                            batch_size when computing nll during nbest rescoring
-                            (default: 100)
-      --k2_config K2_CONFIG
-                            Config file for decoding with k2 (default: None)
 .. _asr_inference_streaming.py:
 
 asr_inference_streaming.py
@@ -475,6 +367,7 @@ asr_train.py
                         [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                         [--train_dtype {float16,float32,float64}]
                         [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                        [--use_matplotlib USE_MATPLOTLIB]
                         [--use_tensorboard USE_TENSORBOARD]
                         [--use_wandb USE_WANDB] [--wandb_project WANDB_PROJECT]
                         [--wandb_id WANDB_ID] [--wandb_entity WANDB_ENTITY]
@@ -514,6 +407,7 @@ asr_train.py
                         [--token_list TOKEN_LIST]
                         [--init {chainer,xavier_uniform,xavier_normal,kaiming_uniform,kaiming_normal,None}]
                         [--input_size INPUT_SIZE] [--ctc_conf CTC_CONF]
+                        [--joint_net_conf JOINT_NET_CONF]
                         [--model_conf MODEL_CONF]
                         [--use_preprocessor USE_PREPROCESSOR]
                         [--token_type {bpe,char,word,phn}] [--bpemodel BPEMODEL]
@@ -525,7 +419,7 @@ asr_train.py
                         [--noise_scp NOISE_SCP]
                         [--noise_apply_prob NOISE_APPLY_PROB]
                         [--noise_db_range NOISE_DB_RANGE]
-                        [--frontend {default,sliding_window,s3prl}]
+                        [--frontend {default,sliding_window,s3prl,fused}]
                         [--frontend_conf FRONTEND_CONF] [--specaug {specaug,None}]
                         [--specaug_conf SPECAUG_CONF]
                         [--normalize {global_mvn,utterance_mvn,None}]
@@ -536,7 +430,7 @@ asr_train.py
                         [--encoder_conf ENCODER_CONF]
                         [--postencoder {hugging_face_transformers,None}]
                         [--postencoder_conf POSTENCODER_CONF]
-                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn}]
+                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer}]
                         [--decoder_conf DECODER_CONF]
     
     base parser
@@ -644,6 +538,8 @@ asr_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -876,6 +772,8 @@ asr_train.py
       --input_size INPUT_SIZE
                             The number of input dimension of the feature (default: None)
       --ctc_conf CTC_CONF   The keyword arguments for CTC class. (default: {'dropout_rate': 0.0, 'ctc_type': 'builtin', 'reduce': True, 'ignore_nan_grad': True})
+      --joint_net_conf JOINT_NET_CONF
+                            The keyword arguments for joint network class. (default: None)
       --model_conf MODEL_CONF
                             The keyword arguments for model class. (default: {'ctc_weight': 0.5, 'ignore_id': -1, 'lsm_weight': 0.0, 'length_normalized_loss': False, 'report_cer': True, 'report_wer': True, 'sym_space': '<space>', 'sym_blank': '<blank>', 'extract_feats_in_collect_stats': True})
     
@@ -886,7 +784,7 @@ asr_train.py
       --token_type {bpe,char,word,phn}
                             The text will be tokenized in the specified level token (default: bpe)
       --bpemodel BPEMODEL   The model file of sentencepiece (default: None)
-      --frontend {default,sliding_window,s3prl}
+      --frontend {default,sliding_window,s3prl,fused}
                             The frontend type (default: default)
       --frontend_conf FRONTEND_CONF
                             The keyword arguments for frontend (default: {})
@@ -910,7 +808,7 @@ asr_train.py
                             The postencoder type (default: None)
       --postencoder_conf POSTENCODER_CONF
                             The keyword arguments for postencoder (default: {})
-      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn}
+      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer}
                             The decoder type (default: rnn)
       --decoder_conf DECODER_CONF
                             The keyword arguments for decoder (default: {})
@@ -1018,6 +916,7 @@ diar_train.py
                          [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                          [--train_dtype {float16,float32,float64}]
                          [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                         [--use_matplotlib USE_MATPLOTLIB]
                          [--use_tensorboard USE_TENSORBOARD]
                          [--use_wandb USE_WANDB] [--wandb_project WANDB_PROJECT]
                          [--wandb_id WANDB_ID] [--wandb_entity WANDB_ENTITY]
@@ -1059,6 +958,7 @@ diar_train.py
                          [--use_preprocessor USE_PREPROCESSOR]
                          [--frontend {default,sliding_window,s3prl}]
                          [--frontend_conf FRONTEND_CONF]
+                         [--specaug {specaug,None}] [--specaug_conf SPECAUG_CONF]
                          [--normalize {global_mvn,utterance_mvn,None}]
                          [--normalize_conf NORMALIZE_CONF]
                          [--encoder {conformer,transformer,rnn}]
@@ -1157,6 +1057,8 @@ diar_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -1398,6 +1300,10 @@ diar_train.py
                             The frontend type (default: default)
       --frontend_conf FRONTEND_CONF
                             The keyword arguments for frontend (default: {})
+      --specaug {specaug,None}
+                            The specaug type (default: None)
+      --specaug_conf SPECAUG_CONF
+                            The keyword arguments for specaug (default: {})
       --normalize {global_mvn,utterance_mvn,None}
                             The normalize type (default: utterance_mvn)
       --normalize_conf NORMALIZE_CONF
@@ -1565,6 +1471,7 @@ enh_train.py
                         [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                         [--train_dtype {float16,float32,float64}]
                         [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                        [--use_matplotlib USE_MATPLOTLIB]
                         [--use_tensorboard USE_TENSORBOARD]
                         [--use_wandb USE_WANDB] [--wandb_project WANDB_PROJECT]
                         [--wandb_id WANDB_ID] [--wandb_entity WANDB_ENTITY]
@@ -1602,7 +1509,7 @@ enh_train.py
                         [--scheduler {reducelronplateau,lambdalr,steplr,multisteplr,exponentiallr,cosineannealinglr,noamlr,warmuplr,cycliclr,onecyclelr,cosineannealingwarmrestarts,None}]
                         [--scheduler_conf SCHEDULER_CONF]
                         [--init {chainer,xavier_uniform,xavier_normal,kaiming_uniform,kaiming_normal,None}]
-                        [--model_conf MODEL_CONF]
+                        [--model_conf MODEL_CONF] [--criterions CRITERIONS]
                         [--use_preprocessor USE_PREPROCESSOR]
                         [--encoder {stft,conv,same}] [--encoder_conf ENCODER_CONF]
                         [--separator {rnn,tcn,dprnn,transformer,conformer,wpe_beamformer,asteroid}]
@@ -1697,6 +1604,8 @@ enh_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -1926,6 +1835,8 @@ enh_train.py
                             The initialization method (default: None)
       --model_conf MODEL_CONF
                             The keyword arguments for model class. (default: {'stft_consistency': False, 'loss_type': 'mask_mse', 'mask_type': None})
+      --criterions CRITERIONS
+                            The criterions binded with the loss wrappers. (default: [{'name': 'si_snr', 'conf': {}, 'wrapper': 'fixed_order', 'wrapper_conf': {}}])
     
       Preprocess related
     
@@ -1984,6 +1895,7 @@ gan_tts_train.py
                             [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                             [--train_dtype {float16,float32,float64}]
                             [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                            [--use_matplotlib USE_MATPLOTLIB]
                             [--use_tensorboard USE_TENSORBOARD]
                             [--use_wandb USE_WANDB]
                             [--wandb_project WANDB_PROJECT] [--wandb_id WANDB_ID]
@@ -2144,6 +2056,8 @@ gan_tts_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -2458,6 +2372,7 @@ hubert_train.py
                            [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                            [--train_dtype {float16,float32,float64}]
                            [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                           [--use_matplotlib USE_MATPLOTLIB]
                            [--use_tensorboard USE_TENSORBOARD]
                            [--use_wandb USE_WANDB] [--wandb_project WANDB_PROJECT]
                            [--wandb_id WANDB_ID] [--wandb_entity WANDB_ENTITY]
@@ -2636,6 +2551,8 @@ hubert_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -3034,6 +2951,7 @@ lm_train.py
                        [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                        [--train_dtype {float16,float32,float64}]
                        [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                       [--use_matplotlib USE_MATPLOTLIB]
                        [--use_tensorboard USE_TENSORBOARD] [--use_wandb USE_WANDB]
                        [--wandb_project WANDB_PROJECT] [--wandb_id WANDB_ID]
                        [--wandb_entity WANDB_ENTITY] [--wandb_name WANDB_NAME]
@@ -3172,6 +3090,8 @@ lm_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
@@ -3654,6 +3574,7 @@ tts_train.py
                         [--no_forward_run NO_FORWARD_RUN] [--resume RESUME]
                         [--train_dtype {float16,float32,float64}]
                         [--use_amp USE_AMP] [--log_interval LOG_INTERVAL]
+                        [--use_matplotlib USE_MATPLOTLIB]
                         [--use_tensorboard USE_TENSORBOARD]
                         [--use_wandb USE_WANDB] [--wandb_project WANDB_PROJECT]
                         [--wandb_id WANDB_ID] [--wandb_entity WANDB_ENTITY]
@@ -3805,6 +3726,8 @@ tts_train.py
       --use_amp USE_AMP     Enable Automatic Mixed Precision. This feature requires pytorch>=1.6 (default: False)
       --log_interval LOG_INTERVAL
                             Show the logs every the number iterations in each epochs at the training phase. If None is given, it is decided according the number of training samples automatically . (default: None)
+      --use_matplotlib USE_MATPLOTLIB
+                            Enable matplotlib logging (default: True)
       --use_tensorboard USE_TENSORBOARD
                             Enable tensorboard logging (default: True)
       --use_wandb USE_WANDB
