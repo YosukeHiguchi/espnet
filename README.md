@@ -2,13 +2,14 @@
 
 # ESPnet: end-to-end speech processing toolkit
 
-|system/pytorch ver.|1.0.1|1.1.0|1.2.0|1.3.1|1.4.0|1.5.1|1.6.0|1.7.1|1.8.1|
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|ubuntu20/python3.8/pip|||||||||[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
-|ubuntu18/python3.7/pip|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
-|debian9/python3.6/conda|||||||||[![debian9](https://github.com/espnet/espnet/workflows/debian9/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adebian9)|
-|centos7/python3.6/conda|||||||||[![centos7](https://github.com/espnet/espnet/workflows/centos7/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Acentos7)|
-|[docs/coverage] python3.8|||||||||[![Build Status](https://travis-ci.org/espnet/espnet.svg?branch=master)](https://travis-ci.org/espnet/espnet)|
+|   system/pytorch ver.   |                                                         1.4.0                                                          |                                                         1.5.1                                                          |                                                         1.6.0                                                          |                                                         1.7.1                                                          |                                                         1.8.1                                                          |                                                         1.9.1                                                          |                                                                    1.10.1                                                                     |
+| :---------------------: | :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: |
+| ubuntu20/python3.9/pip  |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |            [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)             |
+| ubuntu20/python3.8/pip  |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |            [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)             |
+| ubuntu18/python3.7/pip  | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) | [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions) |            [![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)             |
+| debian9/python3.7/conda |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        | [![debian9](https://github.com/espnet/espnet/workflows/debian9/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adebian9) |
+| centos7/python3.7/conda |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        | [![centos7](https://github.com/espnet/espnet/workflows/centos7/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Acentos7) |
+|      doc/python3.8      |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |                                                                                                                        |       [![doc](https://github.com/espnet/espnet/workflows/doc/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adoc)       |
 
 [![PyPI version](https://badge.fury.io/py/espnet.svg)](https://badge.fury.io/py/espnet)
 [![Python Versions](https://img.shields.io/pypi/pyversions/espnet.svg)](https://pypi.org/project/espnet/)
@@ -26,56 +27,97 @@
 | [**Notebook**](https://github.com/espnet/notebook)
 | [**Tutorial (2019)**](https://github.com/espnet/interspeech2019-tutorial)
 
-ESPnet is an end-to-end speech processing toolkit, mainly focuses on end-to-end speech recognition and end-to-end text-to-speech.
-ESPnet uses [chainer](https://chainer.org/) and [pytorch](http://pytorch.org/) as a main deep learning engine,
-and also follows [Kaldi](http://kaldi-asr.org/) style data processing, feature extraction/format, and recipes to provide a complete setup for speech recognition and other speech processing experiments.
-
+ESPnet is an end-to-end speech processing toolkit covering end-to-end speech recognition, text-to-speech, speech translation, speech enhancement, speaker diarization, spoken language understanding, and so on.
+ESPnet uses [pytorch](http://pytorch.org/) as a deep learning engine and also follows [Kaldi](http://kaldi-asr.org/) style data processing, feature extraction/format, and recipes to provide a complete setup for various speech processing experiments.
 ## Key Features
 
 ### Kaldi style complete recipe
 - Support numbers of `ASR` recipes (WSJ, Switchboard, CHiME-4/5, Librispeech, TED, CSJ, AMI, HKUST, Voxforge, REVERB, etc.)
 - Support numbers of `TTS` recipes with a similar manner to the ASR recipe (LJSpeech, LibriTTS, M-AILABS, etc.)
 - Support numbers of `ST` recipes (Fisher-CallHome Spanish, Libri-trans, IWSLT'18, How2, Must-C, Mboshi-French, etc.)
-- Support numbers of `MT` recipes (IWSLT'16, the above ST recipes etc.)
-- Support speech separation and recognition recipe (WSJ-2mix)
-- Support voice conversion recipe (VCC2020 baseline) (new!)
-
+- Support numbers of `MT` recipes (IWSLT'14, IWSLT'16, the above ST recipes etc.)
+- Support numbers of `SLU` recipes (CATSLU-MAPS, FSC, Grabo, IEMOCAP, JDCINAL, SNIPS, SLURP, SWBD-DA, etc.)
+- Support numbers of `SE/SS` recipes (DNS-IS2020, LibriMix, SMS-WSJ, VCTK-noisyreverb, WHAM!, WHAMR!, WSJ-2mix, etc.)
+- Support voice conversion recipe (VCC2020 baseline)
+- Support speaker diarization recipe (mini_librispeech)
 
 ### ASR: Automatic Speech Recognition
 - **State-of-the-art performance** in several ASR benchmarks (comparable/superior to hybrid DNN/HMM and CTC)
 - **Hybrid CTC/attention** based end-to-end ASR
   - Fast/accurate training with CTC/attention multitask training
   - CTC/attention joint decoding to boost monotonic alignment decoding
-  - Encoder: VGG-like CNN + BiRNN (LSTM/GRU), sub-sampling BiRNN (LSTM/GRU) or Transformer
+  - Encoder: VGG-like CNN + BiRNN (LSTM/GRU), sub-sampling BiRNN (LSTM/GRU), Transformer, or conformer
 - Attention: Dot product, location-aware attention, variants of multihead
 - Incorporate RNNLM/LSTMLM/TransformerLM/N-gram trained only with text data
 - Batch GPU decoding
+- Data augmentation
 - **Transducer** based end-to-end ASR
-  - Available: RNN-based encoder/decoder or custom encoder/decoder w/ supports for Transformer, Conformer, TDNN (encoder) and causal conv1d (decoder) blocks.
-  - Also support: mixed RNN/Custom encoder-decoder, VGG2L (RNN/Cutom encoder) and various decoding algorithms.
+  - Architecture:
+    - RNN-based encoder and decoder.
+    - Custom encoder and decoder supporting Transformer, Conformer (encoder), 1D Conv / TDNN (encoder) and causal 1D Conv (decoder) blocks.
+    - VGG2L (RNN/custom encoder) and Conv2D (custom encoder) bottlenecks.
+  - Search algorithms:
+    - Greedy search constrained to one emission by timestep.
+    - Default beam search algorithm [[Graves, 2012]](https://arxiv.org/abs/1211.3711) without prefix search.
+    - Alignment-Length Synchronous decoding [[Saon et al., 2020]](https://ieeexplore.ieee.org/abstract/document/9053040).
+    - Time Synchronous Decoding [[Saon et al., 2020]](https://ieeexplore.ieee.org/abstract/document/9053040).
+    - N-step Constrained beam search modified from [[Kim et al., 2020]](https://arxiv.org/abs/2002.03577).
+    - modified Adaptive Expansion Search based on [[Kim et al., 2021]](https://ieeexplore.ieee.org/abstract/document/9250505) and NSC.
+  - Features:
+    - Multi-task learning with various auxiliary losses:
+      - Encoder: CTC, auxiliary Transducer and symmetric KL divergence.
+      - Decoder: cross-entropy w/ label smoothing.
+    - Transfer learning with acoustic model and/or language model.
+    - Training with FastEmit regularization method [[Yu et al., 2021]](https://arxiv.org/abs/2010.11148).
   > Please refer to the [tutorial page](https://espnet.github.io/espnet/tutorial.html#transducer) for complete documentation.
 - CTC segmentation
 - Non-autoregressive model based on Mask-CTC
 - ASR examples for supporting endangered language documentation (Please refer to egs/puebla_nahuatl and egs/yoloxochitl_mixtec for details)
 - Wav2Vec2.0 pretrained model as Encoder, imported from [FairSeq](https://github.com/pytorch/fairseq/tree/master/fairseq).
+- Self-supervised learning representations as features, using upstream models in [S3PRL](https://github.com/s3prl/s3prl) in frontend.
+  - Set `frontend` to be `s3prl`
+  - Select any upstream model by setting the `frontend_conf` to the corresponding name.
+- Streaming Transformer/Conformer ASR with blockwise synchronous beam search.
+- Restricted Self-Attention based on [Longformer](https://arxiv.org/abs/2004.05150) as an encoder for long sequences 
+
+### SUM: Speech Summarization
+- End to End Speech Summarization Recipe for Instructional Videos using Restricted Self-Attention [[Sharma et al., 2022]](https://arxiv.org/abs/2110.06263)
 
 Demonstration
 - Real-time ASR demo with ESPnet2  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/espnet/notebook/blob/master/espnet2_asr_realtime_demo.ipynb)
+- [Gradio](https://github.com/gradio-app/gradio) Web Demo on [Huggingface Spaces](https://huggingface.co/docs/hub/spaces). Check out the [Web Demo](https://huggingface.co/spaces/akhaliq/espnet2_asr)
+- Streaming Transformer ASR [Local Demo](https://github.com/espnet/notebook/blob/master/espnet2_streaming_asr_demo.ipynb) with ESPnet2.
 
 ### TTS: Text-to-speech
-- Tacotron2
-- Transformer-TTS
-- FastSpeech
-- FastSpeech2 (in ESPnet2)
-- Conformer-based FastSpeech & FastSpeech2 (in ESPnet2)
-- Multi-speaker model with pretrained speaker embedding
-- Multi-speaker model with GST (in ESPnet2)
-- Phoneme-based training (En, Jp, and Zn)
-- Integration with neural vocoders (WaveNet, ParallelWaveGAN, and MelGAN)
+- Architecture
+    - Tacotron2
+    - Transformer-TTS
+    - FastSpeech
+    - FastSpeech2
+    - Conformer FastSpeech & FastSpeech2
+    - VITS
+- Multi-speaker & multi-language extention
+    - Pretrined speaker embedding (e.g., X-vector)
+    - Speaker ID embedding
+    - Language ID embedding
+    - Global style token (GST) embedding
+    - Mix of the above embeddings
+- End-to-end training
+    - End-to-end text-to-wav model (e.g., VITS)
+    - Joint training of text2mel and vocoder
+- Various language support
+    - En / Jp / Zn / De / Ru / And more...
+- Integration with neural vocoders
+    - Parallel WaveGAN
+    - MelGAN
+    - Multi-band MelGAN
+    - HiFiGAN
+    - StyleMelGAN
+    - Mix of the above models
 
 Demonstration
 - Real-time TTS demo with ESPnet2  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/espnet/notebook/blob/master/espnet2_tts_realtime_demo.ipynb)
-- Real-time TTS demo with ESPnet1  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/espnet/notebook/blob/master/tts_realtime_demo.ipynb)
+- Integrated to [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). See demo: [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/akhaliq/ESPnet2-TTS)
 
 To train the neural vocoder, please check the following repositories:
 - [kan-bayashi/ParallelWaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)
@@ -89,9 +131,9 @@ To train the neural vocoder, please check the following repositories:
 
 - Single-speaker speech enhancement
 - Multi-speaker speech separation
-- Unified encoder-separator-decoder structure for time-domain and frequency-domian models
+- Unified encoder-separator-decoder structure for time-domain and frequency-domain models
   - Encoder/Decoder: STFT/iSTFT, Convolution/Transposed-Convolution
-  - Separators: BLSTM, Transformer, Conformer, DPRNN, Neural Beamformers, etc.
+  - Separators: BLSTM, Transformer, Conformer, DPRNN, [DCCRN](https://arxiv.org/abs/2008.00264), Neural Beamformers, etc.
 - Flexible ASR integration: working as an individual task or as the ASR frontend
 - Easy to import pretrained models from [Asteroid](https://github.com/asteroid-team/asteroid)
   - Both the pre-trained models from Asteroid and the specific configuration are supported.
@@ -109,6 +151,11 @@ Demonstration
 - Transformer and Tacotron2 based parallel VC using melspectrogram (new!)
 - End-to-end VC based on cascaded ASR+TTS (Baseline system for Voice Conversion Challenge 2020!)
 
+### SLU: Speech Language Understanding
+- Predicting intent by directly classifying it as one of intent or decoding by character
+- Transformer & RNN based encoder-decoder model
+- Establish SOTA results with spectral augmentation (Performs better than reported results of pretrained model on Fluent Speech Command Dataset)
+
 ### DNN Framework
 - Flexible network architecture thanks to chainer and pytorch
 - Flexible front-end processing thanks to [kaldiio](https://github.com/nttcslab-sp/kaldiio) and HDF5 support
@@ -117,13 +164,13 @@ Demonstration
 ### ESPnet2
 See [ESPnet2](https://espnet.github.io/espnet/espnet2_tutorial.html).
 
-- Indepedent from Kaldi/Chainer, unlike ESPnet1
+- Independent from Kaldi/Chainer, unlike ESPnet1
 - On the fly feature extraction and text processing when training
 - Supporting DistributedDataParallel and DaraParallel both
 - Supporting multiple nodes training and integrated with [Slurm](https://slurm.schedmd.com/) or MPI
 - Supporting Sharded Training provided by [fairscale](https://github.com/facebookresearch/fairscale)
 - A template recipe which can be applied for all corpora
-- Possible to train any size of corpus without cpu memory error
+- Possible to train any size of corpus without CPU memory error
 - [ESPnet Model Zoo](https://github.com/espnet/espnet_model_zoo)
 - Integrated with [wandb](https://espnet.github.io/espnet/espnet2_training_option.html#weights-biases-integration)
 
@@ -131,21 +178,23 @@ See [ESPnet2](https://espnet.github.io/espnet/espnet2_tutorial.html).
 - If you intend to do full experiments including DNN training, then see [Installation](https://espnet.github.io/espnet/installation.html).
 - If you just need the Python module only:
     ```sh
+    # We recommend you installing pytorch before installing espnet following https://pytorch.org/get-started/locally/
     pip install espnet
     # To install latest
     # pip install git+https://github.com/espnet/espnet
+    # To install additional packages
+    # pip install "espnet[all]"
     ```
 
-    You need to install some packages.
+    If you'll use ESPnet1, please install chainer and cupy.
 
     ```sh
-    pip install torch
-    pip install chainer==6.0.0 cupy==6.0.0    # [Option] If you'll use ESPnet1
-    pip install torchaudio                    # [Option] If you'll use enhancement task
-    pip install torch_optimizer               # [Option] If you'll use additional optimizers in ESPnet2
+    pip install chainer==6.0.0 cupy==6.0.0    # [Option]
     ```
 
-    There are some required packages depending on each task other than above. If you meet ImportError, please intall them at that time.
+    You might need to install some packages depending on each task. We prepared various installation scripts at [tools/installers](tools/installers).
+
+- (ESPnet2) Once installed, run `wandb login` and set `--use_wandb true` to enable tracking runs using W&B.
 
 ## Usage
 See [Usage](https://espnet.github.io/espnet/tutorial.html).
@@ -155,7 +204,7 @@ See [Usage](https://espnet.github.io/espnet/tutorial.html).
 go to [docker/](docker/) and follow [instructions](https://espnet.github.io/espnet/docker.html).
 
 ## Contribution
-Thank you for taking times for ESPnet! Any contributions to ESPNet are welcome and feel free to ask any questions or requests to [issues](https://github.com/espnet/espnet/issues).
+Thank you for taking times for ESPnet! Any contributions to ESPnet are welcome and feel free to ask any questions or requests to [issues](https://github.com/espnet/espnet/issues).
 If it's the first contribution to ESPnet for you,  please follow the [contribution guide](CONTRIBUTING.md).
 
 ## Results and demo
@@ -169,22 +218,22 @@ You can find useful tutorials and demos in [Interspeech 2019 Tutorial](https://g
 
 We list the character error rate (CER) and word error rate (WER) of major ASR tasks.
 
-| Task                   | CER (%) | WER (%) | Pretrained model|
-| -----------            | :----:  | :----:  | :----:                                                                                                                                                                |
-| Aishell dev/test            | 4.6/5.1    | N/A     | [link](https://github.com/espnet/espnet/blob/master/egs/aishell/asr1/RESULTS.md#conformer-kernel-size--15--specaugment--lm-weight--00-result) |
-| **ESPnet2** Aishell dev/test            | 4.4/4.7    | N/A     | [link](https://github.com/espnet/espnet/tree/master/egs2/aishell/asr1#conformer--specaug--speed-perturbation-featsraw-n_fft512-hop_length128) |
-| Common Voice dev/test       | 1.7/1.8     | 2.2/2.3     | [link](https://github.com/espnet/espnet/blob/master/egs/commonvoice/asr1/RESULTS.md#first-results-default-pytorch-transformer-setting-with-bpe-100-epochs-single-gpu) |
-| CSJ eval1/eval2/eval3              | 5.7/3.8/4.2     | N/A     | [link](https://github.com/espnet/espnet/blob/master/egs/csj/asr1/RESULTS.md#pytorch-backend-transformer-without-any-hyperparameter-tuning)                            |
-| **ESPnet2** CSJ eval1/eval2/eval3              | 4.5/3.3/3.6     | N/A     | [link](https://github.com/espnet/espnet/tree/master/egs2/csj/asr1#initial-conformer-results)                            |
-| HKUST dev              | 23.5    | N/A     | [link](https://github.com/espnet/espnet/blob/master/egs/hkust/asr1/RESULTS.md#transformer-only-20-epochs)                                                             |
-|  **ESPnet2** HKUST dev              | 21.2    | N/A     | [link](https://github.com/espnet/espnet/tree/master/egs2/hkust/asr1#transformer-asr--transformer-lm)                                                             |
-| Librispeech dev_clean/dev_other/test_clean/test_other  | N/A     | 1.9/4.9/2.1/4.9     | [link](https://github.com/espnet/espnet/blob/master/egs/librispeech/asr1/RESULTS.md#pytorch-large-conformer-with-specaug--speed-perturbation-8-gpus--transformer-lm-4-gpus)             |
-| **ESPnet2** Librispeech dev_clean/dev_other/test_clean/test_other  | 0.7/2.2/0.7/2.1    | 1.9/4.6/2.1/4.7     | [link](https://github.com/espnet/espnet/tree/master/egs2/librispeech/asr1#with-transformer-lm)             |
-| Switchboard (eval2000) callhm/swbd           | N/A     | 14.0/6.8     | [link](https://github.com/espnet/espnet/blob/master/egs/swbd/asr1/RESULTS.md#conformer-with-bpe-2000-specaug-speed-perturbation-transformer-lm-decoding)   |
-| TEDLIUM2 dev/test           | N/A     | 8.6/7.2     | [link](https://github.com/espnet/espnet/blob/master/egs/tedlium2/asr1/RESULTS.md#conformer-large-model--specaug--speed-perturbation--rnnlm)   |
-| TEDLIUM3 dev/test           | N/A     | 9.6/7.6     | [link](https://github.com/espnet/espnet/blob/master/egs/tedlium3/asr1/RESULTS.md)                   |
-| WSJ dev93/eval92              | 3.2/2.1     | 7.0/4.7     | N/A |
-|  **ESPnet2** WSJ dev93/eval92              | 2.7/1.8     | 6.6/4.6     | [link](https://github.com/espnet/espnet/tree/master/egs2/wsj/asr1#using-transformer-lm-asr-model-is-same-as-the-above-lm_weight12-ctc_weight03-beam_size20) |
+| Task                                                              |     CER (%)     |     WER (%)     |                                                                              Pretrained model                                                                               |
+| ----------------------------------------------------------------- | :-------------: | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Aishell dev/test                                                  |     4.6/5.1     |       N/A       |                [link](https://github.com/espnet/espnet/blob/master/egs/aishell/asr1/RESULTS.md#conformer-kernel-size--15--specaugment--lm-weight--00-result)                |
+| **ESPnet2** Aishell dev/test                                      |     4.4/4.7     |       N/A       |                [link](https://github.com/espnet/espnet/tree/master/egs2/aishell/asr1#conformer--specaug--speed-perturbation-featsraw-n_fft512-hop_length128)                |
+| Common Voice dev/test                                             |     1.7/1.8     |     2.2/2.3     |    [link](https://github.com/espnet/espnet/blob/master/egs/commonvoice/asr1/RESULTS.md#first-results-default-pytorch-transformer-setting-with-bpe-100-epochs-single-gpu)    |
+| CSJ eval1/eval2/eval3                                             |   5.7/3.8/4.2   |       N/A       |                 [link](https://github.com/espnet/espnet/blob/master/egs/csj/asr1/RESULTS.md#pytorch-backend-transformer-without-any-hyperparameter-tuning)                  |
+| **ESPnet2** CSJ eval1/eval2/eval3                                 |   4.5/3.3/3.6   |       N/A       |                                        [link](https://github.com/espnet/espnet/tree/master/egs2/csj/asr1#initial-conformer-results)                                         |
+| HKUST dev                                                         |      23.5       |       N/A       |                                  [link](https://github.com/espnet/espnet/blob/master/egs/hkust/asr1/RESULTS.md#transformer-only-20-epochs)                                  |
+| **ESPnet2** HKUST dev                                             |      21.2       |       N/A       |                                    [link](https://github.com/espnet/espnet/tree/master/egs2/hkust/asr1#transformer-asr--transformer-lm)                                     |
+| Librispeech dev_clean/dev_other/test_clean/test_other             |       N/A       | 1.9/4.9/2.1/4.9 | [link](https://github.com/espnet/espnet/blob/master/egs/librispeech/asr1/RESULTS.md#pytorch-large-conformer-with-specaug--speed-perturbation-8-gpus--transformer-lm-4-gpus) |
+| **ESPnet2** Librispeech dev_clean/dev_other/test_clean/test_other | 0.6/1.5/0.6/1.4 | 1.7/3.4/1.8/3.6 |    [link](https://github.com/espnet/espnet/tree/master/egs2/librispeech/asr1#self-supervised-learning-features-hubert_large_ll60k-conformer-utt_mvn-with-transformer-lm)    |
+| Switchboard (eval2000) callhm/swbd                                |       N/A       |    14.0/6.8     |          [link](https://github.com/espnet/espnet/blob/master/egs/swbd/asr1/RESULTS.md#conformer-with-bpe-2000-specaug-speed-perturbation-transformer-lm-decoding)           |
+| TEDLIUM2 dev/test                                                 |       N/A       |     8.6/7.2     |                 [link](https://github.com/espnet/espnet/blob/master/egs/tedlium2/asr1/RESULTS.md#conformer-large-model--specaug--speed-perturbation--rnnlm)                 |
+| TEDLIUM3 dev/test                                                 |       N/A       |     9.6/7.6     |                                              [link](https://github.com/espnet/espnet/blob/master/egs/tedlium3/asr1/RESULTS.md)                                              |
+| WSJ dev93/eval92                                                  |     3.2/2.1     |     7.0/4.7     |                                                                                     N/A                                                                                     |
+| **ESPnet2** WSJ dev93/eval92                                      |     1.1/0.8     |     2.8/1.8     |       [link](https://github.com/espnet/espnet/tree/master/egs2/wsj/asr1#self-supervised-learning-features-wav2vec2_large_ll60k-conformer-utt_mvn-with-transformer-lm)       |
 
 Note that the performance of the CSJ, HKUST, and Librispeech tasks was significantly improved by using the wide network (#units = 1024) and large subword units if necessary reported by [RWTH](https://arxiv.org/pdf/1805.03294.pdf).
 
@@ -211,7 +260,7 @@ The sampling rate must be consistent with that of data used in training.
 Available pretrained models in the demo script are listed as below.
 
 | Model                                                                                            | Notes                                                      |
-| :------                                                                                          | :------                                                    |
+| :----------------------------------------------------------------------------------------------- | :--------------------------------------------------------- |
 | [tedlium2.rnn.v1](https://drive.google.com/open?id=1UqIY6WJMZ4sxNxSugUqp3mrGb3j6h7xe)            | Streaming decoding based on CTC-based VAD                  |
 | [tedlium2.rnn.v2](https://drive.google.com/open?id=1cac5Uc09lJrCYfWkLQsF8eapQcxZnYdf)            | Streaming decoding based on CTC-based VAD (batch decoding) |
 | [tedlium2.transformer.v1](https://drive.google.com/open?id=1cVeSOYY1twOfL9Gns7Z3ZDnkrJqNwPow)    | Joint-CTC attention Transformer trained on Tedlium 2       |
@@ -222,29 +271,29 @@ Available pretrained models in the demo script are listed as below.
 | [csj.rnn.v1](https://drive.google.com/open?id=1ALvD4nHan9VDJlYJwNurVr7H7OV0j2X9)                 | Joint-CTC attention VGGBLSTM trained on CSJ                |
 
 </div></details>
-  
+
 ### SE results
 <details><summary>expand</summary><div>
 
-We list results from three different models on WSJ0-2mix, which is one the most widely used benchmark dateset for speech separation.
-  
-|Model|STOI|SAR|SDR|SIR| 
-|---|---|---|---|---|
-|[TF Masking](https://zenodo.org/record/4498554)|0.89|11.40|10.24|18.04|
-|[Conv-Tasnet](https://zenodo.org/record/4498562)|0.95|16.62|15.94|25.90|
-|[DPRNN-Tasnet](https://zenodo.org/record/4688000)|0.96|18.82|18.29|28.92|
-  
+We list results from three different models on WSJ0-2mix, which is one the most widely used benchmark dataset for speech separation.
+
+| Model                                             | STOI | SAR   | SDR   | SIR   |
+| ------------------------------------------------- | ---- | ----- | ----- | ----- |
+| [TF Masking](https://zenodo.org/record/4498554)   | 0.89 | 11.40 | 10.24 | 18.04 |
+| [Conv-Tasnet](https://zenodo.org/record/4498562)  | 0.95 | 16.62 | 15.94 | 25.90 |
+| [DPRNN-Tasnet](https://zenodo.org/record/4688000) | 0.96 | 18.82 | 18.29 | 28.92 |
+
 </div></details>
-  
+
 ### SE demos
 <details><summary>expand</summary><div>
 You can try the interactive demo with Google Colab. Please click the following button to get access to the demos.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1fjRJCh96SoYLZPRxsjF9VDv4Q2VoIckI?usp=sharing)
-  
- 
+
+
 It is based on ESPnet2. Pretrained models are available for both speech enhancement and speech separation tasks.
-  
+
 </div></details>
 
 ### ST results
@@ -254,23 +303,23 @@ It is based on ESPnet2. Pretrained models are available for both speech enhancem
 We list 4-gram BLEU of major ST tasks.
 
 #### end-to-end system
-| Task | BLEU | Pretrained model |
-| ---- | :----: | :----: |
+| Task                                              | BLEU  |                                                                                         Pretrained model                                                                                          |
+| ------------------------------------------------- | :---: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Fisher-CallHome Spanish fisher_test (Es->En)      | 51.03 | [link](https://github.com/espnet/espnet/blob/master/egs/fisher_callhome_spanish/st1/RESULTS.md#train_spen_lcrm_pytorch_train_pytorch_transformer_bpe_short_long_bpe1000_specaug_asrtrans_mttrans) |
 | Fisher-CallHome Spanish callhome_evltest (Es->En) | 20.44 | [link](https://github.com/espnet/espnet/blob/master/egs/fisher_callhome_spanish/st1/RESULTS.md#train_spen_lcrm_pytorch_train_pytorch_transformer_bpe_short_long_bpe1000_specaug_asrtrans_mttrans) |
-| Libri-trans test (En->Fr)                         | 16.70 | [link](https://github.com/espnet/espnet/blob/master/egs/libri_trans/st1/RESULTS.md#train_spfr_lc_pytorch_train_pytorch_transformer_bpe_short_long_bpe1000_specaug_asrtrans_mttrans-1) |
-| How2 dev5 (En->Pt)                                | 45.68 | [link](https://github.com/espnet/espnet/blob/master/egs/how2/st1/RESULTS.md#trainpt_tc_pytorch_train_pytorch_transformer_short_long_bpe8000_specaug_asrtrans_mttrans-1) |
-| Must-C tst-COMMON (En->De)                        | 22.91 | [link](https://github.com/espnet/espnet/blob/master/egs/must_c/st1/RESULTS.md#train_spen-dede_tc_pytorch_train_pytorch_transformer_short_long_bpe8000_specaug_asrtrans_mttrans) |
-| Mboshi-French dev (Fr->Mboshi)                    | 6.18  | N/A  |
+| Libri-trans test (En->Fr)                         | 16.70 |       [link](https://github.com/espnet/espnet/blob/master/egs/libri_trans/st1/RESULTS.md#train_spfr_lc_pytorch_train_pytorch_transformer_bpe_short_long_bpe1000_specaug_asrtrans_mttrans-1)       |
+| How2 dev5 (En->Pt)                                | 45.68 |              [link](https://github.com/espnet/espnet/blob/master/egs/how2/st1/RESULTS.md#trainpt_tc_pytorch_train_pytorch_transformer_short_long_bpe8000_specaug_asrtrans_mttrans-1)              |
+| Must-C tst-COMMON (En->De)                        | 22.91 |          [link](https://github.com/espnet/espnet/blob/master/egs/must_c/st1/RESULTS.md#train_spen-dede_tc_pytorch_train_pytorch_transformer_short_long_bpe8000_specaug_asrtrans_mttrans)          |
+| Mboshi-French dev (Fr->Mboshi)                    | 6.18  |                                                                                                N/A                                                                                                |
 
 #### cascaded system
-| Task | BLEU | Pretrained model |
-| ---- | :----: | :----: |
-| Fisher-CallHome Spanish fisher_test (Es->En)      | 42.16 | N/A  |
-| Fisher-CallHome Spanish callhome_evltest (Es->En) | 19.82 | N/A  |
-| Libri-trans test (En->Fr)                         | 16.96 | N/A  |
-| How2 dev5 (En->Pt)                                | 44.90 | N/A  |
-| Must-C tst-COMMON (En->De)                        | 23.65 | N/A  |
+| Task                                              | BLEU  | Pretrained model |
+| ------------------------------------------------- | :---: | :--------------: |
+| Fisher-CallHome Spanish fisher_test (Es->En)      | 42.16 |       N/A        |
+| Fisher-CallHome Spanish callhome_evltest (Es->En) | 19.82 |       N/A        |
+| Libri-trans test (En->Fr)                         | 16.96 |       N/A        |
+| How2 dev5 (En->Pt)                                | 44.90 |       N/A        |
+| Must-C tst-COMMON (En->De)                        | 23.65 |       N/A        |
 
 If you want to check the results of the other recipes, please check `egs/<name_of_recipe>/st1/RESULTS.md`.
 
@@ -303,9 +352,9 @@ The sampling rate must be consistent with that of data used in training.
 
 Available pretrained models in the demo script are listed as below.
 
-| Model                                                                                            | Notes                                                      |
-| :------                                                                                          | :------                                                    |
-| [fisher_callhome_spanish.transformer.v1](https://drive.google.com/open?id=1hawp5ZLw4_SIHIT3edglxbKIIkPVe8n3)            | Transformer-ST trained on Fisher-CallHome Spanish Es->En                  |
+| Model                                                                                                        | Notes                                                    |
+| :----------------------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
+| [fisher_callhome_spanish.transformer.v1](https://drive.google.com/open?id=1hawp5ZLw4_SIHIT3edglxbKIIkPVe8n3) | Transformer-ST trained on Fisher-CallHome Spanish Es->En |
 
 </div></details>
 
@@ -314,17 +363,18 @@ Available pretrained models in the demo script are listed as below.
 
 <details><summary>expand</summary><div>
 
-| Task | BLEU | Pretrained model |
-| ---- | :----: | :----: |
+| Task                                              | BLEU  |                                                                        Pretrained model                                                                         |
+| ------------------------------------------------- | :---: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Fisher-CallHome Spanish fisher_test (Es->En)      | 61.45 | [link](https://github.com/espnet/espnet/blob/master/egs/fisher_callhome_spanish/mt1/RESULTS.md#trainen_lcrm_lcrm_pytorch_train_pytorch_transformer_bpe_bpe1000) |
 | Fisher-CallHome Spanish callhome_evltest (Es->En) | 29.86 | [link](https://github.com/espnet/espnet/blob/master/egs/fisher_callhome_spanish/mt1/RESULTS.md#trainen_lcrm_lcrm_pytorch_train_pytorch_transformer_bpe_bpe1000) |
-| Libri-trans test (En->Fr)                         | 18.09 | [link](https://github.com/espnet/espnet/blob/master/egs/libri_trans/mt1/RESULTS.md#trainfr_lcrm_tc_pytorch_train_pytorch_transformer_bpe1000) |
-| How2 dev5 (En->Pt)                                | 58.61 | [link](https://github.com/espnet/espnet/blob/master/egs/how2/mt1/RESULTS.md#trainpt_tc_tc_pytorch_train_pytorch_transformer_bpe8000) |
-| Must-C tst-COMMON (En->De)                        | 27.63 | [link](https://github.com/espnet/espnet/blob/master/egs/must_c/mt1/RESULTS.md#summary-4-gram-bleu) |
-| IWSLT'14 test2014 (En->De)                        | 24.70 | [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result) |
-| IWSLT'14 test2014 (De->En)                        | 29.22 | [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result) |
-| IWSLT'16 test2014 (En->De)                        | 24.05 | [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result) |
-| IWSLT'16 test2014 (De->En)                        | 29.13 | [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result) |
+| Libri-trans test (En->Fr)                         | 18.09 |          [link](https://github.com/espnet/espnet/blob/master/egs/libri_trans/mt1/RESULTS.md#trainfr_lcrm_tc_pytorch_train_pytorch_transformer_bpe1000)          |
+| How2 dev5 (En->Pt)                                | 58.61 |              [link](https://github.com/espnet/espnet/blob/master/egs/how2/mt1/RESULTS.md#trainpt_tc_tc_pytorch_train_pytorch_transformer_bpe8000)               |
+| Must-C tst-COMMON (En->De)                        | 27.63 |                               [link](https://github.com/espnet/espnet/blob/master/egs/must_c/mt1/RESULTS.md#summary-4-gram-bleu)                                |
+| IWSLT'14 test2014 (En->De)                        | 24.70 |                                     [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result)                                      |
+| IWSLT'14 test2014 (De->En)                        | 29.22 |                                     [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result)                                      |
+| IWSLT'14 test2014 (De->En)                        | 32.2  | [link](https://github.com/espnet/espnet/blob/master/egs2/iwslt14/mt1/README.md)  |
+| IWSLT'16 test2014 (En->De)                        | 24.05 |                                     [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result)                                      |
+| IWSLT'16 test2014 (De->En)                        | 29.13 |                                     [link](https://github.com/espnet/espnet/blob/master/egs/iwslt16/mt1/RESULTS.md#result)                                      |
 
 </div></details>
 
@@ -332,7 +382,7 @@ Available pretrained models in the demo script are listed as below.
 
 <details><summary>ESPnet2</summary><div>
 
-You can listen to the generated samples in the following url.
+You can listen to the generated samples in the following URL.
 - [ESPnet2 TTS generated samples](https://drive.google.com/drive/folders/1H3fnlBbWMEkQUfrHqosKN_ZX_WjO29ma?usp=sharing)
 
 > Note that in the generation we use Griffin-Lim (`wav/`) and [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN) (`wav_pwg/`).
@@ -384,19 +434,19 @@ If you want to build your own neural vocoder, please check the above repositorie
 Here we list all of the pretrained neural vocoders. Please download and enjoy the generation of high quality speech!
 
 | Model link                                                                                           | Lang  | Fs [Hz] | Mel range [Hz] | FFT / Shift / Win [pt] | Model type                                                              |
-| :------                                                                                              | :---: | :----:  | :--------:     | :---------------:      | :------                                                                 |
-| [ljspeech.wavenet.softmax.ns.v1](https://drive.google.com/open?id=1eA1VcRS9jzFa-DovyTgJLQ_jmwOLIi8L) | EN    | 22.05k  | None           | 1024 / 256 / None      | [Softmax WaveNet](https://github.com/kan-bayashi/PytorchWaveNetVocoder) |
-| [ljspeech.wavenet.mol.v1](https://drive.google.com/open?id=1sY7gEUg39QaO1szuN62-Llst9TrFno2t)        | EN    | 22.05k  | None           | 1024 / 256 / None      | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
-| [ljspeech.parallel_wavegan.v1](https://drive.google.com/open?id=1tv9GKyRT4CDsvUWKwH3s_OfXkiTi0gw7)   | EN    | 22.05k  | None           | 1024 / 256 / None      | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
-| [ljspeech.wavenet.mol.v2](https://drive.google.com/open?id=1es2HuKUeKVtEdq6YDtAsLNpqCy4fhIXr)        | EN    | 22.05k  | 80-7600        | 1024 / 256 / None      | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
-| [ljspeech.parallel_wavegan.v2](https://drive.google.com/open?id=1Grn7X9wD35UcDJ5F7chwdTqTa4U7DeVB)   | EN    | 22.05k  | 80-7600        | 1024 / 256 / None      | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
-| [ljspeech.melgan.v1](https://drive.google.com/open?id=1ipPWYl8FBNRlBFaKj1-i23eQpW_W_YcR)             | EN    | 22.05k  | 80-7600        | 1024 / 256 / None      | [MelGAN](https://github.com/kan-bayashi/ParallelWaveGAN)                |
-| [ljspeech.melgan.v3](https://drive.google.com/open?id=1_a8faVA5OGCzIcJNw4blQYjfG4oA9VEt)             | EN    | 22.05k  | 80-7600        | 1024 / 256 / None      | [MelGAN](https://github.com/kan-bayashi/ParallelWaveGAN)                |
-| [libritts.wavenet.mol.v1](https://drive.google.com/open?id=1jHUUmQFjWiQGyDd7ZeiCThSjjpbF_B4h)        | EN    | 24k     | None           | 1024 / 256 / None      | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
-| [jsut.wavenet.mol.v1](https://drive.google.com/open?id=187xvyNbmJVZ0EZ1XHCdyjZHTXK9EcfkK)            | JP    | 24k     | 80-7600        | 2048 / 300 / 1200      | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
-| [jsut.parallel_wavegan.v1](https://drive.google.com/open?id=1OwrUQzAmvjj1x9cDhnZPp6dqtsEqGEJM)       | JP    | 24k     | 80-7600        | 2048 / 300 / 1200      | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
-| [csmsc.wavenet.mol.v1](https://drive.google.com/open?id=1PsjFRV5eUP0HHwBaRYya9smKy5ghXKzj)           | ZH    | 24k     | 80-7600        | 2048 / 300 / 1200      | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
-| [csmsc.parallel_wavegan.v1](https://drive.google.com/open?id=10M6H88jEUGbRWBmU1Ff2VaTmOAeL8CEy)      | ZH    | 24k     | 80-7600        | 2048 / 300 / 1200      | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
+| :--------------------------------------------------------------------------------------------------- | :---: | :-----: | :------------: | :--------------------: | :---------------------------------------------------------------------- |
+| [ljspeech.wavenet.softmax.ns.v1](https://drive.google.com/open?id=1eA1VcRS9jzFa-DovyTgJLQ_jmwOLIi8L) |  EN   | 22.05k  |      None      |   1024 / 256 / None    | [Softmax WaveNet](https://github.com/kan-bayashi/PytorchWaveNetVocoder) |
+| [ljspeech.wavenet.mol.v1](https://drive.google.com/open?id=1sY7gEUg39QaO1szuN62-Llst9TrFno2t)        |  EN   | 22.05k  |      None      |   1024 / 256 / None    | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
+| [ljspeech.parallel_wavegan.v1](https://drive.google.com/open?id=1tv9GKyRT4CDsvUWKwH3s_OfXkiTi0gw7)   |  EN   | 22.05k  |      None      |   1024 / 256 / None    | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
+| [ljspeech.wavenet.mol.v2](https://drive.google.com/open?id=1es2HuKUeKVtEdq6YDtAsLNpqCy4fhIXr)        |  EN   | 22.05k  |    80-7600     |   1024 / 256 / None    | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
+| [ljspeech.parallel_wavegan.v2](https://drive.google.com/open?id=1Grn7X9wD35UcDJ5F7chwdTqTa4U7DeVB)   |  EN   | 22.05k  |    80-7600     |   1024 / 256 / None    | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
+| [ljspeech.melgan.v1](https://drive.google.com/open?id=1ipPWYl8FBNRlBFaKj1-i23eQpW_W_YcR)             |  EN   | 22.05k  |    80-7600     |   1024 / 256 / None    | [MelGAN](https://github.com/kan-bayashi/ParallelWaveGAN)                |
+| [ljspeech.melgan.v3](https://drive.google.com/open?id=1_a8faVA5OGCzIcJNw4blQYjfG4oA9VEt)             |  EN   | 22.05k  |    80-7600     |   1024 / 256 / None    | [MelGAN](https://github.com/kan-bayashi/ParallelWaveGAN)                |
+| [libritts.wavenet.mol.v1](https://drive.google.com/open?id=1jHUUmQFjWiQGyDd7ZeiCThSjjpbF_B4h)        |  EN   |   24k   |      None      |   1024 / 256 / None    | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
+| [jsut.wavenet.mol.v1](https://drive.google.com/open?id=187xvyNbmJVZ0EZ1XHCdyjZHTXK9EcfkK)            |  JP   |   24k   |    80-7600     |   2048 / 300 / 1200    | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
+| [jsut.parallel_wavegan.v1](https://drive.google.com/open?id=1OwrUQzAmvjj1x9cDhnZPp6dqtsEqGEJM)       |  JP   |   24k   |    80-7600     |   2048 / 300 / 1200    | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
+| [csmsc.wavenet.mol.v1](https://drive.google.com/open?id=1PsjFRV5eUP0HHwBaRYya9smKy5ghXKzj)           |  ZH   |   24k   |    80-7600     |   2048 / 300 / 1200    | [MoL WaveNet](https://github.com/r9y9/wavenet_vocoder)                  |
+| [csmsc.parallel_wavegan.v1](https://drive.google.com/open?id=10M6H88jEUGbRWBmU1Ff2VaTmOAeL8CEy)      |  ZH   |   24k   |    80-7600     |   2048 / 300 / 1200    | [Parallel WaveGAN](https://github.com/kan-bayashi/ParallelWaveGAN)      |
 
 If you want to use the above pretrained vocoders, please exactly match the feature setting with them.
 
@@ -437,7 +487,7 @@ synth_wav.sh example.txt
 
 # also you can use multiple sentences
 echo "THIS IS A DEMONSTRATION OF TEXT TO SPEECH." > example_multi.txt
-echo "TEXT TO SPEECH IS A TECHQNIQUE TO CONVERT TEXT INTO SPEECH." >> example_multi.txt
+echo "TEXT TO SPEECH IS A TECHNIQUE TO CONVERT TEXT INTO SPEECH." >> example_multi.txt
 synth_wav.sh example_multi.txt
 ```
 
@@ -480,6 +530,17 @@ You can download converted samples of the cascade ASR+TTS baseline system [here]
 
 </div></details>
 
+### SLU results
+
+<details><summary>ESPnet2</summary><div>
+
+- Transformer based SLU for Fluent Speech Command Dataset
+
+In SLU, The objective is to infer the meaning or intent of spoken utterance. The [Fluent Speech Command Dataset](https://fluent.ai/fluent-speech-commands-a-dataset-for-spoken-language-understanding-research/) describes an intent as combination of 3 slot values: action, object and location. You can see baseline results on this dataset [here](https://github.com/espnet/espnet/blob/master/egs2/fsc/asr1/RESULTS.md)
+
+
+</div></details>
+
 ### CTC Segmentation demo
 
 <details><summary>ESPnet1</summary><div>
@@ -487,7 +548,7 @@ You can download converted samples of the cascade ASR+TTS baseline system [here]
 [CTC segmentation](https://arxiv.org/abs/2007.09127) determines utterance segments within audio files.
 Aligned utterance segments constitute the labels of speech datasets.
 
-As demo, we align start and end of utterances within the audio file `ctc_align_test.wav`, using the example script `utils/ctc_align_wav.sh`.
+As demo, we align start and end of utterances within the audio file `ctc_align_test.wav`, using the example script `utils/asr_align_wav.sh`.
 For preparation, set up a data directory:
 
 ```sh
@@ -631,14 +692,6 @@ The sample rate of the audio must be consistent with that of the data used in tr
 
 </div></details>
 
-## References
-
-[1] Shinji Watanabe, Takaaki Hori, Shigeki Karita, Tomoki Hayashi, Jiro Nishitoba, Yuya Unno, Nelson Enrique Yalta Soplin, Jahn Heymann, Matthew Wiesner, Nanxin Chen, Adithya Renduchintala, and Tsubasa Ochiai, "ESPnet: End-to-End Speech Processing Toolkit," *Proc. Interspeech'18*, pp. 2207-2211 (2018)
-
-[2] Suyoun Kim, Takaaki Hori, and Shinji Watanabe, "Joint CTC-attention based end-to-end speech recognition using multi-task learning," *Proc. ICASSP'17*, pp. 4835--4839 (2017)
-
-[3] Shinji Watanabe, Takaaki Hori, Suyoun Kim, John R. Hershey and Tomoki Hayashi, "Hybrid CTC/Attention Architecture for End-to-End Speech Recognition," *IEEE Journal of Selected Topics in Signal Processing*, vol. 11, no. 8, pp. 1240-1253, Dec. 2017
-
 ## Citations
 
 ```
@@ -683,5 +736,11 @@ The sample rate of the audio must be consistent with that of the data used in tr
   pages={785--792},
   year={2021},
   organization={IEEE},
+}
+@article{arora2021espnet,
+  title={ESPnet-SLU: Advancing Spoken Language Understanding through ESPnet},
+  author={Arora, Siddhant and Dalmia, Siddharth and Denisov, Pavel and Chang, Xuankai and Ueda, Yushi and Peng, Yifan and Zhang, Yuekai and Kumar, Sujay and Ganesan, Karthik and Yan, Brian and others},
+  journal={arXiv preprint arXiv:2111.14706},
+  year={2021}
 }
 ```
