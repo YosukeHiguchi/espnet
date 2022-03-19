@@ -56,6 +56,27 @@
 <li class="toctree-l1"><a class="reference internal" href="espnet2_task.html">Task class and data input system for training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_distributed.html">Distributed training</a></li>
 </ul>
+<p><span class="caption-text">Notebook:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebook/asr_cli.html">Speech Recognition (Recipe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/asr_library.html">Speech Recognition (Library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_asr_realtime_demo.html">ESPnet2-ASR realtime demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_streaming_asr_demo.html">ESPnet2 real streaming Transformer demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_tts_realtime_demo.html">ESPnet2-TTS realtime demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_tutorial_2021_CMU_11751_18781.html">CMU 11751/18781 2021: ESPnet Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_tutorial_2021_CMU_11751_18781.html#Run-an-inference-example">Run an inference example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_tutorial_2021_CMU_11751_18781.html#Full-installation">Full installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_tutorial_2021_CMU_11751_18781.html#Run-a-recipe-example">Run a recipe example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet_se_demonstration_for_waspaa_2021.html">ESPnet Speech Enhancement Demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet_se_demonstration_for_waspaa_2021.html#Contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet_se_demonstration_for_waspaa_2021.html#(1)-Tutorials-on-the-Basic-Usage">(1) Tutorials on the Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet_se_demonstration_for_waspaa_2021.html#(2)-Tutorials-on-Contributing-to-ESPNet-SE-Project">(2) Tutorials on Contributing to ESPNet-SE Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/pretrained.html">Pretrained Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/se_demo.html">ESPnet Speech Enhancement Demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/st_demo.html">ESPnet Speech Translation Demonstration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/tts_cli.html">Text-to-Speech (Recipe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/tts_realtime_demo.html">ESPnet real time E2E-TTS demonstration</a></li>
+</ul>
 <p><span class="caption-text">Package Reference:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet.nets.html">espnet.nets package</a></li>
@@ -719,6 +740,8 @@
       <li><a href="_gen/espnet2.asr.html#espnet2.asr.espnet_model.ESPnetASRModel.batchify_nll">batchify_nll() (espnet2.asr.espnet_model.ESPnetASRModel method)</a>
 
       <ul>
+        <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCModel.batchify_nll">(espnet2.asr.maskctc_model.MaskCTCModel method)</a>
+</li>
         <li><a href="_gen/espnet2.lm.html#espnet2.lm.espnet_model.ESPnetLanguageModel.batchify_nll">(espnet2.lm.espnet_model.ESPnetLanguageModel method)</a>
 </li>
       </ul></li>
@@ -2226,6 +2249,8 @@
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.decoder.abs_decoder">espnet2.asr.decoder.abs_decoder (module)</a>
 </li>
+      <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.decoder.mlm_decoder">espnet2.asr.decoder.mlm_decoder (module)</a>
+</li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.decoder.rnn_decoder">espnet2.asr.decoder.rnn_decoder (module)</a>
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.decoder.transformer_decoder">espnet2.asr.decoder.transformer_decoder (module)</a>
@@ -2242,10 +2267,10 @@
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.encoder.hubert_encoder">espnet2.asr.encoder.hubert_encoder (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.encoder.longformer_encoder">espnet2.asr.encoder.longformer_encoder (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.encoder.rnn_encoder">espnet2.asr.encoder.rnn_encoder (module)</a>
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.encoder.transformer_encoder">espnet2.asr.encoder.transformer_encoder (module)</a>
@@ -2267,6 +2292,8 @@
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.frontend.s3prl">espnet2.asr.frontend.s3prl (module)</a>
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.frontend.windowing">espnet2.asr.frontend.windowing (module)</a>
+</li>
+      <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.maskctc_model">espnet2.asr.maskctc_model (module)</a>
 </li>
       <li><a href="_gen/espnet2.asr.html#module-espnet2.asr.postencoder.__init__">espnet2.asr.postencoder.__init__ (module)</a>
 </li>
@@ -2307,6 +2334,8 @@
       <li><a href="_gen/espnet2.bin.html#module-espnet2.bin.asr_align">espnet2.bin.asr_align (module)</a>
 </li>
       <li><a href="_gen/espnet2.bin.html#module-espnet2.bin.asr_inference">espnet2.bin.asr_inference (module)</a>
+</li>
+      <li><a href="_gen/espnet2.bin.html#module-espnet2.bin.asr_inference_maskctc">espnet2.bin.asr_inference_maskctc (module)</a>
 </li>
       <li><a href="_gen/espnet2.bin.html#module-espnet2.bin.asr_inference_streaming">espnet2.bin.asr_inference_streaming (module)</a>
 </li>
@@ -3293,6 +3322,8 @@
 </li>
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.decoder.abs_decoder.AbsDecoder.forward">(espnet2.asr.decoder.abs_decoder.AbsDecoder method)</a>
 </li>
+        <li><a href="_gen/espnet2.asr.html#espnet2.asr.decoder.mlm_decoder.MLMDecoder.forward">(espnet2.asr.decoder.mlm_decoder.MLMDecoder method)</a>
+</li>
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.decoder.rnn_decoder.RNNDecoder.forward">(espnet2.asr.decoder.rnn_decoder.RNNDecoder method)</a>
 </li>
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.decoder.transformer_decoder.BaseTransformerDecoder.forward">(espnet2.asr.decoder.transformer_decoder.BaseTransformerDecoder method)</a>
@@ -3330,6 +3361,10 @@
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.frontend.s3prl.S3prlFrontend.forward">(espnet2.asr.frontend.s3prl.S3prlFrontend method)</a>
 </li>
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.frontend.windowing.SlidingWindow.forward">(espnet2.asr.frontend.windowing.SlidingWindow method)</a>
+</li>
+        <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCInference.forward">(espnet2.asr.maskctc_model.MaskCTCInference method)</a>
+</li>
+        <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCModel.forward">(espnet2.asr.maskctc_model.MaskCTCModel method)</a>
 </li>
         <li><a href="_gen/espnet2.asr.html#espnet2.asr.postencoder.abs_postencoder.AbsPostEncoder.forward">(espnet2.asr.postencoder.abs_postencoder.AbsPostEncoder method)</a>
 </li>
@@ -3729,6 +3764,8 @@
       <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference.Speech2Text.from_pretrained">from_pretrained() (espnet2.bin.asr_inference.Speech2Text static method)</a>
 
       <ul>
+        <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_maskctc.Speech2Text.from_pretrained">(espnet2.bin.asr_inference_maskctc.Speech2Text static method)</a>
+</li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.diar_inference.DiarizeSpeech.from_pretrained">(espnet2.bin.diar_inference.DiarizeSpeech static method)</a>
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.enh_inference.SeparateSpeech.from_pretrained">(espnet2.bin.enh_inference.SeparateSpeech static method)</a>
@@ -3932,6 +3969,8 @@
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_align.get_parser">(in module espnet2.bin.asr_align)</a>
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference.get_parser">(in module espnet2.bin.asr_inference)</a>
+</li>
+        <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_maskctc.get_parser">(in module espnet2.bin.asr_inference_maskctc)</a>
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_streaming.get_parser">(in module espnet2.bin.asr_inference_streaming)</a>
 </li>
@@ -4168,6 +4207,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_gen/espnet.transform.html#espnet.transform.transform_interface.Identity">Identity (class in espnet.transform.transform_interface)</a>
 </li>
+      <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCInference.ids2text">ids2text() (espnet2.asr.maskctc_model.MaskCTCInference method)</a>
+</li>
       <li><a href="_gen/espnet2.text.html#espnet2.text.token_id_converter.TokenIDConverter.ids2tokens">ids2tokens() (espnet2.text.token_id_converter.TokenIDConverter method)</a>
 </li>
       <li><a href="_gen/espnet2.utils.html#espnet2.utils.yaml_no_alias_safe_dump.NoAliasSafeDumper.ignore_aliases">ignore_aliases() (espnet2.utils.yaml_no_alias_safe_dump.NoAliasSafeDumper method)</a>
@@ -4225,6 +4266,8 @@
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference.inference">(in module espnet2.bin.asr_inference)</a>
 </li>
+        <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_maskctc.inference">(in module espnet2.bin.asr_inference_maskctc)</a>
+</li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_streaming.inference">(in module espnet2.bin.asr_inference_streaming)</a>
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.diar_inference.inference">(in module espnet2.bin.diar_inference)</a>
@@ -4256,10 +4299,10 @@
         <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.e2e_st.E2E.init_like_chainer">(espnet.nets.pytorch_backend.e2e_st.E2E method)</a>
 </li>
       </ul></li>
-      <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.e2e_mt.E2E.init_like_fairseq">init_like_fairseq() (espnet.nets.pytorch_backend.e2e_mt.E2E method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.e2e_mt.E2E.init_like_fairseq">init_like_fairseq() (espnet.nets.pytorch_backend.e2e_mt.E2E method)</a>
+</li>
       <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.transducer.utils.init_lm_state">init_lm_state() (in module espnet.nets.pytorch_backend.transducer.utils)</a>
 </li>
       <li><a href="_gen/espnet2.train.html#espnet2.train.distributed_utils.DistributedOption.init_options">init_options() (espnet2.train.distributed_utils.DistributedOption method)</a>
@@ -4651,6 +4694,8 @@
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference.main">(in module espnet2.bin.asr_inference)</a>
 </li>
+        <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_maskctc.main">(in module espnet2.bin.asr_inference_maskctc)</a>
+</li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_streaming.main">(in module espnet2.bin.asr_inference_streaming)</a>
 </li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_train.main">(in module espnet2.bin.asr_train)</a>
@@ -4706,10 +4751,10 @@
 </li>
       <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.nets_utils.make_non_pad_mask">make_non_pad_mask() (in module espnet.nets.pytorch_backend.nets_utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.nets_utils.make_pad_mask">make_pad_mask() (in module espnet.nets.pytorch_backend.nets_utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_gen/espnet.lm.html#espnet.lm.lm_utils.MakeSymlinkToBestModel">MakeSymlinkToBestModel (class in espnet.lm.lm_utils)</a>
 </li>
       <li><a href="_gen/espnet2.layers.html#espnet2.layers.mask_along_axis.mask_along_axis">mask_along_axis() (in module espnet2.layers.mask_along_axis)</a>
@@ -4729,6 +4774,10 @@
       <li><a href="_gen/espnet2.layers.html#espnet2.layers.mask_along_axis.MaskAlongAxis">MaskAlongAxis (class in espnet2.layers.mask_along_axis)</a>
 </li>
       <li><a href="_gen/espnet2.layers.html#espnet2.layers.mask_along_axis.MaskAlongAxisVariableMaxWidth">MaskAlongAxisVariableMaxWidth (class in espnet2.layers.mask_along_axis)</a>
+</li>
+      <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCInference">MaskCTCInference (class in espnet2.asr.maskctc_model)</a>
+</li>
+      <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCModel">MaskCTCModel (class in espnet2.asr.maskctc_model)</a>
 </li>
       <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.frontends.mask_estimator.MaskEstimator">MaskEstimator (class in espnet.nets.pytorch_backend.frontends.mask_estimator)</a>
 
@@ -4773,6 +4822,8 @@
 </li>
       </ul></li>
       <li><a href="_gen/espnet.nets.html#espnet.nets.pytorch_backend.e2e_asr_mix.PIT.min_pit_sample">min_pit_sample() (espnet.nets.pytorch_backend.e2e_asr_mix.PIT method)</a>
+</li>
+      <li><a href="_gen/espnet2.asr.html#espnet2.asr.decoder.mlm_decoder.MLMDecoder">MLMDecoder (class in espnet2.asr.decoder.mlm_decoder)</a>
 </li>
       <li><a href="_gen/espnet2.torch_utils.html#espnet2.torch_utils.model_summary.model_summary">model_summary() (in module espnet2.torch_utils.model_summary)</a>
 </li>
@@ -4865,6 +4916,8 @@
       <li><a href="_gen/espnet2.asr.html#espnet2.asr.espnet_model.ESPnetASRModel.nll">nll() (espnet2.asr.espnet_model.ESPnetASRModel method)</a>
 
       <ul>
+        <li><a href="_gen/espnet2.asr.html#espnet2.asr.maskctc_model.MaskCTCModel.nll">(espnet2.asr.maskctc_model.MaskCTCModel method)</a>
+</li>
         <li><a href="_gen/espnet2.lm.html#espnet2.lm.espnet_model.ESPnetLanguageModel.nll">(espnet2.lm.espnet_model.ESPnetLanguageModel method)</a>
 </li>
       </ul></li>
@@ -5899,6 +5952,8 @@
       <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference.Speech2Text">Speech2Text (class in espnet2.bin.asr_inference)</a>
 
       <ul>
+        <li><a href="_gen/espnet2.bin.html#espnet2.bin.asr_inference_maskctc.Speech2Text">(class in espnet2.bin.asr_inference_maskctc)</a>
+</li>
         <li><a href="_gen/espnet2.bin.html#espnet2.bin.st_inference.Speech2Text">(class in espnet2.bin.st_inference)</a>
 </li>
       </ul></li>
