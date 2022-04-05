@@ -100,3 +100,7 @@ def initialize(model: torch.nn.Module, init: str):
             model.postencoder, "reload_pretrained_parameters", None
         ):
             model.postencoder.reload_pretrained_parameters()
+
+        # TODO(xkc): bestrq
+        if hasattr(model, "espnet_initialization_fn"):
+            model.espnet_initialization_fn()
