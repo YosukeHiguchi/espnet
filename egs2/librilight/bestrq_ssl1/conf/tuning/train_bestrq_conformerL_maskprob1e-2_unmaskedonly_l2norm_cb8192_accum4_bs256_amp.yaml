@@ -1,0 +1,60 @@
+# Trained with
+use_amp: true
+batch_type: folded
+batch_size: 256
+accum_grad: 4
+max_epoch: 500
+patience: none
+init: xavier_uniform
+best_model_criterion:
+-   - valid
+    - acc
+    - max
+keep_nbest_models: 10
+
+# model related
+frontend_conf:
+    fs: 16000
+    n_fft: 512
+    win_length: 400
+    hop_length: 160
+    frontend_conf: null
+    apply_stft: True
+
+encoder: conformer
+encoder_conf:
+    output_size: 512
+    attention_heads: 8
+    linear_units: 2048
+    num_blocks: 17
+    dropout_rate: 0.1
+    positional_dropout_rate: 0.1
+    attention_dropout_rate: 0.1
+    input_layer: conv2d
+    normalize_before: true
+    macaron_style: true
+    rel_pos_type: "latest"
+    pos_enc_layer_type: "rel_pos"
+    selfattention_layer_type: "rel_selfattn"
+    activation_type: "swish"
+    use_cnn_module:  true
+    cnn_module_kernel: 31
+
+model_conf:
+    lsm_weight: 0.0
+    length_normalized_loss: false
+    vector_size: 16
+    codebook_size: 8192
+    temporal_reduction: 4
+    mask_prob: 0.01
+    mask_length: 40
+    unmasked_region_weight: 0
+    apply_l2_normalization: true
+    codebook_and_matrix_init_file: "data/local/codebook_and_matrix_seed100000.pth"
+
+optim: adam
+optim_conf:
+    lr: 0.001
+scheduler: warmuplr
+scheduler_conf:
+    warmup_steps: 40000

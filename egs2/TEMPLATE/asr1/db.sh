@@ -39,6 +39,7 @@ LABOROTV=
 TEDXJP=
 LIBRISPEECH=
 LIBRILIGHT_LIMITED=
+LIBRILIGHT=
 FSC=
 SLURP=
 VOXCELEB=
@@ -205,6 +206,7 @@ if [[ "$(hostname -d)" == clsp.jhu.edu ]]; then
     LABOROTV=
     TEDXJP=
     LIBRISPEECH=
+    LIBRILIGHT=
     FSC=
     SNIPS= # smart-light-en-closed-field data path
     SLURP=
