@@ -119,6 +119,18 @@ class ESPnetSSLModel(AbsESPnetModel):
         self.register_parameter("projection_matrix", projection_matrix)
         self.register_parameter("codebook", codebook)
 
+        prediction_record = torch.zeros(self.codebook_size).long()
+        label_record = torch.zeros(self.codebook_size).long()
+        self.register_buffer("prediction_record", prediction_record)
+        self.register_buffer("label_record", label_record)
+
+    def report_coverage(self):
+        prediction_coverage_epoch = float(torch.sum(self.prediction_record) / self.codebook_size)
+        label_coverage_epoch = float(torch.sum(self.label_record) / self.codebook_size)
+        self.prediction_record.zero_()
+        self.label_record.zero_()
+        return prediction_coverage_epoch, label_coverage_epoch
+
     def espnet_initialization_fn(self):
         if (
             getattr(self, "codebook_init", None) is not None
@@ -194,6 +206,9 @@ class ESPnetSSLModel(AbsESPnetModel):
         prediction_coverage = len(prediction_different_tokens) / self.codebook_size
 
         label_coverage = len(set(label.view(-1).tolist())) / self.codebook_size
+
+        self.prediction_record[list(prediction_different_tokens)] = 1
+        self.label_record[label.view(-1).tolist()] = 1
 
         # Unmasked region
         if not self.training or self.unmasked_region_weight > 0:

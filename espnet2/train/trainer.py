@@ -496,6 +496,7 @@ class Trainer:
                 log_interval = 100
 
         model.train()
+
         all_steps_are_invalid = True
         # [For distributed] Because iteration counts are not always equals between
         # processes, send stop-flag to the other processes if iterator is finished
@@ -669,6 +670,16 @@ class Trainer:
                     ),
                 )
                 start_time = time.perf_counter()
+
+                # xkc09: for bestrq
+                if getattr(model, "report_coverage", None) is not None:
+                    prediction_coverage, label_coverage = model.report_coverage()
+                    reporter.register(
+                        dict(
+                            prediction_coverage = prediction_coverage,
+                            label_coverage = label_coverage,
+                        )
+                    )
 
             # NOTE(kamo): Call log_message() after next()
             reporter.next()
