@@ -19,6 +19,7 @@ librilight_data_url="https://dl.fbaipublicfiles.com/librilight/data"
 librilight_parts="small medium"  # "large" is missing because
 train_set="train_6k"  # "train_60k" if large is included
 train_dev="dev"
+nj=128
 
 log "$0 $*"
 . utils/parse_options.sh
@@ -49,7 +50,7 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     fi
     if [ ! -d "${LIBRILIGHT}/.complete" ]; then
         echo "Stage 1b: Data Download librilight data to ${LIBRILIGHT}"
-        for part in small medium; do
+        for part in ${librilight_parts}; do
             local/download_and_untar_librilight.sh ${LIBRILIGHT} ${librilight_data_url} ${part}
         done
     else
@@ -64,7 +65,26 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
         local/data_prep_librispeech.sh ${LIBRISPEECH}/LibriSpeech/${part} data/librispeech_${part//-/_}
     done
 
-    for part in small medium; do
+    for part in ${librilight_parts}; do
+		log "Segment ${LIBRILIGHT}/${part} to ${LIBRILIGHT}/${part}_segmented"
+        _logdir_root=${LIBRILIGHT}/logdir
+        _logdir=${_logdir_root}/${part}_segmented
+        mkdir -p ${_logdir}
+
+        # Split book paths for multi-processing
+        python local/split_book_paths.py \
+            --root ${LIBRILIGHT}/${part} \
+            --output_dir ${_logdir} \
+            --num_outputs ${nj}
+
+        # Launch jobs to segment the audios
+        ${train_cmd} "JOB=1:${nj}" "${_logdir}/segment_audio.JOB.log" \
+            python local/cut_by_vad.py \
+                --books_file "${_logdir}/book_path.JOB" \
+                --output_dir "${LIBRILIGHT}/${part}_segmented" \
+                --target_len_sec 60 \
+                --out_extension ".flac"
+
         local/data_prep_librilight.sh ${LIBRILIGHT}/${part}_segmented data/librilight_${part}
     done
 fi

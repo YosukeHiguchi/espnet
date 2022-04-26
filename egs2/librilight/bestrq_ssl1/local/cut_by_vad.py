@@ -1,12 +1,14 @@
-# This file is from https://github.com/facebookresearch/libri-light. For convenience, just copied the file.
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+# This is modified by Yifan Peng based on Facebook's official script.
+# Ref: https://github.com/facebookresearch/libri-light/tree/main/data_preparation
+
 import pathlib
 import soundfile as sf
 import numpy as np
 import json
-import multiprocessing
+# import multiprocessing
 import argparse
-import tqdm
+# import tqdm
 
 def save(seq, fname, index, extension):
     output = np.hstack(seq)
@@ -61,43 +63,58 @@ def cut_book(task):
         cut_sequence(sound_file, vad, path_out, target_len_sec, extension)
 
 
-def cut(input_dir,
-        output_dir,
-        target_len_sec=30,
-        n_process=32,
-        out_extension='.flac'):
+# def cut(input_dir,
+#         output_dir,
+#         target_len_sec=30,
+#         n_process=32,
+#         out_extension='.flac'):
 
-    list_dir = pathlib.Path(input_dir).glob('*/*')
-    list_dir = [x for x in list_dir if x.is_dir()]
+#     list_dir = pathlib.Path(input_dir).glob('*/*')
+#     list_dir = [x for x in list_dir if x.is_dir()]
 
-    print(f"{len(list_dir)} directories detected")
-    print(f"Launching {n_process} processes")
+#     print(f"{len(list_dir)} directories detected")
+#     print(f"Launching {n_process} processes")
 
-    tasks = [(path_book, output_dir, target_len_sec, out_extension) for path_book in list_dir]
+#     tasks = [(path_book, output_dir, target_len_sec, out_extension) for path_book in list_dir]
 
-    with multiprocessing.Pool(processes=n_process) as pool:
-        for _ in tqdm.tqdm(pool.imap_unordered(cut_book, tasks), total=len(tasks)):
-            pass
+#     with multiprocessing.Pool(processes=n_process) as pool:
+#         for _ in tqdm.tqdm(pool.imap_unordered(cut_book, tasks), total=len(tasks)):
+#             pass
+
+
+# def parse_args():
+#     parser = argparse.ArgumentParser(description="Cut a dataset in small "
+#                                      "sequences using VAD files")
+#     parser.add_argument('--input_dir', type=str, default=None,
+#                         help="Path to the input directory", required=True)
+#     parser.add_argument('--output_dir', type=str, default=None,
+#                         help="Path to the output directory", required=True)
+
+#     parser.add_argument('--target_len_sec', type=int, default=60,
+#                         help="Target time, in seconds of each output sequence"
+#                              "(default is 60)")
+#     parser.add_argument('--n_workers', type=int, default=32,
+#                         help="Number of parallel worker processes")
+#     parser.add_argument('--out_extension', type=str, default=".flac",
+#                         choices=[".wav", ".flac", ".mp3"],
+#                         help="Output extension")
+#     return parser.parse_args()
 
 
 def parse_args():
-
     parser = argparse.ArgumentParser(description="Cut a dataset in small "
                                      "sequences using VAD files")
-    parser.add_argument('--input_dir', type=str, default=None,
-                        help="Path to the input directory", required=True)
+    parser.add_argument('--books_file', type=str, default=None,
+                        help="Path to the txt file containing all books", required=True)
     parser.add_argument('--output_dir', type=str, default=None,
                         help="Path to the output directory", required=True)
 
     parser.add_argument('--target_len_sec', type=int, default=60,
                         help="Target time, in seconds of each output sequence"
                              "(default is 60)")
-    parser.add_argument('--n_workers', type=int, default=32,
-                        help="Number of parallel worker processes")
     parser.add_argument('--out_extension', type=str, default=".flac",
                         choices=[".wav", ".flac", ".mp3"],
                         help="Output extension")
-
 
     return parser.parse_args()
 
@@ -106,5 +123,10 @@ if __name__ == "__main__":
     args = parse_args()
     pathlib.Path(args.output_dir).mkdir(exist_ok=True, parents=True)
 
-    cut(args.input_dir, args.output_dir, args.target_len_sec,
-        args.n_workers, args.out_extension)
+    with open(args.books_file, 'r') as fp:
+        books = [line.strip() for line in fp.readlines()]
+
+    for path_book in books:
+        cut_book(
+            (pathlib.Path(path_book), args.output_dir, args.target_len_sec, args.out_extension)
+        )
