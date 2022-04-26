@@ -496,6 +496,8 @@ class Trainer:
                 log_interval = 100
 
         model.train()
+        if getattr(model, "clear_stats", None) is not None:
+            model.clear_stats()
 
         all_steps_are_invalid = True
         # [For distributed] Because iteration counts are not always equals between
@@ -712,6 +714,8 @@ class Trainer:
         distributed = distributed_option.distributed
 
         model.eval()
+        if getattr(model, "clear_stats", None) is not None:
+            model.clear_stats()
 
         # [For distributed] Because iteration counts are not always equals between
         # processes, send stop-flag to the other processes if iterator is finished
@@ -739,6 +743,16 @@ class Trainer:
                 stats, weight = recursive_average(stats, weight, distributed)
 
             reporter.register(stats, weight)
+            
+            # xkc09: for bestrq
+            if getattr(model, "report_coverage", None) is not None:
+                prediction_coverage, label_coverage = model.report_coverage()
+                reporter.register(
+                    dict(
+                        prediction_coverage = prediction_coverage,
+                        label_coverage = label_coverage,
+                    )
+                )
             reporter.next()
 
         else:

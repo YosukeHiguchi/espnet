@@ -127,9 +127,12 @@ class ESPnetSSLModel(AbsESPnetModel):
     def report_coverage(self):
         prediction_coverage_epoch = float(torch.sum(self.prediction_record) / self.codebook_size)
         label_coverage_epoch = float(torch.sum(self.label_record) / self.codebook_size)
+        self.clear_stats()
+        return prediction_coverage_epoch, label_coverage_epoch
+
+    def clear_stats(self):
         self.prediction_record.zero_()
         self.label_record.zero_()
-        return prediction_coverage_epoch, label_coverage_epoch
 
     def espnet_initialization_fn(self):
         if (
@@ -239,8 +242,6 @@ class ESPnetSSLModel(AbsESPnetModel):
         stats["unmasked_loss"] = unmasked_loss.detach()
         stats["masked_acc"] = masked_acc
         stats["unmasked_acc"] = unmasked_acc
-        stats["prediction_coverage"] = prediction_coverage
-        stats["label_coverage"] = label_coverage
 
         # force_gatherable: to-device and to-tensor if scalar for DataParallel
         loss, stats, weight = force_gatherable((loss, stats, batch_size), loss.device)
