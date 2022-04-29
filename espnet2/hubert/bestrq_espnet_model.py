@@ -124,10 +124,11 @@ class ESPnetSSLModel(AbsESPnetModel):
         self.register_buffer("prediction_record", prediction_record)
         self.register_buffer("label_record", label_record)
 
-    def report_coverage(self):
+    def report_coverage(self, reset=True):
         prediction_coverage_epoch = float(torch.sum(self.prediction_record) / self.codebook_size)
         label_coverage_epoch = float(torch.sum(self.label_record) / self.codebook_size)
-        self.clear_stats()
+        if reset:
+            self.clear_stats()
         return prediction_coverage_epoch, label_coverage_epoch
 
     def clear_stats(self):

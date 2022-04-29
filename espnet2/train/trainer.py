@@ -674,14 +674,24 @@ class Trainer:
                 start_time = time.perf_counter()
 
                 # xkc09: for bestrq
-                if getattr(model, "report_coverage", None) is not None:
-                    prediction_coverage, label_coverage = model.report_coverage()
-                    reporter.register(
-                        dict(
-                            prediction_coverage = prediction_coverage,
-                            label_coverage = label_coverage,
+                if hasattr(model, "module"):
+                    if getattr(model.module, "report_coverage", None) is not None:
+                        prediction_coverage, label_coverage = model.module.report_coverage()
+                        reporter.register(
+                            dict(
+                                prediction_coverage = prediction_coverage,
+                                label_coverage = label_coverage,
+                            )
                         )
-                    )
+                else:
+                    if getattr(model, "report_coverage", None) is not None:
+                        prediction_coverage, label_coverage = model.report_coverage()
+                        reporter.register(
+                            dict(
+                                prediction_coverage = prediction_coverage,
+                                label_coverage = label_coverage,
+                            )
+                        )
 
             # NOTE(kamo): Call log_message() after next()
             reporter.next()
@@ -743,16 +753,26 @@ class Trainer:
                 stats, weight = recursive_average(stats, weight, distributed)
 
             reporter.register(stats, weight)
-            
+
             # xkc09: for bestrq
-            if getattr(model, "report_coverage", None) is not None:
-                prediction_coverage, label_coverage = model.report_coverage()
-                reporter.register(
-                    dict(
-                        prediction_coverage = prediction_coverage,
-                        label_coverage = label_coverage,
+            if hasattr(model, "module"):
+                if getattr(model.module, "report_coverage", None) is not None:
+                    prediction_coverage, label_coverage = model.module.report_coverage(reset=False)
+                    reporter.register(
+                        dict(
+                            prediction_coverage = prediction_coverage,
+                            label_coverage = label_coverage,
+                        )
                     )
-                )
+            else:
+                if getattr(model, "report_coverage", None) is not None:
+                    prediction_coverage, label_coverage = model.report_coverage(reset=False)
+                    reporter.register(
+                        dict(
+                            prediction_coverage = prediction_coverage,
+                            label_coverage = label_coverage,
+                        )
+                    )
             reporter.next()
 
         else:
