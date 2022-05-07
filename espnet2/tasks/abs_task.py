@@ -974,13 +974,14 @@ class AbsTask(ABC):
             f"Otherwise you need to set --allow_variable_data_keys true "
         )
 
-        for k in cls.required_data_names(train, inference):
-            if not dataset.has_name(k):
-                raise RuntimeError(
-                    f'"{cls.required_data_names(train, inference)}" are required for'
-                    f' {cls.__name__}. but "{dataset.names()}" are input.\n{mes}'
-                )
         if not allow_variable_data_keys:
+            for k in cls.required_data_names(train, inference):
+                if not dataset.has_name(k):
+                    raise RuntimeError(
+                        f'"{cls.required_data_names(train, inference)}" are required for'
+                        f' {cls.__name__}. but "{dataset.names()}" are input.\n{mes}'
+                    )
+
             task_keys = cls.required_data_names(
                 train, inference
             ) + cls.optional_data_names(train, inference)

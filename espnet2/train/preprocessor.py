@@ -397,7 +397,7 @@ class CommonPreprocessor_multi(AbsPreprocessor):
         return data
 
 
-class MutliTokenizerCommonPreprocessor(CommonPreprocessor):
+class MultiTokenizerCommonPreprocessor(CommonPreprocessor):
     def __init__(
         self,
         train: bool,

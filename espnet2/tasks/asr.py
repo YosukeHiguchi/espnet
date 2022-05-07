@@ -49,6 +49,7 @@ from espnet2.asr.frontend.default import DefaultFrontend
 from espnet2.asr.frontend.fused import FusedFrontends
 from espnet2.asr.frontend.s3prl import S3prlFrontend
 from espnet2.asr.frontend.windowing import SlidingWindow
+from espnet2.asr.hierctc_model import HierCTCModel
 from espnet2.asr.maskctc_model import MaskCTCModel
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
 from espnet2.asr.postencoder.hugging_face_transformers_postencoder import (
@@ -71,6 +72,7 @@ from espnet2.train.abs_espnet_model import AbsESPnetModel
 from espnet2.train.class_choices import ClassChoices
 from espnet2.train.collate_fn import CommonCollateFn
 from espnet2.train.preprocessor import CommonPreprocessor
+from espnet2.train.preprocessor import MultiTokenizerCommonPreprocessor
 from espnet2.train.trainer import Trainer
 from espnet2.utils.get_default_kwargs import get_default_kwargs
 from espnet2.utils.nested_dict_action import NestedDictAction
@@ -114,6 +116,7 @@ model_choices = ClassChoices(
     classes=dict(
         espnet=ESPnetASRModel,
         maskctc=MaskCTCModel,
+        hierctc=HierCTCModel,
     ),
     type_check=AbsESPnetModel,
     default="espnet",
@@ -324,6 +327,27 @@ class ASRTask(AbsTask):
             help="The range of noise decibel level.",
         )
 
+        # for multiple targets
+        group.add_argument(
+            "--token_lists",
+            type=str,
+            action="append",
+            default=[],
+        )
+        group.add_argument(
+            "--token_types",
+            type=str,
+            action="append",
+            choices=["bpe", "char", "word", "phn"],
+            default=[],
+        )
+        group.add_argument(
+            "--bpemodels",
+            type=str,
+            action="append",
+            default=[],
+        )
+
         for class_choices in cls.class_choices_list:
             # Append --<name> and --<name>_conf.
             # e.g. --encoder and --encoder_conf
@@ -346,30 +370,66 @@ class ASRTask(AbsTask):
     ) -> Optional[Callable[[str, Dict[str, np.array]], Dict[str, np.ndarray]]]:
         assert check_argument_types()
         if args.use_preprocessor:
-            retval = CommonPreprocessor(
-                train=train,
-                token_type=args.token_type,
-                token_list=args.token_list,
-                bpemodel=args.bpemodel,
-                non_linguistic_symbols=args.non_linguistic_symbols,
-                text_cleaner=args.cleaner,
-                g2p_type=args.g2p,
-                # NOTE(kamo): Check attribute existence for backward compatibility
-                rir_scp=args.rir_scp if hasattr(args, "rir_scp") else None,
-                rir_apply_prob=args.rir_apply_prob
-                if hasattr(args, "rir_apply_prob")
-                else 1.0,
-                noise_scp=args.noise_scp if hasattr(args, "noise_scp") else None,
-                noise_apply_prob=args.noise_apply_prob
-                if hasattr(args, "noise_apply_prob")
-                else 1.0,
-                noise_db_range=args.noise_db_range
-                if hasattr(args, "noise_db_range")
-                else "13_15",
-                speech_volume_normalize=args.speech_volume_normalize
-                if hasattr(args, "rir_scp")
-                else None,
-            )
+            if len(args.token_types) == 0:
+                logging.info("Single-target training")
+                retval = CommonPreprocessor(
+                    train=train,
+                    token_type=args.token_type,
+                    token_list=args.token_list,
+                    bpemodel=args.bpemodel,
+                    non_linguistic_symbols=args.non_linguistic_symbols,
+                    text_cleaner=args.cleaner,
+                    g2p_type=args.g2p,
+                    # NOTE(kamo): Check attribute existence for backward compatibility
+                    rir_scp=args.rir_scp if hasattr(args, "rir_scp") else None,
+                    rir_apply_prob=args.rir_apply_prob
+                    if hasattr(args, "rir_apply_prob")
+                    else 1.0,
+                    noise_scp=args.noise_scp if hasattr(args, "noise_scp") else None,
+                    noise_apply_prob=args.noise_apply_prob
+                    if hasattr(args, "noise_apply_prob")
+                    else 1.0,
+                    noise_db_range=args.noise_db_range
+                    if hasattr(args, "noise_db_range")
+                    else "13_15",
+                    speech_volume_normalize=args.speech_volume_normalize
+                    if hasattr(args, "rir_scp")
+                    else None,
+                )
+            else:
+                logging.info("Multi-target training")
+                assert len(args.token_types) == len(args.token_lists) == len(args.bpemodels)
+
+                text_name=[
+                    "text{}_".format(i) + x.split('/')[-2]
+                    for i, x in enumerate(args.bpemodels)
+                ]
+
+                retval = MultiTokenizerCommonPreprocessor(
+                    train=train,
+                    token_type=args.token_types, #
+                    token_list=args.token_lists, #
+                    bpemodel=args.bpemodels, #
+                    non_linguistic_symbols=args.non_linguistic_symbols,
+                    text_cleaner=args.cleaner,
+                    g2p_type=args.g2p,
+                    # NOTE(kamo): Check attribute existence for backward compatibility
+                    rir_scp=args.rir_scp if hasattr(args, "rir_scp") else None,
+                    rir_apply_prob=args.rir_apply_prob
+                    if hasattr(args, "rir_apply_prob")
+                    else 1.0,
+                    noise_scp=args.noise_scp if hasattr(args, "noise_scp") else None,
+                    noise_apply_prob=args.noise_apply_prob
+                    if hasattr(args, "noise_apply_prob")
+                    else 1.0,
+                    noise_db_range=args.noise_db_range
+                    if hasattr(args, "noise_db_range")
+                    else "13_15",
+                    speech_volume_normalize=args.speech_volume_normalize
+                    if hasattr(args, "rir_scp")
+                    else None,
+                    text_name=text_name,
+                )
         else:
             retval = None
         assert check_return_type(retval)
@@ -395,7 +455,7 @@ class ASRTask(AbsTask):
         return retval
 
     @classmethod
-    def build_model(cls, args: argparse.Namespace) -> ESPnetASRModel:
+    def build_model(cls, args: argparse.Namespace) -> AbsESPnetModel:
         assert check_argument_types()
         if isinstance(args.token_list, str):
             with open(args.token_list, encoding="utf-8") as f:
@@ -407,8 +467,23 @@ class ASRTask(AbsTask):
             token_list = list(args.token_list)
         else:
             raise RuntimeError("token_list must be str or list")
+
         vocab_size = len(token_list)
         logging.info(f"Vocabulary size: {vocab_size }")
+
+        if len(args.token_lists) > 0:
+            if isinstance(args.token_lists[0], str):
+                token_lists = []
+                for token_list_path in args.token_lists:
+                    with open(token_list_path, encoding="utf-8") as f:
+                        tl = [line.rstrip() for line in f]
+                    token_lists.append(list(tl).copy())
+                args.token_lists = token_lists.copy()
+                multi_vocab_size = [len(tl) for tl in args.token_lists]
+                logging.info(f"Multi-vocabulary size: {multi_vocab_size }")
+            else:
+                token_lists = args.token_lists
+                multi_vocab_size = [len(tl) for tl in args.token_lists]
 
         # 1. frontend
         if args.input_size is None:
@@ -479,18 +554,43 @@ class ASRTask(AbsTask):
                 **args.joint_net_conf,
             )
         else:
-            decoder = decoder_class(
-                vocab_size=vocab_size,
-                encoder_output_size=encoder_output_size,
-                **args.decoder_conf,
-            )
+            if len(args.token_lists) == 0:
+                decoder = decoder_class(
+                    vocab_size=vocab_size,
+                    encoder_output_size=encoder_output_size,
+                    **args.decoder_conf,
+                )
+            else:
+                decoder = decoder_class(
+                    vocab_size=multi_vocab_size[-1], #
+                    encoder_output_size=encoder_output_size,
+                    **args.decoder_conf,
+                )
+                logging.info("Decoder output size: {}".format(multi_vocab_size[-1]))
 
             joint_network = None
 
         # 6. CTC
-        ctc = CTC(
-            odim=vocab_size, encoder_output_size=encoder_output_size, **args.ctc_conf
-        )
+        if len(args.token_lists) == 0:
+            ctc = CTC(
+                odim=vocab_size, encoder_output_size=encoder_output_size, **args.ctc_conf
+            )
+        else:
+            ctc = torch.nn.ModuleList()
+            inter_len = len(args.encoder_conf['interctc_layer_idx'])
+            assert inter_len + 1 <= len(multi_vocab_size)
+            for i in range(inter_len + 1):
+                ctc.append(
+                    CTC(
+                        odim=multi_vocab_size[i],
+                        encoder_output_size=encoder_output_size,
+                        **args.ctc_conf,
+                    )
+                )
+                logging.info("CTC{} output size: {}".format(i, multi_vocab_size[i]))
+
+            vocab_size = multi_vocab_size
+            token_list = token_lists
 
         # 7. Build model
         try:

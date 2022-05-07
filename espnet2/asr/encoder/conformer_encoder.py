@@ -331,34 +331,68 @@ class ConformerEncoder(AbsEncoder):
         if len(self.interctc_layer_idx) == 0:
             xs_pad, masks = self.encoders(xs_pad, masks)
         else:
-            for layer_idx, encoder_layer in enumerate(self.encoders):
-                xs_pad, masks = encoder_layer(xs_pad, masks)
+            if type(self.after_norm) != torch.nn.ModuleList:
+                for layer_idx, encoder_layer in enumerate(self.encoders):
+                    xs_pad, masks = encoder_layer(xs_pad, masks)
 
-                if layer_idx + 1 in self.interctc_layer_idx:
-                    encoder_out = xs_pad
-                    if isinstance(encoder_out, tuple):
-                        encoder_out = encoder_out[0]
+                    if layer_idx + 1 in self.interctc_layer_idx:
+                        encoder_out = xs_pad
+                        if isinstance(encoder_out, tuple):
+                            encoder_out = encoder_out[0]
 
-                    # intermediate outputs are also normalized
-                    if self.normalize_before:
-                        encoder_out = self.after_norm(encoder_out)
+                        # intermediate outputs are also normalized
+                        if self.normalize_before:
+                            encoder_out = self.after_norm(encoder_out)
 
-                    intermediate_outs.append((layer_idx + 1, encoder_out))
+                        intermediate_outs.append((layer_idx + 1, encoder_out))
 
-                    if self.interctc_use_conditioning:
-                        ctc_out = ctc.softmax(encoder_out)
+                        if self.interctc_use_conditioning:
+                            ctc_out = ctc.softmax(encoder_out)
 
-                        if isinstance(xs_pad, tuple):
-                            x, pos_emb = xs_pad
-                            x = x + self.conditioning_layer(ctc_out)
-                            xs_pad = (x, pos_emb)
-                        else:
-                            xs_pad = xs_pad + self.conditioning_layer(ctc_out)
+                            if isinstance(xs_pad, tuple):
+                                x, pos_emb = xs_pad
+                                x = x + self.conditioning_layer(ctc_out)
+                                xs_pad = (x, pos_emb)
+                            else:
+                                xs_pad = xs_pad + self.conditioning_layer(ctc_out)
+            else:
+                inter_idx = 0
+                for layer_idx, encoder_layer in enumerate(self.encoders):
+                    xs_pad, masks = encoder_layer(xs_pad, masks)
+
+                    if layer_idx + 1 in self.interctc_layer_idx:
+                        encoder_out = xs_pad
+                        if isinstance(encoder_out, tuple):
+                            encoder_out = encoder_out[0]
+
+                        # intermediate outputs are also normalized
+                        if self.normalize_before:
+                            encoder_out = self.after_norm[inter_idx](encoder_out)
+
+                        ### original hc-ctc applies after_norm to x_pad
+                        ### and feeds to the next block
+
+                        intermediate_outs.append((layer_idx + 1, encoder_out))
+
+                        if self.interctc_use_conditioning:
+                            ctc_out = ctc[inter_idx].softmax(encoder_out)
+
+                            if isinstance(xs_pad, tuple):
+                                x, pos_emb = xs_pad
+                                x = x + self.conditioning_layer[inter_idx](ctc_out)
+                                xs_pad = (x, pos_emb)
+                            else:
+                                xs_pad = xs_pad + self.conditioning_layer[inter_idx](ctc_out)
+
+                        inter_idx += 1
 
         if isinstance(xs_pad, tuple):
             xs_pad = xs_pad[0]
         if self.normalize_before:
-            xs_pad = self.after_norm(xs_pad)
+            if type(self.after_norm) != torch.nn.ModuleList:
+                xs_pad = self.after_norm(xs_pad)
+            else:
+                xs_pad = self.after_norm[-1](xs_pad)
 
         olens = masks.squeeze(1).sum(1)
         if len(intermediate_outs) > 0:

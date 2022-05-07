@@ -89,8 +89,18 @@ class Speech2Text:
 
         decoder = asr_model.decoder
 
-        ctc = CTCPrefixScorer(ctc=asr_model.ctc, eos=asr_model.eos)
-        token_list = asr_model.token_list
+        if decoder is not None:
+            assert asr_model.ctc[-1].ctc_lo.out_features == decoder.output_layer.out_features, (
+                "ctc[-1] and decoder must have the same vocab"
+            )
+
+        if isinstance(asr_model.ctc, torch.nn.ModuleList):
+            ctc = CTCPrefixScorer(ctc=asr_model.ctc[-1], eos=asr_model.eos)
+            token_list = asr_model.token_list[-1]
+        else:
+            ctc = CTCPrefixScorer(ctc=asr_model.ctc, eos=asr_model.eos)
+            token_list = asr_model.token_list
+
         scorers.update(
             decoder=decoder,
             ctc=ctc,
