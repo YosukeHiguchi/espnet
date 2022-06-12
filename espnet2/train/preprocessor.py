@@ -10,6 +10,7 @@ from typeguard import check_argument_types, check_return_type
 from espnet2.text.build_tokenizer import build_tokenizer
 from espnet2.text.cleaner import TextCleaner
 from espnet2.text.token_id_converter import TokenIDConverter
+from transformers import AutoTokenizer
 
 
 class AbsPreprocessor(ABC):
@@ -139,6 +140,8 @@ class CommonPreprocessor(AbsPreprocessor):
         speech_volume_normalize: float = None,
         speech_name: str = "speech",
         text_name: str = "text",
+        bert_tokenizer: str = None,
+        slu_type: str = None,
     ):
         super().__init__(train)
         self.train = train
@@ -169,6 +172,13 @@ class CommonPreprocessor(AbsPreprocessor):
             self.text_cleaner = None
             self.tokenizer = None
             self.token_id_converter = None
+
+        if bert_tokenizer is not None:
+            self.bert_tokenizer = AutoTokenizer.from_pretrained(bert_tokenizer)
+        else:
+            self.bert_tokenizer = None
+
+        self.slu_type = slu_type
 
         if train and rir_scp is not None:
             self.rirs = []
@@ -302,6 +312,15 @@ class CommonPreprocessor(AbsPreprocessor):
         if self.text_name in data and self.tokenizer is not None:
             text = data[self.text_name]
             text = self.text_cleaner(text)
+
+            if self.bert_tokenizer is not None:
+                if self.slu_type == 'ic':
+                    raise NotImplementedError
+                else:
+                    bert_text_ints = self.bert_tokenizer(text)['input_ids']
+                data[self.text_name + '_bert'] = np.array(bert_text_ints, dtype=np.int64)
+                data[self.text_name + '_bert_org'] = np.array(bert_text_ints[1:-1], dtype=np.int64)
+
             tokens = self.tokenizer.text2tokens(text)
             text_ints = self.token_id_converter.tokens2ids(tokens)
             data[self.text_name] = np.array(text_ints, dtype=np.int64)

@@ -81,6 +81,10 @@ class TransformerEncoder(AbsEncoder):
         assert check_argument_types()
         super().__init__()
         self._output_size = output_size
+        self._pos_enc_class = pos_enc_class
+        self._dropout_rate = dropout_rate
+        self._positional_dropout_rate = positional_dropout_rate
+        self._input_layer = input_layer
 
         if input_layer == "linear":
             self.embed = torch.nn.Sequential(
@@ -103,6 +107,8 @@ class TransformerEncoder(AbsEncoder):
                 torch.nn.Embedding(input_size, output_size, padding_idx=padding_idx),
                 pos_enc_class(output_size, positional_dropout_rate),
             )
+        elif input_layer == "identity":
+            self.embed = torch.nn.Identity()
         elif input_layer is None:
             if input_size == output_size:
                 self.embed = None
@@ -167,6 +173,7 @@ class TransformerEncoder(AbsEncoder):
         ilens: torch.Tensor,
         prev_states: torch.Tensor = None,
         ctc: CTC = None,
+        masks: torch.Tensor = None,
     ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
         """Embed positions in tensor.
 
@@ -177,7 +184,8 @@ class TransformerEncoder(AbsEncoder):
         Returns:
             position embedded tensor and mask
         """
-        masks = (~make_pad_mask(ilens)[:, None, :]).to(xs_pad.device)
+        if masks is None:
+            masks = (~make_pad_mask(ilens)[:, None, :]).to(xs_pad.device)
 
         if self.embed is None:
             xs_pad = xs_pad

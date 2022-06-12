@@ -10,6 +10,7 @@ import torch
 from typeguard import check_argument_types, check_return_type
 
 from espnet2.asr.maskctc_model import MaskCTCInference
+from espnet2.asr.bertctc_model import BERTCTCInference
 from espnet2.fileio.datadir_writer import DatadirWriter
 from espnet2.tasks.asr import ASRTask
 from espnet2.text.build_tokenizer import build_tokenizer
@@ -46,6 +47,7 @@ class Speech2Text:
         dtype: str = "float32",
         maskctc_n_iterations: int = 10,
         maskctc_threshold_probability: float = 0.99,
+        length_init_with_asr: bool = False,
     ):
         assert check_argument_types()
 
@@ -56,11 +58,18 @@ class Speech2Text:
         asr_model.to(dtype=getattr(torch, dtype)).eval()
         token_list = asr_model.token_list
 
-        s2t = MaskCTCInference(
-            asr_model=asr_model,
-            n_iterations=maskctc_n_iterations,
-            threshold_probability=maskctc_threshold_probability,
-        )
+        if asr_train_args.model == "bertctc":
+            s2t = BERTCTCInference(
+                asr_model=asr_model,
+                n_iterations=maskctc_n_iterations,
+                length_init_with_asr=length_init_with_asr,
+            )
+        else:
+            s2t = MaskCTCInference(
+                asr_model=asr_model,
+                n_iterations=maskctc_n_iterations,
+                threshold_probability=maskctc_threshold_probability,
+            )
         s2t.to(device=device, dtype=getattr(torch, dtype)).eval()
 
         # 2. [Optional] Build Text converter: e.g. bpe-sym -> Text
@@ -79,7 +88,10 @@ class Speech2Text:
         else:
             tokenizer = build_tokenizer(token_type=token_type)
         converter = TokenIDConverter(token_list=token_list)
+
         logging.info(f"Text tokenizer: {tokenizer}")
+        if hasattr(asr_model, 'predecoder'):
+            s2t.tokenizer = tokenizer
 
         self.asr_model = asr_model
         self.asr_train_args = asr_train_args
@@ -91,7 +103,9 @@ class Speech2Text:
 
     @torch.no_grad()
     def __call__(
-        self, speech: Union[torch.Tensor, np.ndarray]
+        self,
+        speech: Union[torch.Tensor, np.ndarray],
+        attn_save_dir: Optional[str],
     ) -> List[Tuple[Optional[str], List[str], List[int], Hypothesis]]:
         """Inference
 
@@ -123,7 +137,7 @@ class Speech2Text:
         assert len(enc) == 1, len(enc)
 
         # c. Passed the encoder result and the inference algorithm
-        hyp = self.s2t(enc[0])
+        hyp = self.s2t(enc[0], attn_save_dir)
         assert isinstance(hyp, Hypothesis), type(hyp)
 
         # remove sos/eos and get results
@@ -193,6 +207,8 @@ def inference(
     allow_variable_data_keys: bool,
     maskctc_n_iterations: int,
     maskctc_threshold_probability: float,
+    n_save_attw: int,
+    length_init_with_asr: bool,
 ):
     assert check_argument_types()
     if batch_size > 1:
@@ -224,6 +240,7 @@ def inference(
         dtype=dtype,
         maskctc_n_iterations=maskctc_n_iterations,
         maskctc_threshold_probability=maskctc_threshold_probability,
+        length_init_with_asr=length_init_with_asr,
     )
     speech2text = Speech2Text.from_pretrained(
         model_tag=model_tag,
@@ -245,7 +262,7 @@ def inference(
 
     # 7 .Start for-loop
     with DatadirWriter(output_dir) as writer:
-        for keys, batch in loader:
+        for i, (keys, batch) in enumerate(loader):
             assert isinstance(batch, dict), type(batch)
             assert all(isinstance(s, str) for s in keys), keys
             _bs = len(next(iter(batch.values())))
@@ -253,7 +270,24 @@ def inference(
             batch = {k: v[0] for k, v in batch.items() if not k.endswith("_lengths")}
 
             try:
-                results = speech2text(**batch)
+                if n_save_attw > 0:
+                    attn_save_dir = os.path.join(
+                        os.path.dirname(output_dir),
+                        keys[0],
+                    )
+                    if not os.path.isdir(attn_save_dir):
+                        os.mkdir(attn_save_dir)
+                    results = speech2text(
+                        **batch,
+                        attn_save_dir=attn_save_dir,
+                    )
+                    if i == n_save_attw:
+                        break
+                else:
+                    results = speech2text(
+                        **batch,
+                        attn_save_dir=None,
+                    )
             except TooShortUttError as e:
                 logging.warning(f"Utterance {keys} {e}")
                 hyp = Hypothesis(score=0.0, scores={}, states={}, yseq=[])
@@ -358,6 +392,8 @@ def get_parser():
         help="The model path of sentencepiece. "
         "If not given, refers from the training args",
     )
+    group.add_argument("--n_save_attw", type=int, default=0)
+    group.add_argument("--length_init_with_asr", type=str2bool, default=False)
 
     return parser
 

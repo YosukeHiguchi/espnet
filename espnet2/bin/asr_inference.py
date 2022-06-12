@@ -34,7 +34,7 @@ from espnet.nets.scorer_interface import BatchScorerInterface
 from espnet.nets.scorers.ctc import CTCPrefixScorer
 from espnet.nets.scorers.length_bonus import LengthBonus
 from espnet.utils.cli_utils import get_commandline_args
-
+from espnet2.asr.rnnt_bert_model import RNNTBERTModel
 
 class Speech2Text:
     """Speech2Text class
@@ -166,9 +166,9 @@ class Speech2Text:
                 beam_size=beam_size,
                 lm=scorers["lm"] if "lm" in scorers else None,
                 lm_weight=lm_weight,
-                token_list=token_list,
                 **transducer_conf,
             )
+                # token_list=token_list,
             beam_search = None
         else:
             beam_search_transducer = None
@@ -236,7 +236,12 @@ class Speech2Text:
                 tokenizer = None
         else:
             tokenizer = build_tokenizer(token_type=token_type)
-        converter = TokenIDConverter(token_list=token_list)
+
+        if isinstance(asr_model, RNNTBERTModel):
+            tokenizer.tokens2text = asr_model.bert_tokenizer.convert_tokens_to_string
+            converter = TokenIDConverter(token_list=asr_model.bert_token_list, unk_symbol='[UNK]')
+        else:
+            converter = TokenIDConverter(token_list=token_list)
         logging.info(f"Text tokenizer: {tokenizer}")
 
         self.asr_model = asr_model

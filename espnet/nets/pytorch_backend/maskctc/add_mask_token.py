@@ -37,3 +37,29 @@ def mask_uniform(ys_pad, mask_token, eos, ignore_id):
         ys_out[i][idx] = ys[i][idx]
 
     return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
+
+def mask_uniform_for_bert(ys_pad, mask_token, eos, ignore_id):
+    from espnet.nets.pytorch_backend.nets_utils import pad_list
+
+    ys = [y[y != ignore_id] for y in ys_pad]  # parse padded ys
+    ys_out = [y.new(y.size()).fill_(ignore_id) for y in ys]
+    ys_in = [y.clone() for y in ys]
+    for i in range(len(ys)):
+        ys_length = len(ys[i]) - 2 # excluding [CLS] and [SEP] tokens
+
+        if ys_length <= 1:
+            continue
+
+        num_samples = numpy.random.randint(1, ys_length + 1)
+        idx = numpy.random.choice(
+            ys_length,
+            num_samples,
+            replace=False,
+        )
+
+        idx += 1 # shift to right
+
+        ys_in[i][idx] = mask_token
+        ys_out[i][idx] = ys[i][idx]
+
+    return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)

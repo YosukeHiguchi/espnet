@@ -41,9 +41,15 @@ from espnet2.asr.frontend.fused import FusedFrontends
 from espnet2.asr.frontend.s3prl import S3prlFrontend
 from espnet2.asr.frontend.windowing import SlidingWindow
 from espnet2.asr.maskctc_model import MaskCTCModel
+from espnet2.asr.bertctc_model import BERTCTCModel
+from espnet2.asr.rnnt_bert_model import RNNTBERTModel
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
 from espnet2.asr.postencoder.hugging_face_transformers_postencoder import (
     HuggingFaceTransformersPostEncoder,
+)
+from espnet2.asr.predecoder.abs_predecoder import AbsPreDecoder
+from espnet2.asr.predecoder.hugging_face_transformers_predecoder import (
+    HuggingFaceTransformersPreDecoder,
 )
 from espnet2.asr.preencoder.abs_preencoder import AbsPreEncoder
 from espnet2.asr.preencoder.linear import LinearProjection
@@ -102,6 +108,8 @@ model_choices = ClassChoices(
     classes=dict(
         espnet=ESPnetASRModel,
         maskctc=MaskCTCModel,
+        bertctc=BERTCTCModel,
+        rnntbert=RNNTBERTModel,
     ),
     type_check=AbsESPnetModel,
     default="espnet",
@@ -142,6 +150,15 @@ postencoder_choices = ClassChoices(
     default=None,
     optional=True,
 )
+predecoder_choices = ClassChoices(
+    name="predecoder",
+    classes=dict(
+        hugging_face_transformers=HuggingFaceTransformersPreDecoder,
+      ),
+    type_check=AbsPreDecoder,
+    default=None,
+    optional=True,
+)
 decoder_choices = ClassChoices(
     "decoder",
     classes=dict(
@@ -153,8 +170,9 @@ decoder_choices = ClassChoices(
         rnn=RNNDecoder,
         transducer=TransducerDecoder,
         mlm=MLMDecoder,
+        trf_encoder=TransformerEncoder,
     ),
-    type_check=AbsDecoder,
+    # type_check=AbsDecoder,
     default="rnn",
 )
 
@@ -179,6 +197,8 @@ class ASRTask(AbsTask):
         encoder_choices,
         # --postencoder and --postencoder_conf
         postencoder_choices,
+        # --predecoder and --predecoder_conf
+        predecoder_choices,
         # --decoder and --decoder_conf
         decoder_choices,
     ]
@@ -334,6 +354,18 @@ class ASRTask(AbsTask):
     ) -> Optional[Callable[[str, Dict[str, np.array]], Dict[str, np.ndarray]]]:
         assert check_argument_types()
         if args.use_preprocessor:
+
+            if args.predecoder is not None:
+                if 'hugging_face_transformers' in args.predecoder:
+                    bert_tokenizer = args.predecoder_conf['model_name_or_path']
+            else:
+                bert_tokenizer = None
+
+            if hasattr(args.model_conf, 'slu_type'):
+                slu_type = args.model_conf['slu_type']
+            else:
+                slu_type = None
+
             retval = CommonPreprocessor(
                 train=train,
                 token_type=args.token_type,
@@ -357,6 +389,8 @@ class ASRTask(AbsTask):
                 speech_volume_normalize=args.speech_volume_normalize
                 if hasattr(args, "rir_scp")
                 else None,
+                bert_tokenizer=bert_tokenizer,
+                slu_type=slu_type,
             )
         else:
             retval = None
@@ -383,7 +417,7 @@ class ASRTask(AbsTask):
         return retval
 
     @classmethod
-    def build_model(cls, args: argparse.Namespace) -> ESPnetASRModel:
+    def build_model(cls, args: argparse.Namespace) -> AbsESPnetModel:
         assert check_argument_types()
         if isinstance(args.token_list, str):
             with open(args.token_list, encoding="utf-8") as f:
@@ -451,27 +485,57 @@ class ASRTask(AbsTask):
             postencoder = None
 
         # 5. Decoder
+        # Pre-decoder block
+        if getattr(args, "predecoder", None) is not None:
+            predecoder_class = predecoder_choices.get_class(args.predecoder)
+            if "hugging_face_transformers" in args.predecoder:
+                predecoder = predecoder_class(**args.predecoder_conf)
+        else:
+            predecoder = None
+
         decoder_class = decoder_choices.get_class(args.decoder)
 
         if args.decoder == "transducer":
-            decoder = decoder_class(
-                vocab_size,
-                embed_pad=0,
-                **args.decoder_conf,
-            )
+            if predecoder is not None:
+                bert_vocab_size = predecoder.vocab_size()
+                decoder = decoder_class(
+                    bert_vocab_size,
+                    embed_pad=0,
+                    **args.decoder_conf,
+                )
 
-            joint_network = JointNetwork(
-                vocab_size,
-                encoder.output_size(),
-                decoder.dunits,
-                **args.joint_net_conf,
-            )
+                joint_network = JointNetwork(
+                    bert_vocab_size,
+                    encoder.output_size(),
+                    decoder.dunits,
+                    **args.joint_net_conf,
+                )
+            else:
+                decoder = decoder_class(
+                    vocab_size,
+                    embed_pad=0,
+                    **args.decoder_conf,
+                )
+
+                joint_network = JointNetwork(
+                    vocab_size,
+                    encoder.output_size(),
+                    decoder.dunits,
+                    **args.joint_net_conf,
+                )
         else:
-            decoder = decoder_class(
-                vocab_size=vocab_size,
-                encoder_output_size=encoder_output_size,
-                **args.decoder_conf,
-            )
+            if "bertctc" in args.model:
+                # encoder
+                decoder = decoder_class(
+                    input_size=input_size,
+                    **args.decoder_conf,
+                )
+            else:
+                decoder = decoder_class(
+                    vocab_size=vocab_size,
+                    encoder_output_size=encoder_output_size,
+                    **args.decoder_conf,
+                )
 
             joint_network = None
 
@@ -485,20 +549,38 @@ class ASRTask(AbsTask):
             model_class = model_choices.get_class(args.model)
         except AttributeError:
             model_class = model_choices.get_class("espnet")
-        model = model_class(
-            vocab_size=vocab_size,
-            frontend=frontend,
-            specaug=specaug,
-            normalize=normalize,
-            preencoder=preencoder,
-            encoder=encoder,
-            postencoder=postencoder,
-            decoder=decoder,
-            ctc=ctc,
-            joint_network=joint_network,
-            token_list=token_list,
-            **args.model_conf,
-        )
+
+        if predecoder is None:
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                joint_network=joint_network,
+                token_list=token_list,
+                **args.model_conf,
+            )
+        else:
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                predecoder=predecoder,
+                decoder=decoder,
+                ctc=ctc,
+                joint_network=joint_network,
+                token_list=token_list,
+                **args.model_conf,
+            )
 
         # FIXME(kamo): Should be done in model?
         # 8. Initialize
