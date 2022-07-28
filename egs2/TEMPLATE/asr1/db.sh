@@ -4,9 +4,11 @@
 ACCENTED_FR=downloads
 AIDATATANG_200ZH=downloads
 AISHELL=downloads
+AISHELL2=
 AISHELL3=downloads
 AISHELL4=downloads
 ALFFA=downloads
+AMERICASNLP22=downloads
 AN4=downloads
 AUDIOSET=
 DIRHA_ENGLISH_PHDEV=
@@ -46,10 +48,13 @@ LIBRISPEECH=
 LIBRILIGHT_LIMITED=
 FSC=
 SLURP=
+SLURP_S= # Output file path
+LIBRITRANS_S= # Output file path
 VOXCELEB=
 MEDIASPEECH=downloads
 MINI_LIBRISPEECH=downloads
 MISP2021=
+L3DAS22=
 LIBRIMIX=downloads
 LIBRITTS=
 LJSPEECH=downloads
@@ -71,6 +76,7 @@ TSUKUYOMI=downloads
 VOXFORGE=downloads
 AMI=
 COMMONVOICE=downloads
+FLEURS=downloads
 MICROSOFT_SPEECH_CORPUS=
 BABEL_101=
 BABEL_102=
@@ -178,6 +184,9 @@ if [[ "$(hostname)" == tir* ]]; then
     FISHER_CALLHOME_SPANISH=/projects/tir5/data/speech_corpora/fisher_callhome_spanish
     DSING=/projects/tir5/data/speech_corpora/sing_300x30x2
     MS_INDIC_IS18=/projects/tir6/general/cnariset/corpora/microsoft_speech_corpus_indian_languages
+    AISHELL=/projects/tir5/data/speech_corpora/Aishell
+    LIBRISPEECH=/projects/tir5/data/speech_corpora/LibriSpeech
+    SLURP=/projects/tir5/data/speech_corpora/SLURP
 fi
 
 # For only JHU environment
