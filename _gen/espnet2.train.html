@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>espnet2.train package &mdash; ESPnet 202205 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>espnet2.train package &mdash; ESPnet 202207 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
@@ -32,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> ESPnet
           </a>
               <div class="version">
-                202205
+                202207
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -133,6 +133,7 @@
 <li class="toctree-l1"><a class="reference internal" href="espnet2.st.html">espnet2.st package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2.tasks.html">espnet2.tasks package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2.mt.html">espnet2.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2.bin.html">espnet2.bin package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2.samplers.html">espnet2.samplers package</a></li>
 </ul>
@@ -586,6 +587,12 @@ discrimiantor loss. This must have the default value.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="espnet2.train.preprocessor.DynamicMixingPreprocessor">
+<em class="property">class </em><code class="sig-prename descclassname">espnet2.train.preprocessor.</code><code class="sig-name descname">DynamicMixingPreprocessor</code><span class="sig-paren">(</span><em class="sig-param">train: bool</em>, <em class="sig-param">source_scp: str = None</em>, <em class="sig-param">num_spk: int = 2</em>, <em class="sig-param">dynamic_mixing_gain_db: float = 0.0</em>, <em class="sig-param">speech_name: str = 'speech_mix'</em>, <em class="sig-param">speech_ref_name_prefix: str = 'speech_ref'</em>, <em class="sig-param">utt2spk: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/preprocessor.html#DynamicMixingPreprocessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.preprocessor.DynamicMixingPreprocessor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#espnet2.train.preprocessor.AbsPreprocessor" title="espnet2.train.preprocessor.AbsPreprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet2.train.preprocessor.AbsPreprocessor</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
 <dt id="espnet2.train.preprocessor.EnhPreprocessor">
 <em class="property">class </em><code class="sig-prename descclassname">espnet2.train.preprocessor.</code><code class="sig-name descname">EnhPreprocessor</code><span class="sig-paren">(</span><em class="sig-param">train: bool</em>, <em class="sig-param">rir_scp: str = None</em>, <em class="sig-param">rir_apply_prob: float = 1.0</em>, <em class="sig-param">noise_scp: str = None</em>, <em class="sig-param">noise_apply_prob: float = 1.0</em>, <em class="sig-param">noise_db_range: str = '3_10'</em>, <em class="sig-param">short_noise_thres: float = 0.5</em>, <em class="sig-param">speech_volume_normalize: float = None</em>, <em class="sig-param">speech_name: str = 'speech_mix'</em>, <em class="sig-param">speech_ref_name_prefix: str = 'speech_ref'</em>, <em class="sig-param">noise_ref_name_prefix: str = 'noise_ref'</em>, <em class="sig-param">dereverb_ref_name_prefix: str = 'dereverb_ref'</em>, <em class="sig-param">use_reverberant_ref: bool = False</em>, <em class="sig-param">num_spk: int = 1</em>, <em class="sig-param">num_noise_type: int = 1</em>, <em class="sig-param">sample_rate: int = 8000</em>, <em class="sig-param">force_single_channel: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/preprocessor.html#EnhPreprocessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.preprocessor.EnhPreprocessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#espnet2.train.preprocessor.CommonPreprocessor" title="espnet2.train.preprocessor.CommonPreprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet2.train.preprocessor.CommonPreprocessor</span></code></a></p>
@@ -742,7 +749,7 @@ and override the methods if necessary - at least “train_one_epoch()”</p>
 
 <dl class="class">
 <dt id="espnet2.train.trainer.TrainerOptions">
-<em class="property">class </em><code class="sig-prename descclassname">espnet2.train.trainer.</code><code class="sig-name descname">TrainerOptions</code><span class="sig-paren">(</span><em class="sig-param">ngpu: int, resume: bool, use_amp: bool, train_dtype: str, grad_noise: bool, accum_grad: int, grad_clip: float, grad_clip_type: float, log_interval: Union[int, NoneType], no_forward_run: bool, use_matplotlib: bool, use_tensorboard: bool, use_wandb: bool, output_dir: Union[pathlib.Path, str], max_epoch: int, seed: int, sharded_ddp: bool, patience: Union[int, NoneType], keep_nbest_models: Union[int, List[int]], nbest_averaging_interval: int, early_stopping_criterion: Sequence[str], best_model_criterion: Sequence[Sequence[str]], val_scheduler_criterion: Sequence[str], unused_parameters: bool, wandb_model_log_interval: int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/trainer.html#TrainerOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.trainer.TrainerOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">espnet2.train.trainer.</code><code class="sig-name descname">TrainerOptions</code><span class="sig-paren">(</span><em class="sig-param">ngpu: int, resume: bool, use_amp: bool, train_dtype: str, grad_noise: bool, accum_grad: int, grad_clip: float, grad_clip_type: float, log_interval: Union[int, NoneType], no_forward_run: bool, use_matplotlib: bool, use_tensorboard: bool, use_wandb: bool, output_dir: Union[pathlib.Path, str], max_epoch: int, seed: int, sharded_ddp: bool, patience: Union[int, NoneType], keep_nbest_models: Union[int, List[int]], nbest_averaging_interval: int, early_stopping_criterion: Sequence[str], best_model_criterion: Sequence[Sequence[str]], val_scheduler_criterion: Sequence[str], unused_parameters: bool, wandb_model_log_interval: int, create_graph_in_tensorboard: bool</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/trainer.html#TrainerOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.trainer.TrainerOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
@@ -1012,7 +1019,7 @@ espnet.train.abs_gan_espnet_model.AbsGANESPnetModel.</p>
 
 <dl class="class">
 <dt id="espnet2.train.gan_trainer.GANTrainerOptions">
-<em class="property">class </em><code class="sig-prename descclassname">espnet2.train.gan_trainer.</code><code class="sig-name descname">GANTrainerOptions</code><span class="sig-paren">(</span><em class="sig-param">ngpu: int, resume: bool, use_amp: bool, train_dtype: str, grad_noise: bool, accum_grad: int, grad_clip: float, grad_clip_type: float, log_interval: Optional[int], no_forward_run: bool, use_matplotlib: bool, use_tensorboard: bool, use_wandb: bool, output_dir: Union[pathlib.Path, str], max_epoch: int, seed: int, sharded_ddp: bool, patience: Optional[int], keep_nbest_models: Union[int, List[int]], nbest_averaging_interval: int, early_stopping_criterion: Sequence[str], best_model_criterion: Sequence[Sequence[str]], val_scheduler_criterion: Sequence[str], unused_parameters: bool, wandb_model_log_interval: int, generator_first: bool</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/gan_trainer.html#GANTrainerOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.gan_trainer.GANTrainerOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">espnet2.train.gan_trainer.</code><code class="sig-name descname">GANTrainerOptions</code><span class="sig-paren">(</span><em class="sig-param">ngpu: int, resume: bool, use_amp: bool, train_dtype: str, grad_noise: bool, accum_grad: int, grad_clip: float, grad_clip_type: float, log_interval: Optional[int], no_forward_run: bool, use_matplotlib: bool, use_tensorboard: bool, use_wandb: bool, output_dir: Union[pathlib.Path, str], max_epoch: int, seed: int, sharded_ddp: bool, patience: Optional[int], keep_nbest_models: Union[int, List[int]], nbest_averaging_interval: int, early_stopping_criterion: Sequence[str], best_model_criterion: Sequence[Sequence[str]], val_scheduler_criterion: Sequence[str], unused_parameters: bool, wandb_model_log_interval: int, create_graph_in_tensorboard: bool, generator_first: bool</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet2/train/gan_trainer.html#GANTrainerOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet2.train.gan_trainer.GANTrainerOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#espnet2.train.trainer.TrainerOptions" title="espnet2.train.trainer.TrainerOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet2.train.trainer.TrainerOptions</span></code></a></p>
 <p>Trainer option dataclass for GANTrainer.</p>
 </dd></dl>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>espnet2.enh.separator.dccrn_separator &mdash; ESPnet 202205 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <title>espnet2.enh.separator.dccrn_separator &mdash; ESPnet 202207 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
@@ -29,7 +29,7 @@
             <a href="../../../../index.html" class="icon icon-home"> ESPnet
           </a>
               <div class="version">
-                202205
+                202207
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.st.html">espnet2.st package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.mt.html">espnet2.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.bin.html">espnet2.bin package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
 </ul>
@@ -211,6 +212,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">use_builtin_complex</span> <span class="o">=</span> <span class="n">use_builtin_complex</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_spk</span> <span class="o">=</span> <span class="n">num_spk</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_noise_mask</span> <span class="o">=</span> <span class="n">use_noise_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_noise</span> <span class="o">=</span> <span class="n">use_noise_mask</span>
         <span class="k">if</span> <span class="n">masking_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported masking mode: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">masking_mode</span><span class="p">)</span>
         <span class="c1"># Network config</span>
