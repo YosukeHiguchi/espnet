@@ -147,7 +147,7 @@ asr_inference.py
                             [--word_lm_train_config WORD_LM_TRAIN_CONFIG]
                             [--word_lm_file WORD_LM_FILE]
                             [--ngram_file NGRAM_FILE] [--model_tag MODEL_TAG]
-                            [--enh_s2t_task ENH_S2T_TASK]
+                            [--enh_s2t_task ENH_S2T_TASK] [--multi_asr MULTI_ASR]
                             [--quantize_asr_model QUANTIZE_ASR_MODEL]
                             [--quantize_lm QUANTIZE_LM]
                             [--quantize_modules [QUANTIZE_MODULES [QUANTIZE_MODULES ...]]]
@@ -158,6 +158,8 @@ asr_inference.py
                             [--minlenratio MINLENRATIO] [--ctc_weight CTC_WEIGHT]
                             [--lm_weight LM_WEIGHT] [--ngram_weight NGRAM_WEIGHT]
                             [--streaming STREAMING]
+                            [--hugging_face_decoder HUGGING_FACE_DECODER]
+                            [--hugging_face_decoder_max_length HUGGING_FACE_DECODER_MAX_LENGTH]
                             [--transducer_conf TRANSDUCER_CONF]
                             [--token_type {char,bpe,None}] [--bpemodel BPEMODEL]
     
@@ -200,6 +202,8 @@ asr_inference.py
                             (default: None)
       --enh_s2t_task ENH_S2T_TASK
                             enhancement and asr joint model (default: False)
+      --multi_asr MULTI_ASR
+                            multi-speaker asr model (default: False)
     
     Quantization related:
       --quantize_asr_model QUANTIZE_ASR_MODEL
@@ -240,6 +244,8 @@ asr_inference.py
       --ngram_weight NGRAM_WEIGHT
                             ngram weight (default: 0.9)
       --streaming STREAMING
+      --hugging_face_decoder HUGGING_FACE_DECODER
+      --hugging_face_decoder_max_length HUGGING_FACE_DECODER_MAX_LENGTH
       --transducer_conf TRANSDUCER_CONF
                             The keyword arguments for transducer beam search.
                             (default: None)
@@ -432,10 +438,11 @@ asr_train.py
                         [--input_size INPUT_SIZE] [--ctc_conf CTC_CONF]
                         [--joint_net_conf JOINT_NET_CONF]
                         [--use_preprocessor USE_PREPROCESSOR]
-                        [--token_type {bpe,char,word,phn}] [--bpemodel BPEMODEL]
+                        [--token_type {bpe,char,word,phn,hugging_face}]
+                        [--bpemodel BPEMODEL]
                         [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                         [--cleaner {None,tacotron,jaconv,vietnamese}]
-                        [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                        [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                         [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                         [--rir_scp RIR_SCP] [--rir_apply_prob RIR_APPLY_PROB]
                         [--noise_scp NOISE_SCP]
@@ -447,15 +454,18 @@ asr_train.py
                         [--specaug_conf SPECAUG_CONF]
                         [--normalize {global_mvn,utterance_mvn,None}]
                         [--normalize_conf NORMALIZE_CONF]
-                        [--model {espnet,maskctc}] [--model_conf MODEL_CONF]
+                        [--model {espnet,maskctc,pit_espnet}]
+                        [--model_conf MODEL_CONF]
                         [--preencoder {sinc,linear,None}]
                         [--preencoder_conf PREENCODER_CONF]
-                        [--encoder {conformer,transformer,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}]
+                        [--encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}]
                         [--encoder_conf ENCODER_CONF]
                         [--postencoder {hugging_face_transformers,None}]
                         [--postencoder_conf POSTENCODER_CONF]
-                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm}]
+                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers}]
                         [--decoder_conf DECODER_CONF]
+                        [--preprocessor {default,multi}]
+                        [--preprocessor_conf PREPROCESSOR_CONF]
     
     base parser
     
@@ -679,6 +689,20 @@ asr_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -790,12 +814,12 @@ asr_train.py
     
       --use_preprocessor USE_PREPROCESSOR
                             Apply preprocessing to data or not (default: True)
-      --token_type {bpe,char,word,phn}
+      --token_type {bpe,char,word,phn,hugging_face}
                             The text will be tokenized in the specified level token (default: bpe)
       --bpemodel BPEMODEL   The model file of sentencepiece (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
       --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
                             Scale the maximum amplitude to the given value. (default: None)
@@ -822,7 +846,7 @@ asr_train.py
                             The normalize type (default: utterance_mvn)
       --normalize_conf NORMALIZE_CONF
                             The keyword arguments for normalize (default: {})
-      --model {espnet,maskctc}
+      --model {espnet,maskctc,pit_espnet}
                             The model type (default: espnet)
       --model_conf MODEL_CONF
                             The keyword arguments for model (default: {})
@@ -830,7 +854,7 @@ asr_train.py
                             The preencoder type (default: None)
       --preencoder_conf PREENCODER_CONF
                             The keyword arguments for preencoder (default: {})
-      --encoder {conformer,transformer,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}
+      --encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}
                             The encoder type (default: rnn)
       --encoder_conf ENCODER_CONF
                             The keyword arguments for encoder (default: {})
@@ -838,10 +862,14 @@ asr_train.py
                             The postencoder type (default: None)
       --postencoder_conf POSTENCODER_CONF
                             The keyword arguments for postencoder (default: {})
-      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm}
+      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers}
                             The decoder type (default: rnn)
       --decoder_conf DECODER_CONF
                             The keyword arguments for decoder (default: {})
+      --preprocessor {default,multi}
+                            The preprocessor type (default: default)
+      --preprocessor_conf PREPROCESSOR_CONF
+                            The keyword arguments for preprocessor (default: {})
 .. _asr_transducer_inference.py:
 
 asr_transducer_inference.py
@@ -1041,8 +1069,7 @@ asr_transducer_train.py
                                    [--scheduler {reducelronplateau,lambdalr,steplr,multisteplr,exponentiallr,cosineannealinglr,noamlr,warmupsteplr,warmuplr,cycliclr,onecyclelr,cosineannealingwarmrestarts,None}]
                                    [--scheduler_conf SCHEDULER_CONF]
                                    [--token_list TOKEN_LIST]
-                                   [--input_size INPUT_SIZE]
-                                   [--init {chainer,chainer_espnet1,xavier_uniform,xavier_normal,kaiming_uniform,kaiming_normal,None}]
+                                   [--input_size INPUT_SIZE] [--init INIT]
                                    [--model_conf MODEL_CONF]
                                    [--encoder_conf ENCODER_CONF]
                                    [--joint_network_conf JOINT_NETWORK_CONF]
@@ -1051,7 +1078,7 @@ asr_transducer_train.py
                                    [--bpemodel BPEMODEL]
                                    [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                                    [--cleaner {None,tacotron,jaconv,vietnamese}]
-                                   [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                                   [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                                    [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                                    [--rir_scp RIR_SCP]
                                    [--rir_apply_prob RIR_APPLY_PROB]
@@ -1071,23 +1098,6 @@ asr_transducer_train.py
     
     optional arguments:
       --config CONFIG       Give config file in yaml format (default: None)
-      --non_linguistic_symbols NON_LINGUISTIC_SYMBOLS
-                            non_linguistic_symbols file path (default: None)
-      --cleaner {None,tacotron,jaconv,vietnamese}
-                            Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
-                            Specify g2p method if --token_type=phn (default: None)
-      --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
-                            Scale the maximum amplitude to the given value. (default: None)
-      --rir_scp RIR_SCP     The file path of rir scp file. (default: None)
-      --rir_apply_prob RIR_APPLY_PROB
-                            The probability for applying RIR convolution. (default: 1.0)
-      --noise_scp NOISE_SCP
-                            The file path of noise scp file. (default: None)
-      --noise_apply_prob NOISE_APPLY_PROB
-                            The probability applying Noise adding. (default: 1.0)
-      --noise_db_range NOISE_DB_RANGE
-                            The range of noise decibel level. (default: 13_15)
     
     Common configuration:
       --print_config        Print the config file and exit (default: False)
@@ -1304,6 +1314,20 @@ asr_transducer_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -1399,28 +1423,44 @@ asr_transducer_train.py
       --scheduler_conf SCHEDULER_CONF
                             The keyword arguments for lr scheduler (default: {})
     
-      Task related
+      Task related.
     
       --token_list TOKEN_LIST
-                            A text mapping int-id to token (default: None)
+                            Integer-string mapper for tokens. (default: None)
       --input_size INPUT_SIZE
-                            The number of input dimension of the feature (default: None)
-      --init {chainer,chainer_espnet1,xavier_uniform,xavier_normal,kaiming_uniform,kaiming_normal,None}
-                            The initialization method (default: None)
+                            The number of dimensions for input features. (default: None)
+      --init INIT           Type of model initialization to use. (default: None)
       --model_conf MODEL_CONF
-                            The keyword arguments for model class. (default: {'transducer_weight': 1.0, 'fastemit_lambda': 0.0, 'auxiliary_ctc_weight': 0.0, 'auxiliary_ctc_dropout_rate': 0.0, 'auxiliary_lm_loss_weight': 0.0, 'auxiliary_lm_loss_smoothing': 0.0, 'ignore_id': -1, 'sym_space': '<space>', 'sym_blank': '<blank>', 'report_cer': False, 'report_wer': False, 'extract_feats_in_collect_stats': True})
+                            The keyword arguments for the model class. (default: {'transducer_weight': 1.0, 'fastemit_lambda': 0.0, 'auxiliary_ctc_weight': 0.0, 'auxiliary_ctc_dropout_rate': 0.0, 'auxiliary_lm_loss_weight': 0.0, 'auxiliary_lm_loss_smoothing': 0.05, 'ignore_id': -1, 'sym_space': '<space>', 'sym_blank': '<blank>', 'report_cer': False, 'report_wer': False, 'extract_feats_in_collect_stats': True})
       --encoder_conf ENCODER_CONF
-                            The keyword arguments for encoder class. (default: {})
+                            The keyword arguments for the encoder class. (default: {})
       --joint_network_conf JOINT_NETWORK_CONF
-                            The keyword arguments for joint network class. (default: {})
+                            The keyword arguments for the joint network class. (default: {})
     
-      Preprocess related
+      Preprocess related.
     
       --use_preprocessor USE_PREPROCESSOR
-                            Apply preprocessing to data or not (default: True)
+                            Whether to apply preprocessing to input data. (default: True)
       --token_type {bpe,char,word,phn}
-                            The text will be tokenized in the specified level token (default: bpe)
-      --bpemodel BPEMODEL   The model file of sentencepiece (default: None)
+                            The type of tokens to use during tokenization. (default: bpe)
+      --bpemodel BPEMODEL   The path of the sentencepiece model. (default: None)
+      --non_linguistic_symbols NON_LINGUISTIC_SYMBOLS
+                            The 'non_linguistic_symbols' file path. (default: None)
+      --cleaner {None,tacotron,jaconv,vietnamese}
+                            Text cleaner to use. (default: None)
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
+                            g2p method to use if --token_type=phn. (default: None)
+      --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
+                            Normalization value for maximum amplitude scaling. (default: None)
+      --rir_scp RIR_SCP     The RIR SCP file path. (default: None)
+      --rir_apply_prob RIR_APPLY_PROB
+                            The probability of the applied RIR convolution. (default: 1.0)
+      --noise_scp NOISE_SCP
+                            The path of noise SCP file. (default: None)
+      --noise_apply_prob NOISE_APPLY_PROB
+                            The probability of the applied noise addition. (default: 1.0)
+      --noise_db_range NOISE_DB_RANGE
+                            The range of the noise decibel level. (default: 13_15)
       --frontend {default,sliding_window}
                             The frontend type (default: default)
       --frontend_conf FRONTEND_CONF
@@ -1834,6 +1874,20 @@ diar_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -2157,7 +2211,7 @@ enh_s2t_train.py
                             [--src_bpemodel SRC_BPEMODEL]
                             [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                             [--cleaner {None,tacotron,jaconv,vietnamese}]
-                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                             [--text_name TEXT_NAME [TEXT_NAME ...]]
                             [--enh_encoder {stft,conv,same}]
                             [--enh_encoder_conf ENH_ENCODER_CONF]
@@ -2175,11 +2229,11 @@ enh_s2t_train.py
                             [--normalize_conf NORMALIZE_CONF]
                             [--asr_preencoder {sinc,linear,None}]
                             [--asr_preencoder_conf ASR_PREENCODER_CONF]
-                            [--asr_encoder {conformer,transformer,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}]
+                            [--asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}]
                             [--asr_encoder_conf ASR_ENCODER_CONF]
                             [--asr_postencoder {hugging_face_transformers,None}]
                             [--asr_postencoder_conf ASR_POSTENCODER_CONF]
-                            [--asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm}]
+                            [--asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers}]
                             [--asr_decoder_conf ASR_DECODER_CONF]
                             [--st_preencoder {sinc,linear,None}]
                             [--st_preencoder_conf ST_PREENCODER_CONF]
@@ -2428,6 +2482,20 @@ enh_s2t_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -2543,7 +2611,7 @@ enh_s2t_train.py
       --enh_model_conf ENH_MODEL_CONF
                             The keyword arguments for enh submodel class. (default: {'stft_consistency': False, 'loss_type': 'mask_mse', 'mask_type': None})
       --asr_model_conf ASR_MODEL_CONF
-                            The keyword arguments for asr submodel class. (default: {'ctc_weight': 0.5, 'interctc_weight': 0.0, 'ignore_id': -1, 'lsm_weight': 0.0, 'length_normalized_loss': False, 'report_cer': True, 'report_wer': True, 'sym_space': '<space>', 'sym_blank': '<blank>', 'extract_feats_in_collect_stats': True})
+                            The keyword arguments for asr submodel class. (default: {'ctc_weight': 0.5, 'interctc_weight': 0.0, 'ignore_id': -1, 'lsm_weight': 0.0, 'length_normalized_loss': False, 'report_cer': True, 'report_wer': True, 'sym_space': '<space>', 'sym_blank': '<blank>', 'sym_sos': '<sos/eos>', 'sym_eos': '<sos/eos>', 'extract_feats_in_collect_stats': True, 'lang_token_id': -1})
       --st_model_conf ST_MODEL_CONF
                             The keyword arguments for st submodel class. (default: {'stft_consistency': False, 'loss_type': 'mask_mse', 'mask_type': None})
       --diar_model_conf DIAR_MODEL_CONF
@@ -2568,7 +2636,7 @@ enh_s2t_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
       --text_name TEXT_NAME [TEXT_NAME ...]
                             Specify the text_name attribute used in the preprocessor (default: ['text'])
@@ -2604,7 +2672,7 @@ enh_s2t_train.py
                             The asr_preencoder type (default: None)
       --asr_preencoder_conf ASR_PREENCODER_CONF
                             The keyword arguments for asr_preencoder (default: {})
-      --asr_encoder {conformer,transformer,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}
+      --asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,longformer,branchformer}
                             The asr_encoder type (default: rnn)
       --asr_encoder_conf ASR_ENCODER_CONF
                             The keyword arguments for asr_encoder (default: {})
@@ -2612,7 +2680,7 @@ enh_s2t_train.py
                             The asr_postencoder type (default: None)
       --asr_postencoder_conf ASR_POSTENCODER_CONF
                             The keyword arguments for asr_postencoder (default: {})
-      --asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm}
+      --asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers}
                             The asr_decoder type (default: rnn)
       --asr_decoder_conf ASR_DECODER_CONF
                             The keyword arguments for asr_decoder (default: {})
@@ -2778,7 +2846,6 @@ enh_train.py
                         [--scheduler_conf SCHEDULER_CONF]
                         [--init {chainer,xavier_uniform,xavier_normal,kaiming_uniform,kaiming_normal,None}]
                         [--model_conf MODEL_CONF] [--criterions CRITERIONS]
-                        [--use_preprocessor USE_PREPROCESSOR]
                         [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                         [--rir_scp RIR_SCP] [--rir_apply_prob RIR_APPLY_PROB]
                         [--noise_scp NOISE_SCP]
@@ -2797,6 +2864,8 @@ enh_train.py
                         [--decoder {stft,conv,same}] [--decoder_conf DECODER_CONF]
                         [--mask_module {multi_mask}]
                         [--mask_module_conf MASK_MODULE_CONF]
+                        [--preprocessor {dynamic_mixing,enh,None}]
+                        [--preprocessor_conf PREPROCESSOR_CONF]
     
     base parser
     
@@ -3018,6 +3087,20 @@ enh_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -3124,8 +3207,6 @@ enh_train.py
     
       Preprocess related
     
-      --use_preprocessor USE_PREPROCESSOR
-                            Whether to apply preprocessing to data or not (default: False)
       --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
                             Scale the maximum amplitude to the given value or range. e.g. --speech_volume_normalize 1.0 scales it to 1.0.
                             --speech_volume_normalize 0.5_1.0 scales it to a random number in the range [0.5, 1.0) (default: None)
@@ -3170,6 +3251,10 @@ enh_train.py
                             The mask_module type (default: multi_mask)
       --mask_module_conf MASK_MODULE_CONF
                             The keyword arguments for mask_module (default: {})
+      --preprocessor {dynamic_mixing,enh,None}
+                            The preprocessor type (default: None)
+      --preprocessor_conf PREPROCESSOR_CONF
+                            The keyword arguments for preprocessor (default: {})
 .. _gan_tts_train.py:
 
 gan_tts_train.py
@@ -3262,7 +3347,7 @@ gan_tts_train.py
                             [--bpemodel BPEMODEL]
                             [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                             [--cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}]
-                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                             [--feats_extract {fbank,log_spectrogram,linear_spectrogram}]
                             [--feats_extract_conf FEATS_EXTRACT_CONF]
                             [--normalize {global_mvn,utterance_mvn,None}]
@@ -3287,7 +3372,7 @@ gan_tts_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
     
     Common configuration:
@@ -3503,6 +3588,20 @@ gan_tts_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
                                ...
                             
                             "kaldi_ark":
@@ -3737,7 +3836,7 @@ hubert_train.py
                            [--bpemodel BPEMODEL]
                            [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                            [--cleaner {None,tacotron,jaconv,vietnamese}]
-                           [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                           [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                            [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                            [--rir_scp RIR_SCP] [--rir_apply_prob RIR_APPLY_PROB]
                            [--noise_scp NOISE_SCP]
@@ -3986,6 +4085,20 @@ hubert_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -4103,7 +4216,7 @@ hubert_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
       --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
                             Scale the maximum amplitude to the given value. (default: None)
@@ -4136,6 +4249,31 @@ hubert_train.py
                             The encoder type (default: hubert_pretrain)
       --encoder_conf ENCODER_CONF
                             The keyword arguments for encoder (default: {})
+.. _hugging_face_export_vocabulary.py:
+
+hugging_face_export_vocabulary.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: none
+
+    usage: hugging_face_export_vocabulary.py [-h]
+                                             [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
+                                             --output OUTPUT --model_name_or_path
+                                             MODEL_NAME_OR_PATH
+                                             [--add_symbol ADD_SYMBOL]
+    
+    Export Hugging Face vocabulary
+    
+    optional arguments:
+      --log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
+                            The verbose level of logging (default: INFO)
+      --output OUTPUT, -o OUTPUT
+                            Output text. - indicates sys.stdout (default: None)
+      --model_name_or_path MODEL_NAME_OR_PATH
+                            Hugging Face model name or path (default: None)
+      --add_symbol ADD_SYMBOL
+                            Append symbol e.g. --add_symbol '<blank>:0'
+                            --add_symbol '<unk>:1' (default: [])
 .. _launch.py:
 
 launch.py
@@ -4317,7 +4455,7 @@ lm_train.py
                        [--token_type {bpe,char,word}] [--bpemodel BPEMODEL]
                        [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                        [--cleaner {None,tacotron,jaconv,vietnamese}]
-                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                        [--lm {seq_rnn,transformer}] [--lm_conf LM_CONF]
     
     base parser
@@ -4328,7 +4466,7 @@ lm_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
     
     Common configuration:
@@ -4544,6 +4682,20 @@ lm_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
                                ...
                             
                             "kaldi_ark":
@@ -4837,7 +4989,7 @@ mt_train.py
                        [--bpemodel BPEMODEL] [--src_bpemodel SRC_BPEMODEL]
                        [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                        [--cleaner {None,tacotron,jaconv,vietnamese}]
-                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                        [--frontend {embed}] [--frontend_conf FRONTEND_CONF]
                        [--preencoder {sinc,linear,None}]
                        [--preencoder_conf PREENCODER_CONF]
@@ -4856,7 +5008,7 @@ mt_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
     
     Common configuration:
@@ -5074,6 +5226,20 @@ mt_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -5219,12 +5385,12 @@ pack.py
 
 .. code-block:: none
 
-    usage: pack.py [-h] {asr,st,tts,enh,diar,enh_s2t} ...
+    usage: pack.py [-h] {asr,st,tts,enh,diar,svs,enh_s2t} ...
     
     Pack input files to archive format
     
     positional arguments:
-      {asr,st,tts,enh,diar,enh_s2t}
+      {asr,st,tts,enh,diar,svs,enh_s2t}
     
     optional arguments:
 .. _split_scps.py:
@@ -5429,11 +5595,11 @@ st_train.py
                        [--model_conf MODEL_CONF]
                        [--use_preprocessor USE_PREPROCESSOR]
                        [--token_type {bpe,char,word,phn}]
-                       [--src_token_type {bpe,char,word,phn}]
+                       [--src_token_type {bpe,char,word,phn,none}]
                        [--bpemodel BPEMODEL] [--src_bpemodel SRC_BPEMODEL]
                        [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                        [--cleaner {None,tacotron,jaconv,vietnamese}]
-                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                       [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                        [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                        [--rir_scp RIR_SCP] [--rir_apply_prob RIR_APPLY_PROB]
                        [--noise_scp NOISE_SCP]
@@ -5678,6 +5844,20 @@ st_train.py
                                utterance_id_b b.wav
                                ...
                             
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               ...
+                            
                             "kaldi_ark":
                             Kaldi-ark file type.
                             
@@ -5793,7 +5973,7 @@ st_train.py
                             Apply preprocessing to data or not (default: True)
       --token_type {bpe,char,word,phn}
                             The target text will be tokenized in the specified level token (default: bpe)
-      --src_token_type {bpe,char,word,phn}
+      --src_token_type {bpe,char,word,phn,none}
                             The source text will be tokenized in the specified level token (default: bpe)
       --bpemodel BPEMODEL   The model file of sentencepiece (for target language) (default: None)
       --src_bpemodel SRC_BPEMODEL
@@ -5802,7 +5982,7 @@ st_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
       --speech_volume_normalize SPEECH_VOLUME_NORMALIZE
                             Scale the maximum amplitude to the given value. (default: None)
@@ -5869,7 +6049,7 @@ tokenize_text.py
                             [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                             [--remove_non_linguistic_symbols REMOVE_NON_LINGUISTIC_SYMBOLS]
                             [--cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}]
-                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                             [--write_vocabulary WRITE_VOCABULARY]
                             [--vocabulary_size VOCABULARY_SIZE] [--cutoff CUTOFF]
                             [--add_symbol ADD_SYMBOL]
@@ -5900,7 +6080,7 @@ tokenize_text.py
                             False)
       --cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
     
     write_vocabulary mode related:
@@ -6098,7 +6278,7 @@ tts_train.py
                         [--token_type {bpe,char,word,phn}] [--bpemodel BPEMODEL]
                         [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
                         [--cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}]
-                        [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}]
+                        [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                         [--feats_extract {fbank,spectrogram,linear_spectrogram}]
                         [--feats_extract_conf FEATS_EXTRACT_CONF]
                         [--normalize {global_mvn,None}]
@@ -6121,7 +6301,7 @@ tts_train.py
                             non_linguistic_symbols file path (default: None)
       --cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}
                             Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,g2pk,g2pk_no_space,korean_jaso,korean_jaso_no_space,g2p_is}
+      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
     
     Common configuration:
@@ -6337,6 +6517,20 @@ tts_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "midi":
+                            MIDI format types which supported by sndfile mid, midi, etc.
+                            
+                               utterance_id_a a.mid
+                               utterance_id_b b.mid
+                               ...
+                            
+                            "duration":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               utterance_id_A start_1 end_1 phone_1 start_2 end_2 phone_2 ...
+                               utterance_id_B start_1 end_1 phone_1 start_2 end_2 phone_2 ...
                                ...
                             
                             "kaldi_ark":
