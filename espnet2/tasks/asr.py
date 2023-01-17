@@ -8,8 +8,13 @@ from typeguard import check_argument_types, check_return_type
 
 from espnet2.asr.ctc import CTC
 from espnet2.asr.decoder.abs_decoder import AbsDecoder
+from espnet2.asr.decoder.hugging_face_transformers_decoder import (  # noqa: H301
+    HuggingFaceTransformersDecoder,
+)
 from espnet2.asr.decoder.mlm_decoder import MLMDecoder
 from espnet2.asr.decoder.rnn_decoder import RNNDecoder
+from espnet2.asr.decoder.s4_decoder import S4Decoder
+from espnet2.asr.decoder.transducer_decoder import TransducerDecoder
 from espnet2.asr.decoder.transformer_decoder import (
     DynamicConvolution2DTransformerDecoder,
     DynamicConvolutionTransformerDecoder,
@@ -26,13 +31,18 @@ from espnet2.asr.encoder.contextual_block_conformer_encoder import (
 from espnet2.asr.encoder.contextual_block_transformer_encoder import (
     ContextualBlockTransformerEncoder,
 )
+from espnet2.asr.encoder.e_branchformer_encoder import EBranchformerEncoder
 from espnet2.asr.encoder.hubert_encoder import (
     FairseqHubertEncoder,
     FairseqHubertPretrainEncoder,
+    TorchAudioHuBERTPretrainEncoder,
 )
 from espnet2.asr.encoder.longformer_encoder import LongformerEncoder
 from espnet2.asr.encoder.rnn_encoder import RNNEncoder
 from espnet2.asr.encoder.transformer_encoder import TransformerEncoder
+from espnet2.asr.encoder.transformer_encoder_multispkr import (
+    TransformerEncoder as TransformerEncoderMultiSpkr,
+)
 from espnet2.asr.encoder.vgg_rnn_encoder import VGGRNNEncoder
 from espnet2.asr.encoder.wav2vec2_encoder import FairSeqWav2Vec2Encoder
 from espnet2.asr.espnet_model import ESPnetASRModel
@@ -44,6 +54,7 @@ from espnet2.asr.frontend.windowing import SlidingWindow
 from espnet2.asr.maskctc_model import MaskCTCModel
 from espnet2.asr.bertctc_model import BERTCTCModel
 from espnet2.asr.rnnt_bert_model import RNNTBERTModel
+from espnet2.asr.pit_espnet_model import ESPnetASRModel as PITESPnetModel
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
 from espnet2.asr.postencoder.hugging_face_transformers_postencoder import (
     HuggingFaceTransformersPostEncoder,
@@ -57,8 +68,7 @@ from espnet2.asr.preencoder.linear import LinearProjection
 from espnet2.asr.preencoder.sinc import LightweightSincConvs
 from espnet2.asr.specaug.abs_specaug import AbsSpecAug
 from espnet2.asr.specaug.specaug import SpecAug
-from espnet2.asr.transducer.joint_network import JointNetwork
-from espnet2.asr.transducer.transducer_decoder import TransducerDecoder
+from espnet2.asr_transducer.joint_network import JointNetwork
 from espnet2.layers.abs_normalize import AbsNormalize
 from espnet2.layers.global_mvn import GlobalMVN
 from espnet2.layers.utterance_mvn import UtteranceMVN
@@ -68,7 +78,11 @@ from espnet2.torch_utils.initialize import initialize
 from espnet2.train.abs_espnet_model import AbsESPnetModel
 from espnet2.train.class_choices import ClassChoices
 from espnet2.train.collate_fn import CommonCollateFn
-from espnet2.train.preprocessor import CommonPreprocessor
+from espnet2.train.preprocessor import (
+    AbsPreprocessor,
+    CommonPreprocessor,
+    CommonPreprocessor_multi,
+)
 from espnet2.train.trainer import Trainer
 from espnet2.utils.get_default_kwargs import get_default_kwargs
 from espnet2.utils.nested_dict_action import NestedDictAction
@@ -111,6 +125,7 @@ model_choices = ClassChoices(
         maskctc=MaskCTCModel,
         bertctc=BERTCTCModel,
         rnntbert=RNNTBERTModel,
+        pit_espnet=PITESPnetModel,
     ),
     type_check=AbsESPnetModel,
     default="espnet",
@@ -130,6 +145,7 @@ encoder_choices = ClassChoices(
     classes=dict(
         conformer=ConformerEncoder,
         transformer=TransformerEncoder,
+        transformer_multispkr=TransformerEncoderMultiSpkr,
         contextual_block_transformer=ContextualBlockTransformerEncoder,
         contextual_block_conformer=ContextualBlockConformerEncoder,
         vgg_rnn=VGGRNNEncoder,
@@ -137,8 +153,10 @@ encoder_choices = ClassChoices(
         wav2vec2=FairSeqWav2Vec2Encoder,
         hubert=FairseqHubertEncoder,
         hubert_pretrain=FairseqHubertPretrainEncoder,
+        torchaudiohubert=TorchAudioHuBERTPretrainEncoder,
         longformer=LongformerEncoder,
         branchformer=BranchformerEncoder,
+        e_branchformer=EBranchformerEncoder,
     ),
     type_check=AbsEncoder,
     default="rnn",
@@ -173,9 +191,20 @@ decoder_choices = ClassChoices(
         transducer=TransducerDecoder,
         mlm=MLMDecoder,
         trf_encoder=TransformerEncoder,
+        hugging_face_transformers=HuggingFaceTransformersDecoder,
+        s4=S4Decoder,
     ),
     # type_check=AbsDecoder,
     default="rnn",
+)
+preprocessor_choices = ClassChoices(
+    "preprocessor",
+    classes=dict(
+        default=CommonPreprocessor,
+        multi=CommonPreprocessor_multi,
+    ),
+    type_check=AbsPreprocessor,
+    default="default",
 )
 
 
@@ -203,6 +232,8 @@ class ASRTask(AbsTask):
         predecoder_choices,
         # --decoder and --decoder_conf
         decoder_choices,
+        # --preprocessor and --preprocessor_conf
+        preprocessor_choices,
     ]
 
     # If you need to modify train() or eval() procedures, change Trainer class here
@@ -269,7 +300,7 @@ class ASRTask(AbsTask):
             "--token_type",
             type=str,
             default="bpe",
-            choices=["bpe", "char", "word", "phn"],
+            choices=["bpe", "char", "word", "phn", "hugging_face"],
             help="The text will be tokenized " "in the specified level token",
         )
         group.add_argument(
@@ -375,7 +406,16 @@ class ASRTask(AbsTask):
             else:
                 slu_type = None
 
-            retval = CommonPreprocessor(
+            try:
+                _ = getattr(args, "preprocessor")
+            except AttributeError:
+                setattr(args, "preprocessor", "default")
+                setattr(args, "preprocessor_conf", dict())
+            except Exception as e:
+                raise e
+
+            preprocessor_class = preprocessor_choices.get_class(args.preprocessor)
+            retval = preprocessor_class(
                 train=train,
                 token_type=args.token_type,
                 token_list=args.token_list,
@@ -403,6 +443,7 @@ class ASRTask(AbsTask):
                 else None,
                 bert_tokenizer=bert_tokenizer,
                 slu_type=slu_type,
+                **args.preprocessor_conf,
             )
         else:
             retval = None
@@ -424,7 +465,10 @@ class ASRTask(AbsTask):
     def optional_data_names(
         cls, train: bool = True, inference: bool = False
     ) -> Tuple[str, ...]:
-        retval = ()
+        MAX_REFERENCE_NUM = 4
+        retval = []
+        retval += ["text_spk{}".format(n) for n in range(2, MAX_REFERENCE_NUM + 1)]
+        retval = tuple(retval)
         assert check_return_type(retval)
         return retval
 

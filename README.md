@@ -2,14 +2,14 @@
 
 # ESPnet: end-to-end speech processing toolkit
 
-|system/pytorch ver.|1.4.0|1.5.1|1.6.0|1.7.1|1.8.1|1.9.1|1.10.2|1.11.0|
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|ubuntu20/python3.9/pip||||||||[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
-|ubuntu20/python3.8/pip||||||||[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
-|ubuntu18/python3.7/pip|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
-|debian9/python3.7/conda||||||||[![debian9](https://github.com/espnet/espnet/workflows/debian9/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adebian9)|
-|centos7/python3.7/conda||||||||[![centos7](https://github.com/espnet/espnet/workflows/centos7/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Acentos7)|
-|doc/python3.8||||||||[![doc](https://github.com/espnet/espnet/workflows/doc/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adoc)|
+|system/pytorch ver.|1.4.0|1.5.1|1.6.0|1.7.1|1.8.1|1.9.1|1.10.2|1.11.0|1.12.1|
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|ubuntu20/python3.9/pip|||||||||[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
+|ubuntu20/python3.8/pip|||||||||[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
+|ubuntu18/python3.7/pip|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|[![Github Actions](https://github.com/espnet/espnet/workflows/CI/badge.svg)](https://github.com/espnet/espnet/actions)|
+|debian9/python3.7/conda|||||||||[![debian9](https://github.com/espnet/espnet/workflows/debian9/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adebian9)|
+|centos7/python3.7/conda|||||||||[![centos7](https://github.com/espnet/espnet/workflows/centos7/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Acentos7)|
+|doc/python3.8|||||||||[![doc](https://github.com/espnet/espnet/workflows/doc/badge.svg)](https://github.com/espnet/espnet/actions?query=workflow%3Adoc)|
 
 
 [![PyPI version](https://badge.fury.io/py/espnet.svg)](https://badge.fury.io/py/espnet)
@@ -27,10 +27,25 @@
 | [**Example (ESPnet2)**](https://github.com/espnet/espnet/tree/master/egs2)
 | [**Docker**](https://github.com/espnet/espnet/tree/master/docker)
 | [**Notebook**](https://github.com/espnet/notebook)
-| [**Tutorial (2019)**](https://github.com/espnet/interspeech2019-tutorial)
 
 ESPnet is an end-to-end speech processing toolkit covering end-to-end speech recognition, text-to-speech, speech translation, speech enhancement, speaker diarization, spoken language understanding, and so on.
 ESPnet uses [pytorch](http://pytorch.org/) as a deep learning engine and also follows [Kaldi](http://kaldi-asr.org/) style data processing, feature extraction/format, and recipes to provide a complete setup for various speech processing experiments.
+
+## Tutorial Series
+- 2019 Tutorial at Interspeech
+  - [Material](https://github.com/espnet/interspeech2019-tutorial)
+- 2021 Tutorial at CMU
+  - [Online video](https://youtu.be/2mRz3wH1vd0)
+  - [Material](https://colab.research.google.com/github/espnet/notebook/blob/master/espnet2_tutorial_2021_CMU_11751_18781.ipynb)
+- 2022 Tutorial at CMU
+  - Usage of ESPnet (ASR as an example)
+    - [Online video](https://youtu.be/YDN8cVjxSik)
+    - [Material](https://colab.research.google.com/github/espnet/notebook/blob/master/espnet2_recipe_tutorial_CMU_11751_18781_Fall2022.ipynb)
+  - Add new models/tasks to ESPnet
+    - [Online video](https://youtu.be/Css3XAes7SU)
+    - [Material](https://colab.research.google.com/github/espnet/notebook/blob/master/espnet2_new_task_tutorial_CMU_11751_18781_Fall2022.ipynb)
+
+
 ## Key Features
 
 ### Kaldi style complete recipe
@@ -41,7 +56,8 @@ ESPnet uses [pytorch](http://pytorch.org/) as a deep learning engine and also fo
 - Support numbers of `SLU` recipes (CATSLU-MAPS, FSC, Grabo, IEMOCAP, JDCINAL, SNIPS, SLURP, SWBD-DA, etc.)
 - Support numbers of `SE/SS` recipes (DNS-IS2020, LibriMix, SMS-WSJ, VCTK-noisyreverb, WHAM!, WHAMR!, WSJ-2mix, etc.)
 - Support voice conversion recipe (VCC2020 baseline)
-- Support speaker diarization recipe (mini_librispeech)
+- Support speaker diarization recipe (mini_librispeech, librimix)
+- Support singing voice synthesis recipe (ofuton_p_utagoe_db)
 
 ### ASR: Automatic Speech Recognition
 - **State-of-the-art performance** in several ASR benchmarks (comparable/superior to hybrid DNN/HMM and CTC)
@@ -49,6 +65,7 @@ ESPnet uses [pytorch](http://pytorch.org/) as a deep learning engine and also fo
   - Fast/accurate training with CTC/attention multitask training
   - CTC/attention joint decoding to boost monotonic alignment decoding
   - Encoder: VGG-like CNN + BiRNN (LSTM/GRU), sub-sampling BiRNN (LSTM/GRU), Transformer, Conformer or [Branchformer](https://proceedings.mlr.press/v162/peng22a.html)
+  - Decoder: RNN (LSTM/GRU), Transformer, or S4
 - Attention: Dot product, location-aware attention, variants of multi-head
 - Incorporate RNNLM/LSTMLM/TransformerLM/N-gram trained only with text data
 - Batch GPU decoding
@@ -176,13 +193,36 @@ Demonstration
     - En / Jp / Zn / Nl / And more...
 - Supports using context from previous utterances
 - Supports using other tasks like SE in pipeline manner
+- Supports Two Pass SLU that combines audio and ASR transcript
 Demonstration
 - Performing noisy spoken language understanding using speech enhancement model followed by spoken language understanding model.  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/14nCrJ05vJcQX0cJuXjbMVFWUHJ3Wfb6N?usp=sharing)
+- Performing two pass spoken language understanding where the second pass model attends on both acoustic and semantic information.  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1p2cbGIPpIIcynuDl4ZVHDpmNPl8Nh_ci?usp=sharing)
 - Integrated to [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). See SLU demo on multiple languages: [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Siddhant/ESPnet2-SLU)
 
 
 ### SUM: Speech Summarization
 - End to End Speech Summarization Recipe for Instructional Videos using Restricted Self-Attention [[Sharma et al., 2022]](https://arxiv.org/abs/2110.06263)
+
+### SVS: Singing Voice Synthesis
+- Framework merge from [Muskits](https://github.com/SJTMusicTeam/Muskits)
+- Architecture
+  - RNN-based non-autoregressive model
+  - Xiaoice
+  - Sequence-to-sequence Transformer (with GLU-based encoder)
+  - MLP singer (in progress)
+  - Tacotron-singing (in progress)
+  - DiffSinger (in progress)
+  - VISinger
+- Support multi-speaker & multilingual singing synthesis
+  - Speaker ID embedding
+  - Language ID embedding
+- Various language support
+  - Jp / En / Kr / Zh
+- Tight integration with neural vocoders (the same as TTS)
+
+### Self-supervised Learning
+- Support HuBERT Pretraining:
+  * Example recipe: [egs2/LibriSpeech/ssl1](egs2/LibriSpeech/ssl1)
 
 ### DNN Framework
 - Flexible network architecture thanks to chainer and pytorch
@@ -249,7 +289,7 @@ We list the character error rate (CER) and word error rate (WER) of major ASR ta
 | Task                                                              |     CER (%)     |     WER (%)     |                                                                              Pretrained model                                                                               |
 | ----------------------------------------------------------------- | :-------------: | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Aishell dev/test                                                  |     4.6/5.1     |       N/A       |                [link](https://github.com/espnet/espnet/blob/master/egs/aishell/asr1/RESULTS.md#conformer-kernel-size--15--specaugment--lm-weight--00-result)                |
-| **ESPnet2** Aishell dev/test                                      |     4.4/4.7     |       N/A       |                [link](https://github.com/espnet/espnet/tree/master/egs2/aishell/asr1#conformer--specaug--speed-perturbation-featsraw-n_fft512-hop_length128)                |
+| **ESPnet2** Aishell dev/test                                      |     4.1/4.4     |       N/A       |                [link](https://github.com/espnet/espnet/tree/master/egs2/aishell/asr1#branchformer-initial)                |
 | Common Voice dev/test                                             |     1.7/1.8     |     2.2/2.3     |    [link](https://github.com/espnet/espnet/blob/master/egs/commonvoice/asr1/RESULTS.md#first-results-default-pytorch-transformer-setting-with-bpe-100-epochs-single-gpu)    |
 | CSJ eval1/eval2/eval3                                             |   5.7/3.8/4.2   |       N/A       |                 [link](https://github.com/espnet/espnet/blob/master/egs/csj/asr1/RESULTS.md#pytorch-backend-transformer-without-any-hyperparameter-tuning)                  |
 | **ESPnet2** CSJ eval1/eval2/eval3                                 |   4.5/3.3/3.6   |       N/A       |                                        [link](https://github.com/espnet/espnet/tree/master/egs2/csj/asr1#initial-conformer-results)                                         |
@@ -259,6 +299,7 @@ We list the character error rate (CER) and word error rate (WER) of major ASR ta
 | **ESPnet2** Librispeech dev_clean/dev_other/test_clean/test_other | 0.6/1.5/0.6/1.4 | 1.7/3.4/1.8/3.6 |    [link](https://github.com/espnet/espnet/tree/master/egs2/librispeech/asr1#self-supervised-learning-features-hubert_large_ll60k-conformer-utt_mvn-with-transformer-lm)    |
 | Switchboard (eval2000) callhm/swbd                                |       N/A       |    14.0/6.8     |          [link](https://github.com/espnet/espnet/blob/master/egs/swbd/asr1/RESULTS.md#conformer-with-bpe-2000-specaug-speed-perturbation-transformer-lm-decoding)           |
 | TEDLIUM2 dev/test                                                 |       N/A       |     8.6/7.2     |                 [link](https://github.com/espnet/espnet/blob/master/egs/tedlium2/asr1/RESULTS.md#conformer-large-model--specaug--speed-perturbation--rnnlm)                 |
+| **ESPnet2** TEDLIUM2 dev/test                                                 |       N/A       |     7.3/7.1     |                 [link](https://github.com/espnet/espnet/blob/master/egs2/tedlium2/asr1/README.md#e-branchformer-12-encoder-layers) |
 | TEDLIUM3 dev/test                                                 |       N/A       |     9.6/7.6     |                                              [link](https://github.com/espnet/espnet/blob/master/egs/tedlium3/asr1/RESULTS.md)                                              |
 | WSJ dev93/eval92                                                  |     3.2/2.1     |     7.0/4.7     |                                                                                     N/A                                                                                     |
 | **ESPnet2** WSJ dev93/eval92                                      |     1.1/0.8     |     2.8/1.8     |       [link](https://github.com/espnet/espnet/tree/master/egs2/wsj/asr1#self-supervised-learning-features-wav2vec2_large_ll60k-conformer-utt_mvn-with-transformer-lm)       |

@@ -38,8 +38,16 @@ from espnet2.utils.kwargs2args import kwargs2args
 if torch.distributed.is_available():
     from torch.distributed import ReduceOp
 
+autocast_args = dict()
 if V(torch.__version__) >= V("1.6.0"):
     from torch.cuda.amp import GradScaler, autocast
+
+    if (
+        V(torch.__version__) >= V("1.10.0")
+        and torch.cuda.is_available()
+        and torch.cuda.is_bf16_supported()
+    ):
+        autocast_args = dict(dtype=torch.bfloat16)
 else:
     # Nothing to do if torch<1.6.0
     @contextmanager
@@ -81,6 +89,7 @@ class TrainerOptions:
     val_scheduler_criterion: Sequence[str]
     unused_parameters: bool
     wandb_model_log_interval: int
+    create_graph_in_tensorboard: bool
 
 
 class Trainer:
@@ -433,7 +442,7 @@ class Trainer:
             # 7. If any updating haven't happened, stops the training
             if all_steps_are_invalid:
                 logging.warning(
-                    f"The gradients at all steps are invalid in this epoch. "
+                    "The gradients at all steps are invalid in this epoch. "
                     f"Something seems wrong. This training was stopped at {iepoch}epoch"
                 )
                 break
@@ -482,6 +491,7 @@ class Trainer:
         no_forward_run = options.no_forward_run
         ngpu = options.ngpu
         use_wandb = options.use_wandb
+        create_graph_in_tensorboard = options.create_graph_in_tensorboard
         distributed = distributed_option.distributed
 
         if log_interval is None:
@@ -514,7 +524,11 @@ class Trainer:
                 all_steps_are_invalid = False
                 continue
 
-            if iiter == 1 and summary_writer is not None:
+            if (
+                create_graph_in_tensorboard
+                and iiter == 1
+                and summary_writer is not None
+            ):
                 if distributed:
                     _model = getattr(model, "module")
                 else:
@@ -545,7 +559,10 @@ class Trainer:
                         )
                 del _model
 
-            with autocast(scaler is not None):
+            with autocast(
+                scaler is not None,
+                **autocast_args,
+            ):
                 with reporter.measure_time("forward_time"):
                     retval = model(**batch)
 
@@ -814,8 +831,13 @@ class Trainer:
 
                     if att_w.ndim == 2:
                         att_w = att_w[None]
-                    elif att_w.ndim > 3 or att_w.ndim == 1:
-                        raise RuntimeError(f"Must be 2 or 3 dimension: {att_w.ndim}")
+                    elif att_w.ndim == 4:
+                        # In multispkr_asr model case, the dimension could be 4.
+                        att_w = np.concatenate(
+                            [att_w[i] for i in range(att_w.shape[0])], axis=0
+                        )
+                    elif att_w.ndim > 4 or att_w.ndim == 1:
+                        raise RuntimeError(f"Must be 2, 3 or 4 dimension: {att_w.ndim}")
 
                     w, h = plt.figaspect(1.0 / len(att_w))
                     fig = plt.Figure(figsize=(w * 1.3, h * 1.3))
