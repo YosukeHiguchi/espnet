@@ -11,6 +11,7 @@ from typeguard import check_argument_types, check_return_type
 
 from espnet2.asr.maskctc_model import MaskCTCInference
 from espnet2.asr.bertctc_model import BERTCTCInference
+from espnet2.asr.bectra_model import BECTRAInference
 from espnet2.fileio.datadir_writer import DatadirWriter
 from espnet2.tasks.asr import ASRTask
 from espnet2.text.build_tokenizer import build_tokenizer
@@ -45,9 +46,11 @@ class Speech2Text:
         device: str = "cpu",
         batch_size: int = 1,
         dtype: str = "float32",
+        beam_size: int = 10,
         maskctc_n_iterations: int = 10,
         maskctc_threshold_probability: float = 0.99,
         length_init_with_asr: bool = False,
+        dataset: str = None,
     ):
         assert check_argument_types()
 
@@ -63,6 +66,14 @@ class Speech2Text:
                 asr_model=asr_model,
                 n_iterations=maskctc_n_iterations,
                 length_init_with_asr=length_init_with_asr,
+                dataset=dataset,
+            )
+        elif asr_train_args.model == "bectra":
+            s2t = BECTRAInference(
+                asr_model=asr_model,
+                n_iterations=maskctc_n_iterations,
+                beam_size=beam_size,
+                dataset=dataset,
             )
         else:
             s2t = MaskCTCInference(
@@ -90,7 +101,7 @@ class Speech2Text:
         converter = TokenIDConverter(token_list=token_list)
 
         logging.info(f"Text tokenizer: {tokenizer}")
-        if hasattr(asr_model, 'predecoder'):
+        if hasattr(asr_model, 'predecoder') or hasattr(asr_model, 'bert'):
             s2t.tokenizer = tokenizer
 
         self.asr_model = asr_model
@@ -105,7 +116,6 @@ class Speech2Text:
     def __call__(
         self,
         speech: Union[torch.Tensor, np.ndarray],
-        attn_save_dir: Optional[str],
     ) -> List[Tuple[Optional[str], List[str], List[int], Hypothesis]]:
         """Inference
 
@@ -137,7 +147,7 @@ class Speech2Text:
         assert len(enc) == 1, len(enc)
 
         # c. Passed the encoder result and the inference algorithm
-        hyp = self.s2t(enc[0], attn_save_dir)
+        hyp = self.s2t(enc[0])
         assert isinstance(hyp, Hypothesis), type(hyp)
 
         # remove sos/eos and get results
@@ -205,10 +215,11 @@ def inference(
     token_type: Optional[str],
     bpemodel: Optional[str],
     allow_variable_data_keys: bool,
+    beam_size: int,
     maskctc_n_iterations: int,
     maskctc_threshold_probability: float,
-    n_save_attw: int,
     length_init_with_asr: bool,
+    dataset: str,
 ):
     assert check_argument_types()
     if batch_size > 1:
@@ -238,9 +249,11 @@ def inference(
         device=device,
         batch_size=batch_size,
         dtype=dtype,
+        beam_size=beam_size,
         maskctc_n_iterations=maskctc_n_iterations,
         maskctc_threshold_probability=maskctc_threshold_probability,
         length_init_with_asr=length_init_with_asr,
+        dataset=dataset,
     )
     speech2text = Speech2Text.from_pretrained(
         model_tag=model_tag,
@@ -270,24 +283,7 @@ def inference(
             batch = {k: v[0] for k, v in batch.items() if not k.endswith("_lengths")}
 
             try:
-                if n_save_attw > 0:
-                    attn_save_dir = os.path.join(
-                        os.path.dirname(output_dir),
-                        keys[0],
-                    )
-                    if not os.path.isdir(attn_save_dir):
-                        os.mkdir(attn_save_dir)
-                    results = speech2text(
-                        **batch,
-                        attn_save_dir=attn_save_dir,
-                    )
-                    if i == n_save_attw:
-                        break
-                else:
-                    results = speech2text(
-                        **batch,
-                        attn_save_dir=None,
-                    )
+                results = speech2text(**batch)
             except TooShortUttError as e:
                 logging.warning(f"Utterance {keys} {e}")
                 hyp = Hypothesis(score=0.0, scores={}, states={}, yseq=[])
@@ -373,6 +369,7 @@ def get_parser():
         default=1,
         help="The batch size for inference",
     )
+    group.add_argument("--beam_size", type=int, default=10)
     group.add_argument("--maskctc_n_iterations", type=int, default=10)
     group.add_argument("--maskctc_threshold_probability", type=float, default=0.99)
 
@@ -392,8 +389,9 @@ def get_parser():
         help="The model path of sentencepiece. "
         "If not given, refers from the training args",
     )
-    group.add_argument("--n_save_attw", type=int, default=0)
     group.add_argument("--length_init_with_asr", type=str2bool, default=False)
+
+    group.add_argument("--dataset", type=str, default=None)
 
     return parser
 

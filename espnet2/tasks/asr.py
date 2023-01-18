@@ -53,6 +53,8 @@ from espnet2.asr.frontend.s3prl import S3prlFrontend
 from espnet2.asr.frontend.windowing import SlidingWindow
 from espnet2.asr.maskctc_model import MaskCTCModel
 from espnet2.asr.bertctc_model import BERTCTCModel
+from espnet2.asr.bectra_model import BECTRAModel
+
 from espnet2.asr.rnnt_bert_model import RNNTBERTModel
 from espnet2.asr.pit_espnet_model import ESPnetASRModel as PITESPnetModel
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
@@ -124,6 +126,7 @@ model_choices = ClassChoices(
         espnet=ESPnetASRModel,
         maskctc=MaskCTCModel,
         bertctc=BERTCTCModel,
+        bectra=BECTRAModel,
         rnntbert=RNNTBERTModel,
         pit_espnet=PITESPnetModel,
     ),
@@ -552,7 +555,7 @@ class ASRTask(AbsTask):
         decoder_class = decoder_choices.get_class(args.decoder)
 
         if args.decoder == "transducer":
-            if predecoder is not None:
+            if predecoder is not None and args.model != "bectra":
                 bert_vocab_size = predecoder.vocab_size()
                 decoder = decoder_class(
                     bert_vocab_size,
