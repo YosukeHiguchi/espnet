@@ -1,5 +1,4 @@
 # Training configuration of BECTRA (https://arxiv.org/abs/2211.00792)
-# The BPE size should be set to 300 (i.e., --nbpe 300) in run.sh
 
 batch_type: folded
 batch_size: 64
@@ -50,7 +49,7 @@ encoder_conf:
 
 predecoder: hugging_face_transformers
 predecoder_conf:
-    model_name_or_path: "bert-base-uncased"
+    model_name_or_path: "bert-base-chinese"
 
 decoder: transducer
 decoder_conf:

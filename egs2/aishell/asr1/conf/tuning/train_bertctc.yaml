@@ -1,5 +1,4 @@
-# Training configuration of BECTRA (https://arxiv.org/abs/2211.00792)
-# The BPE size should be set to 300 (i.e., --nbpe 300) in run.sh
+# Training configuration of BERT-CTC (https://arxiv.org/abs/2210.16663)
 
 batch_type: folded
 batch_size: 64
@@ -9,22 +8,21 @@ patience: none
 init: none
 best_model_criterion:
 -   - valid
-    - cer_transducer
+    - cer_ctc_dec
     - min
 keep_nbest_models: 10
 
-model: bectra
+model: bertctc
 model_conf:
     asr_weight: 0.3
     interctc_weight: 0.5
-    aux_weight: 0.5
     lsm_weight: 0.1
     length_normalized_loss: false
     predec_drop_rate: 0.0
     embed_enc_layer: conv2d
 
 freeze_param: [
-    "bert.transformer"
+    "predecoder.transformer"
 ]
 
 encoder: conformer
@@ -50,18 +48,18 @@ encoder_conf:
 
 predecoder: hugging_face_transformers
 predecoder_conf:
-    model_name_or_path: "bert-base-uncased"
+    model_name_or_path: "bert-base-chinese"
 
-decoder: transducer
+decoder: trf_encoder
 decoder_conf:
-    rnn_type: lstm
-    num_layers: 1
-    hidden_size: 256
-    dropout: 0.1
-    dropout_embed: 0.2
-
-joint_net_conf:
-    joint_space_size: 256
+    output_size: 256
+    attention_heads: 4
+    linear_units: 2048
+    num_blocks: 6
+    dropout_rate: 0.1
+    positional_dropout_rate: 0.1
+    attention_dropout_rate: 0.1
+    input_layer: identity
 
 optim: adam
 optim_conf:
