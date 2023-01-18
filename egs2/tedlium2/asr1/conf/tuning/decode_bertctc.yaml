@@ -1,0 +1,3 @@
+maskctc_n_iterations: 20
+length_init_with_asr: true
+dataset: "tedlium2"
