@@ -7,6 +7,8 @@ import os
 
 import numpy as np
 
+from distutils.util import strtobool
+
 
 def main():
     if args.log is not None:
@@ -33,8 +35,12 @@ def main():
                 if "validation/main/cer" in log.keys():
                     val_scores += [[log["epoch"], -log["validation/main/cer"]]]
             elif args.metric == "cer_ctc":
-                if "validation/main/cer_ctc" in log.keys():
-                    val_scores += [[log["epoch"], -log["validation/main/cer_ctc"]]]
+                if args.ctc_index < 0:
+                    if "validation/main/cer_ctc" in log.keys():
+                        val_scores += [[log["epoch"], -log["validation/main/cer_ctc"]]]
+                else:
+                    if "validation/main/cer_ctc{}".format(args.ctc_index) in log.keys():
+                        val_scores += [[log["epoch"], -log["validation/main/cer_ctc{}".format(args.ctc_index)]]]
             else:
                 # Keep original order for compatibility
                 if "validation/main/acc" in log.keys():
@@ -49,7 +55,10 @@ def main():
         val_scores = np.array(val_scores)
         sort_idx = np.argsort(val_scores[:, -1])
         sorted_val_scores = val_scores[sort_idx][::-1]
-        print("metric: %s" % args.metric)
+        if args.metric == "cer_ctc" and args.ctc_index > 0:
+            print("metric: cer_ctc{}".format(args.ctc_index))
+        else:
+            print("metric: %s" % args.metric)
         print("best val scores = " + str(sorted_val_scores[: args.num, 1]))
         print(
             "selected epochs = "
@@ -68,9 +77,15 @@ def main():
     if args.backend == "pytorch":
         import torch
 
+        if args.online_model:
+            print("Averaging online model")
+
         # sum
         for path in last:
-            states = torch.load(path, map_location=torch.device("cpu"))["model"]
+            if args.online_model:
+                states = torch.load(path, map_location=torch.device("cpu"))["online_model"]
+            else:
+                states = torch.load(path, map_location=torch.device("cpu"))["model"]
             if avg is None:
                 avg = states
             else:
@@ -129,6 +144,8 @@ def get_parser():
         type=int,
         nargs="?",
     )
+    parser.add_argument("--ctc-index", default=-1, type=int, nargs="?")
+    parser.add_argument("--online-model", default=False, type=strtobool)
     return parser
 
 

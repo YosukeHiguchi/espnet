@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+import copy
 from collections import OrderedDict
 
 import h5py
@@ -48,6 +49,7 @@ class LoadInputsAndTargets(object):
         use_second_target=False,
         preprocess_args=None,
         keep_all_data_on_mem=False,
+        return_raw_input=False,
     ):
         self._loaders = {}
         if mode not in ["asr", "tts", "mt", "vc"]:
@@ -89,6 +91,7 @@ class LoadInputsAndTargets(object):
             self.preprocess_args = dict(preprocess_args)
 
         self.keep_all_data_on_mem = keep_all_data_on_mem
+        self.return_raw_input = return_raw_input
 
     def __call__(self, batch, return_uttid=False):
         """Function to load inputs and targets from list of dicts
@@ -184,9 +187,16 @@ class LoadInputsAndTargets(object):
             # Apply pre-processing all input features
             for x_name in return_batch.keys():
                 if x_name.startswith("input"):
+                    if self.return_raw_input:
+                        raw_feats = copy.deepcopy(return_batch[x_name])
+
                     return_batch[x_name] = self.preprocessing(
                         return_batch[x_name], uttid_list, **self.preprocess_args
                     )
+
+        if self.return_raw_input:
+            return_batch['raw'] = raw_feats
+            return_batch['uttid_list'] = uttid_list
 
         if return_uttid:
             return tuple(return_batch.values()), uttid_list

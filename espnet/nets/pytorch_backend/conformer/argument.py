@@ -60,6 +60,17 @@ def add_arguments_conformer_common(group):
         type=int,
         help="Kernel size of convolution module.",
     )
+    group.add_argument(
+        "--cnn-module-norm-type",
+        default="batch",
+        type=str,
+        choices=["batch", "group"],
+    )
+    group.add_argument(
+        "--cnn-module-groups",
+        default=32,
+        type=int,
+    )
     return group
 
 

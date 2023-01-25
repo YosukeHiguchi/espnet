@@ -311,6 +311,136 @@ class CustomUpdater(StandardUpdater):
         if self.forward_count == 0:
             self.iteration += 1
 
+class MPLUpdater(StandardUpdater):
+    def __init__(
+            self,
+            online_model,
+            offline_model,
+            grad_clip_threshold,
+            train_iter,
+            unlab_uttid,
+            optimizer,
+            device,
+            ngpu,
+            mpl_alpha,
+            mpl_weight,
+            accum_grad=1,
+            oracle_training=False,
+        ):
+        super(MPLUpdater, self).__init__(train_iter, optimizer)
+        self.online_model = online_model
+        self.offline_model = offline_model
+        self.grad_clip_threshold = grad_clip_threshold
+        self.unlab_uttid = unlab_uttid
+        self.device = device
+        self.ngpu = ngpu
+        self.accum_grad = accum_grad
+        self.oracle_training = oracle_training
+        self.forward_count = 0
+        self.iteration = 0
+
+        if self.oracle_training:
+            assert mpl_weight < 0 and mpl_alpha == 1.0
+            logging.warning("oracle training")
+
+        logging.warning("mpl_alpha={}, mpl_weight={}".format(mpl_alpha, mpl_weight))
+        self.mpl_weight = mpl_weight
+        if mpl_weight > 0.0:
+            num_itr = train_iter['main'].len // accum_grad
+            self.mpl_alpha = math.e**(math.log(mpl_weight) / num_itr)
+            logging.warning("set mpl_alpha to {}".format(self.mpl_alpha))
+        else:
+            self.mpl_alpha = mpl_alpha
+
+        # offline model is not trained
+        self.offline_model.eval()
+
+        self.count_unlab = 0
+        self.count_lab = 0
+
+    # The core part of the update routine can be customized by overriding.
+    def update_core(self):
+        train_iter = self.get_iterator("main")
+        optimizer = self.get_optimizer("main")
+        epoch = train_iter.epoch
+
+        batch = train_iter.next()
+
+        x = _recursive_to(batch, self.device)
+        is_new_epoch = train_iter.epoch != epoch
+        if is_new_epoch:
+            logging.warning("count_lab: {}, count_unlab: {}".format(self.count_lab, self.count_unlab))
+            self.count_lab = 0
+            self.count_unlab = 0
+
+
+        xs_pad, ilens, ys_pad, raw_pad, uttid = x
+
+        if uttid[0] in self.unlab_uttid and not self.oracle_training:
+            # self-traning with an unlabeled sample
+            is_pl = True
+            with torch.no_grad():
+                    # generate pseudo transcriptions from raw input (i.e., no specaug)
+                    hyps_pad = self.offline_model.get_ctc_hypothesis(raw_pad, ilens)
+
+            if self.ngpu == 1:
+                loss = self.online_model(xs_pad, ilens, hyps_pad, is_pl).mean() / self.accum_grad
+            else:
+                loss = (
+                    data_parallel(
+                        self.online_model, (xs_pad, ilens, hyps_pad, is_pl), range(self.ngpu)
+                    ).mean() / self.accum_grad
+                )
+
+            self.count_unlab += len(uttid)
+        else:
+            # supervised-training with a labeled sample
+            is_pl = False
+            if self.ngpu == 1:
+                loss = self.online_model(xs_pad, ilens, ys_pad, is_pl).mean() / self.accum_grad
+            else:
+                loss = (
+                    data_parallel(
+                        self.online_model, (xs_pad, ilens, ys_pad, is_pl), range(self.ngpu)
+                    ).mean() / self.accum_grad
+                )
+
+            self.count_lab += len(uttid)
+
+        loss.backward()
+
+        # update parameters
+        self.forward_count += 1
+        if not is_new_epoch and self.forward_count != self.accum_grad:
+            return
+        self.forward_count = 0
+        # compute the gradient norm to check if it is normal or not
+        grad_norm = torch.nn.utils.clip_grad_norm_(
+            self.online_model.parameters(), self.grad_clip_threshold
+        )
+        logging.info("grad norm={}".format(grad_norm))
+        if math.isnan(grad_norm):
+            logging.warning("grad norm is nan. Do not update model.")
+        else:
+            optimizer.step()
+        optimizer.zero_grad()
+
+        # update target_model parameters based on EMA of onmodel
+        if self.mpl_alpha < 1.0:
+            with torch.no_grad():
+                for param_on, param_off in zip(
+                    self.online_model.parameters(), self.offline_model.parameters()
+                ):
+                    param_off.data = (
+                        self.mpl_alpha * param_off.data + (1 - self.mpl_alpha) * param_on.data
+                    )
+
+    def update(self):
+        self.update_core()
+        # #iterations with accum_grad > 1
+        # Ref.: https://github.com/espnet/espnet/issues/777
+        if self.forward_count == 0:
+            self.iteration += 1
 
 class CustomConverter(object):
     """Custom batch converter for Pytorch.
@@ -340,7 +470,10 @@ class CustomConverter(object):
         """
         # batch should be located in list
         assert len(batch) == 1
-        xs, ys = batch[0]
+        if len(batch[0]) == 4:
+            xs, ys, raw, uttid = batch[0] # for MPL
+        else:
+            xs, ys = batch[0]
 
         # perform subsampling
         if self.subsampling_factor > 1:
@@ -380,8 +513,74 @@ class CustomConverter(object):
             self.ignore_id,
         ).to(device)
 
-        return xs_pad, ilens, ys_pad
+        if len(batch[0]) == 4:
+            # For MPL
+            raw_pad = pad_list([torch.from_numpy(r).float() for r in raw], 0).to(
+                device, dtype=self.dtype
+            )
+            return xs_pad, ilens, ys_pad, raw_pad, uttid
+        else:
+            return xs_pad, ilens, ys_pad
 
+class CustomConverterHierASR(object):
+    def __init__(self, n_out, subsampling_factor=1, dtype=torch.float32):
+        """Construct a CustomConverter object."""
+        logging.warning("############# Building a converter for hier model #############")
+        self.n_out = n_out
+        self.subsampling_factor = subsampling_factor
+        self.ignore_id = -1
+        self.dtype = dtype
+
+    def __call__(self, batch, device=torch.device("cpu")):
+        # batch should be located in list
+        assert len(batch) == 1
+
+        if len(batch[0]) > self.n_out + 1:
+            # for MPL
+            xs = batch[0][0]
+            yss = batch[0][1: self.n_out + 1]
+            raw = batch[0][-2]
+            uttid = batch[0][-1]
+        else:
+            xs = batch[0][0]
+            yss = batch[0][1:]
+
+        # perform subsampling
+        if self.subsampling_factor > 1:
+            xs = [x[:: self.subsampling_factor, :] for x in xs]
+
+        # get batch of lengths of input sequences
+        ilens = np.array([x.shape[0] for x in xs])
+
+        # perform padding and convert to tensor
+        xs_pad = pad_list([torch.from_numpy(x).float() for x in xs], 0).to(
+            device, dtype=self.dtype
+        )
+
+        ilens = torch.from_numpy(ilens).to(device)
+        # NOTE: this is for multi-output (e.g., speech translation)
+        yss_pad = []
+        for ys in yss:
+            yss_pad.append(
+                pad_list(
+                    [
+                        torch.from_numpy(
+                            np.array(y[0][:]) if isinstance(y, tuple) else y
+                        ).long()
+                        for y in ys
+                    ],
+                    self.ignore_id,
+                ).to(device)
+            )
+
+        if len(batch[0]) > self.n_out + 1:
+            # For MPL
+            raw_pad = pad_list([torch.from_numpy(r).float() for r in raw], 0).to(
+                device, dtype=self.dtype
+            )
+            return xs_pad, ilens, yss_pad, raw_pad, uttid
+        else:
+            return xs_pad, ilens, yss_pad
 
 class CustomConverterMulEnc(object):
     """Custom batch converter for Pytorch in multi-encoder case.
@@ -511,10 +710,13 @@ def train(args):
     idim_list = [
         int(valid_json[utts[0]]["input"][i]["shape"][-1]) for i in range(args.num_encs)
     ]
-    odim = int(valid_json[utts[0]]["output"][0]["shape"][-1])
+    num_out = len(valid_json[utts[0]]["output"])
+    odim_list = [
+        int(valid_json[utts[0]]["output"][i]["shape"][-1]) for i in range(num_out)
+    ]
     for i in range(args.num_encs):
         logging.info("stream{}: input dims : {}".format(i + 1, idim_list[i]))
-    logging.info("#output dims: " + str(odim))
+    logging.info("#output dims: " + str(odim_list))
 
     # specify attention, CTC, hybrid mode
     if "transducer" in args.model_module:
@@ -537,14 +739,31 @@ def train(args):
         logging.info("Multitask learning mode")
 
     if (args.enc_init is not None or args.dec_init is not None) and args.num_encs == 1:
-        model = load_trained_modules(idim_list[0], odim, args)
+        model = load_trained_modules(
+            idim_list[0],
+            odim_list[0] if num_out == 1 else odim_list,
+            args,
+        )
     else:
         model_class = dynamic_import(args.model_module)
         model = model_class(
-            idim_list[0] if args.num_encs == 1 else idim_list, odim, args
+            idim_list[0] if args.num_encs == 1 else idim_list,
+            odim_list[0] if num_out == 1 else odim_list,
+            args,
         )
     assert isinstance(model, ASRInterface)
     total_subsampling_factor = model.get_total_subsampling_factor()
+
+    ### offline model initialization
+    if args.unlab_json is not None:
+        if args.enc_init is None:
+            logging.warning("############# No initialization? #############")
+        logging.warning("Initializing offline model")
+        offline_model = load_trained_modules(
+            idim_list[0],
+            odim_list[0] if num_out == 1 else odim_list,
+            args,
+        )
 
     logging.info(
         " Total parameter of the model = "
@@ -570,7 +789,7 @@ def train(args):
                 json.dumps(
                     (
                         idim_list[0] if args.num_encs == 1 else idim_list,
-                        odim,
+                        odim_list[0] if num_out == 1 else odim_list,
                         vars(args),
                     ),
                     indent=4,
@@ -614,6 +833,9 @@ def train(args):
     else:
         dtype = torch.float32
     model = model.to(device=device, dtype=dtype)
+    ### move offline model to device
+    if args.unlab_json is not None:
+        offline_model = offline_model.to(device=device, dtype=dtype)
 
     if args.freeze_mods:
         model, model_params = freeze_modules(model, args.freeze_mods)
@@ -636,7 +858,12 @@ def train(args):
             model_params, rho=0.95, eps=args.eps, weight_decay=args.weight_decay
         )
     elif args.opt == "adam":
-        optimizer = torch.optim.Adam(model_params, weight_decay=args.weight_decay)
+        logging.warning("Adam optimizer, lr={}".format(args.learning_rate))
+        optimizer = torch.optim.Adam(
+            model_params,
+            lr=args.learning_rate,
+            weight_decay=args.weight_decay
+        )
     elif args.opt == "noam":
         from espnet.nets.pytorch_backend.transformer.optimizer import get_std_opt
 
@@ -694,7 +921,14 @@ def train(args):
 
     # Setup a converter
     if args.num_encs == 1:
-        converter = CustomConverter(subsampling_factor=model.subsample[0], dtype=dtype)
+        if num_out == 1:
+            converter = CustomConverter(
+                subsampling_factor=model.subsample[0], dtype=dtype
+            )
+        else:
+            converter = CustomConverterHierASR(
+                num_out, subsampling_factor=model.subsample[0], dtype=dtype
+            )
     else:
         converter = CustomConverterMulEnc(
             [i[0] for i in model.subsample_list], dtype=dtype
@@ -745,11 +979,45 @@ def train(args):
         oaxis=0,
     )
 
+    ### for MPL
+    if not args.unlab_json is None:
+        logging.warning("############# MPL training #############")
+        with open(args.unlab_json, "rb") as f:
+            unlab_json = json.load(f)["utts"]
+        # unlab_uttid = list(unlab_json.keys())
+        unlab_uttid = set(unlab_json.keys())
+        unlab = make_batchset(
+            unlab_json,
+            args.batch_size,
+            args.maxlen_in,
+            args.maxlen_out,
+            args.minibatches,
+            min_batch_size=args.ngpu if args.ngpu > 1 else 1,
+            shortest_first=use_sortagrad,
+            count=args.batch_count,
+            batch_bins=args.batch_bins,
+            batch_frames_in=args.batch_frames_in,
+            batch_frames_out=args.batch_frames_out,
+            batch_frames_inout=args.batch_frames_inout,
+            iaxis=0,
+            oaxis=0,
+        )
+
+        if args.mpl_use_unlab_only:
+            train = unlab
+            logging.warning("############# Only using unlabeled data #############")
+            logging.warning("#unlab_batch={}".format(len(train)))
+        else:
+            logging.warning("#lab_batch={}, #unlab_batch={}".format(len(train), len(unlab)))
+            train.extend(unlab)
+            logging.warning("#total_batch={}".format(len(train)))
+
     load_tr = LoadInputsAndTargets(
         mode="asr",
         load_output=True,
         preprocess_conf=args.preprocess_conf,
         preprocess_args={"train": True},  # Switch the mode of preprocessing
+        return_raw_input=not args.unlab_json is None, ### return raw input (i.e., w/o specaug)
     )
     load_cv = LoadInputsAndTargets(
         mode="asr",
@@ -791,18 +1059,35 @@ def train(args):
     # Set up a trainer
     if args.use_ddp:
         model = DDP(model, device_ids=[localrank])
-    updater = CustomUpdater(
-        model,
-        args.grad_clip,
-        {"main": train_iter},
-        optimizer,
-        device,
-        args.ngpu,
-        args.grad_noise,
-        args.accum_grad,
-        use_apex=use_apex,
-        use_ddp=args.use_ddp,
-    )
+
+    if not args.unlab_json is None:
+        updater = MPLUpdater(
+            model,
+            offline_model,
+            args.grad_clip,
+            {"main": train_iter},
+            unlab_uttid,
+            optimizer,
+            device,
+            args.ngpu,
+            args.mpl_alpha,
+            args.mpl_weight,
+            args.accum_grad,
+            args.mpl_oracle_training,
+        )
+    else:
+        updater = CustomUpdater(
+            model,
+            args.grad_clip,
+            {"main": train_iter},
+            optimizer,
+            device,
+            args.ngpu,
+            args.grad_noise,
+            args.accum_grad,
+            use_apex=use_apex,
+            use_ddp=args.use_ddp,
+        )
     trainer = training.Trainer(updater, (args.epochs, "epoch"), out=args.outdir)
 
     # call DistributedSampler.set_epoch at begining of each epoch.
@@ -833,7 +1118,7 @@ def train(args):
 
     # Resume from a snapshot
     if args.resume:
-        logging.info("resumed from %s" % args.resume)
+        logging.warning("resumed from %s" % args.resume)
         torch_resume(args.resume, trainer)
 
     # Evaluate the model with the test dataset for each epoch
@@ -856,6 +1141,7 @@ def train(args):
         is_attn_plot = (
             "transformer" in args.model_module
             or "conformer" in args.model_module
+            or "hierctc" in args.model_module
             or mtl_mode in ["att", "mtl", "custom_transducer"]
         )
 
@@ -977,6 +1263,44 @@ def train(args):
                     file_name="loss.png",
                 )
             )
+        elif "hierctc" in args.model_module or "paractc" in args.model_module:
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/loss"]
+                    + ["main/loss_ctc{}".format(i) for i in range(num_out)]
+                    + ["validation/main/loss_ctc{}".format(i) for i in range(num_out)],
+                    "epoch",
+                    file_name="loss.png",
+                )
+            )
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/cer_ctc{}".format(i) for i in range(num_out)]
+                    + ["validation/main/cer_ctc{}".format(i) for i in range(num_out)],
+                    "epoch",
+                    file_name="cer.png",
+                )
+            )
+
+            ### for MPL
+            if not args.unlab_json is None:
+                trainer.extend(
+                    extensions.PlotReport(
+                        ["main/loss_lab_ctc{}".format(i) for i in range(num_out)]
+                        + ["main/loss_unlab_ctc{}".format(i) for i in range(num_out)],
+                        "epoch",
+                        file_name="loss_lab_unlab.png",
+                    )
+                )
+                trainer.extend(
+                    extensions.PlotReport(
+                        ["main/cer_lab_ctc{}".format(i) for i in range(num_out)]
+                        + ["main/cer_unlab_ctc{}".format(i) for i in range(num_out)],
+                        "epoch",
+                        file_name="cer_lab_unlab.png",
+                    )
+                )
+            ###
         else:
             trainer.extend(
                 extensions.PlotReport(
@@ -993,6 +1317,30 @@ def train(args):
                     file_name="loss.png",
                 )
             )
+
+            ### for MPL
+            if not args.unlab_json is None:
+                trainer.extend(
+                    extensions.PlotReport(
+                        [
+                            "main/loss_lab_ctc",
+                            "main/loss_unlab_ctc",
+                        ],
+                        "epoch",
+                        file_name="loss_lab_unlab.png",
+                    )
+                )
+                trainer.extend(
+                    extensions.PlotReport(
+                        [
+                            "main/cer_lab_ctc",
+                            "main/cer_unlab_ctc",
+                        ],
+                        "epoch",
+                        file_name="cer_lab_unlab.png",
+                    )
+                )
+            ###
 
         trainer.extend(
             extensions.PlotReport(
@@ -1093,6 +1441,33 @@ def train(args):
                 + transducer_keys
                 + ["elapsed_time"]
             )
+        elif "hierctc" in args.model_module or "paractc" in args.model_module:
+            report_keys = [
+                "epoch", "iteration", "main/loss", "elapsed_time"
+            ] + [
+                "main/loss_ctc{}".format(i) for i in range(num_out)
+            ] + [
+                "validation/main/loss_ctc{}".format(i) for i in range(num_out)
+            ] + [
+                "main/cer_ctc{}".format(i) for i in range(num_out)
+            ] + [
+                "validation/main/cer_ctc{}".format(i) for i in range(num_out)
+            ]
+
+            ### for MPL
+            if not args.unlab_json is None:
+                report_keys.extend([
+                    "main/loss_lab_ctc{}".format(i) for i in range(num_out)
+                ])
+                report_keys.extend([
+                    "main/loss_unlab_ctc{}".format(i) for i in range(num_out)
+                ])
+                report_keys.extend([
+                    "main/cer_lab_ctc{}".format(i) for i in range(num_out)
+                ])
+                report_keys.extend([
+                    "main/cer_unlab_ctc{}".format(i) for i in range(num_out)
+                ])
         else:
             report_keys = [
                 "epoch",
@@ -1111,6 +1486,15 @@ def train(args):
             ] + (
                 [] if args.num_encs == 1 else report_keys_cer_ctc + report_keys_loss_ctc
             )
+
+            ### for MPL
+            if not args.unlab_json is None:
+                report_keys.extend([
+                    "main/loss_lab_ctc",
+                    "main/loss_unlab_ctc",
+                    "main/cer_lab_ctc",
+                    "main/cer_unlab_ctc",
+                ])
 
         if args.opt == "adadelta":
             trainer.extend(
@@ -1386,9 +1770,15 @@ def recog(args):
                     nbest_hyps = model.recognize(
                         feat, args, train_args.char_list, rnnlm
                     )
-                new_js[name] = add_results_to_json(
-                    js[name], nbest_hyps, train_args.char_list
-                )
+
+                if "hierctc" in train_args.model_module:
+                    new_js[name] = add_results_to_json(
+                        js[name], nbest_hyps, train_args.char_list[-1]
+                    )
+                else:
+                    new_js[name] = add_results_to_json(
+                        js[name], nbest_hyps, train_args.char_list
+                    )
 
     else:
 

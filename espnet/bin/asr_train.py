@@ -130,6 +130,12 @@ def get_parser(parser=None, required=True):
         default=None,
         help="Filename of validation label data (json)",
     )
+    parser.add_argument(
+        "--unlab-json",
+        type=str,
+        default=None,
+        help="Filename of unlabeled data (json)",
+    )
     # network architecture
     parser.add_argument(
         "--model-module",
@@ -298,6 +304,9 @@ def get_parser(parser=None, required=True):
     )
     parser.add_argument(
         "--weight-decay", default=0.0, type=float, help="Weight decay ratio"
+    )
+    parser.add_argument(
+        "--learning-rate", default=0.001, type=float, help="learning rate"
     )
     parser.add_argument(
         "--criterion",
@@ -521,6 +530,11 @@ def get_parser(parser=None, required=True):
     )
     parser.add_argument("--fbank-fmin", type=float, default=0.0, help="")
     parser.add_argument("--fbank-fmax", type=float, default=None, help="")
+
+    parser.add_argument("--mpl-alpha", type=float, default=0.999, help="")
+    parser.add_argument("--mpl-weight", type=float, default=-1, help="")
+    parser.add_argument("--mpl-use-unlab-only", type=strtobool, default=False, help="")
+    parser.add_argument("--mpl-oracle-training", type=strtobool, default=False, help="")
     return parser
 
 
@@ -617,15 +631,26 @@ def main(cmd_args):
 
     # load dictionary for debug log
     if args.dict is not None:
-        with open(args.dict, "rb") as f:
-            dictionary = f.readlines()
-        char_list = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
-        char_list.insert(0, "<blank>")
-        char_list.append("<eos>")
-        # for non-autoregressive maskctc model
-        if "maskctc" in args.model_module:
-            char_list.append("<mask>")
-        args.char_list = char_list
+        if "," in args.dict:
+            args.char_list = []
+            dict_list = args.dict.split(",")
+            for d in dict_list[:-1]:
+                with open(d, "rb") as f:
+                    dictionary = f.readlines()
+                cl = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
+                cl.insert(0, "<blank>")
+                cl.append("<eos>")
+                args.char_list.append(cl)
+        else:
+            with open(args.dict, "rb") as f:
+                dictionary = f.readlines()
+            char_list = [entry.decode("utf-8").split(" ")[0] for entry in dictionary]
+            char_list.insert(0, "<blank>")
+            char_list.append("<eos>")
+            # for non-autoregressive maskctc model
+            if "maskctc" in args.model_module:
+                char_list.append("<mask>")
+            args.char_list = char_list
     else:
         args.char_list = None
 

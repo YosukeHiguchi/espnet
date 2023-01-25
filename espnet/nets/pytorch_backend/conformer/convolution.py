@@ -19,7 +19,7 @@ class ConvolutionModule(nn.Module):
 
     """
 
-    def __init__(self, channels, kernel_size, activation=nn.ReLU(), bias=True):
+    def __init__(self, channels, kernel_size, activation=nn.ReLU(), bias=True, norm_type="batch", groups=32):
         """Construct an ConvolutionModule object."""
         super(ConvolutionModule, self).__init__()
         # kernerl_size should be a odd number for 'SAME' padding
@@ -42,7 +42,10 @@ class ConvolutionModule(nn.Module):
             groups=channels,
             bias=bias,
         )
-        self.norm = nn.BatchNorm1d(channels)
+        if norm_type == "batch":
+            self.norm = nn.BatchNorm1d(channels)
+        elif norm_type == "group":
+            self.norm = nn.GroupNorm(groups, channels)
         self.pointwise_conv2 = nn.Conv1d(
             channels,
             channels,

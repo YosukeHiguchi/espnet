@@ -49,7 +49,7 @@ CTC_LOSS_THRESHOLD = 10000
 class Reporter(chainer.Chain):
     """A chainer reporter wrapper."""
 
-    def report(self, loss_ctc, loss_att, acc, cer_ctc, cer, wer, mtl_loss):
+    def report(self, loss_ctc, loss_att, acc, cer_ctc, cer, wer, mtl_loss, is_pl=None):
         """Report at every step."""
         reporter.report({"loss_ctc": loss_ctc}, self)
         reporter.report({"loss_att": loss_att}, self)
@@ -59,6 +59,14 @@ class Reporter(chainer.Chain):
         reporter.report({"wer": wer}, self)
         logging.info("mtl loss:" + str(mtl_loss))
         reporter.report({"loss": mtl_loss}, self)
+
+        if not is_pl is None:
+            if is_pl:
+                reporter.report({"loss_unlab_ctc": loss_ctc}, self)
+                reporter.report({"cer_unlab_ctc": cer_ctc}, self)
+            else:
+                reporter.report({"loss_lab_ctc": loss_ctc}, self)
+                reporter.report({"cer_lab_ctc": cer_ctc}, self)
 
 
 class E2E(ASRInterface, torch.nn.Module):

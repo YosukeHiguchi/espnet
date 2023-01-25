@@ -620,23 +620,49 @@ def _torch_snapshot_object(trainer, target, filename, savefun):
     # make snapshot_dict dictionary
     s = DictionarySerializer()
     s.save(trainer)
-    if hasattr(trainer.updater.model, "model"):
-        # (for TTS)
-        if hasattr(trainer.updater.model.model, "module"):
-            model_state_dict = trainer.updater.model.model.module.state_dict()
+    if hasattr(trainer.updater, "model"):
+        if hasattr(trainer.updater.model, "model"):
+            # (for TTS)
+            if hasattr(trainer.updater.model.model, "module"):
+                model_state_dict = trainer.updater.model.model.module.state_dict()
+            else:
+                model_state_dict = trainer.updater.model.model.state_dict()
         else:
-            model_state_dict = trainer.updater.model.model.state_dict()
+            # (for ASR)
+            if hasattr(trainer.updater.model, "module"):
+                model_state_dict = trainer.updater.model.module.state_dict()
+            else:
+                model_state_dict = trainer.updater.model.state_dict()
+
+    ### for MPL training
+    online_model_state_dict = None
+    if hasattr(trainer.updater, "online_model"):
+        if hasattr(trainer.updater.online_model, "module"):
+            online_model_state_dict = trainer.updater.online_model.module.state_dict()
+        else:
+            online_model_state_dict = trainer.updater.online_model.state_dict()
+
+    offline_model_state_dict = None
+    if hasattr(trainer.updater, "offline_model"):
+        if hasattr(trainer.updater.offline_model, "module"):
+            offline_model_state_dict = trainer.updater.offline_model.module.state_dict()
+        else:
+            offline_model_state_dict = trainer.updater.offline_model.state_dict()
+    ###
+
+    if offline_model_state_dict is not None:
+        snapshot_dict = {
+            "trainer": s.target,
+            "online_model": online_model_state_dict,
+            "offline_model": offline_model_state_dict,
+            "optimizer": trainer.updater.get_optimizer("main").state_dict(),
+        }
     else:
-        # (for ASR)
-        if hasattr(trainer.updater.model, "module"):
-            model_state_dict = trainer.updater.model.module.state_dict()
-        else:
-            model_state_dict = trainer.updater.model.state_dict()
-    snapshot_dict = {
-        "trainer": s.target,
-        "model": model_state_dict,
-        "optimizer": trainer.updater.get_optimizer("main").state_dict(),
-    }
+        snapshot_dict = {
+            "trainer": s.target,
+            "model": model_state_dict,
+            "optimizer": trainer.updater.get_optimizer("main").state_dict(),
+        }
 
     # save snapshot dictionary
     fn = filename.format(trainer)
@@ -797,18 +823,34 @@ def torch_resume(snapshot_path, trainer):
     d.load(trainer)
 
     # restore model states
-    if hasattr(trainer.updater.model, "model"):
-        # (for TTS model)
-        if hasattr(trainer.updater.model.model, "module"):
-            trainer.updater.model.model.module.load_state_dict(snapshot_dict["model"])
+    if hasattr(trainer.updater, "model"): # Not MPL
+        if hasattr(trainer.updater.model, "model"):
+            # (for TTS model)
+            if hasattr(trainer.updater.model.model, "module"):
+                trainer.updater.model.model.module.load_state_dict(snapshot_dict["model"])
+            else:
+                trainer.updater.model.model.load_state_dict(snapshot_dict["model"])
         else:
-            trainer.updater.model.model.load_state_dict(snapshot_dict["model"])
-    else:
-        # (for ASR model)
-        if hasattr(trainer.updater.model, "module"):
-            trainer.updater.model.module.load_state_dict(snapshot_dict["model"])
+            # (for ASR model)
+            if hasattr(trainer.updater.model, "module"):
+                trainer.updater.model.module.load_state_dict(snapshot_dict["model"])
+            else:
+                trainer.updater.model.load_state_dict(snapshot_dict["model"])
+
+    ### for MPL training
+    if hasattr(trainer.updater, "online_model"):
+        logging.warning('Loading online model')
+        if hasattr(trainer.updater.online_model, "module"):
+            trainer.updater.online_model.module.load_state_dict(snapshot_dict["online_model"])
         else:
-            trainer.updater.model.load_state_dict(snapshot_dict["model"])
+            trainer.updater.online_model.load_state_dict(snapshot_dict["online_model"])
+    if hasattr(trainer.updater, "offline_model"):
+        logging.warning('Loading offline model')
+        if hasattr(trainer.updater.offline_model, "module"):
+            trainer.updater.offline_model.module.load_state_dict(snapshot_dict["offline_model"])
+        else:
+            trainer.updater.offline_model.load_state_dict(snapshot_dict["offline_model"])
+    #
 
     # retore optimizer states
     trainer.updater.get_optimizer("main").load_state_dict(snapshot_dict["optimizer"])

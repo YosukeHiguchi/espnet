@@ -173,7 +173,7 @@ class E2E(ASRInterface, torch.nn.Module):
         # initialize parameters
         initialize(self, args.transformer_init)
 
-    def forward(self, xs_pad, ilens, ys_pad):
+    def forward(self, xs_pad, ilens, ys_pad, is_pl=None):
         """E2E forward.
 
         :param torch.Tensor xs_pad: batch of padded source sequences (B, Tmax, idim)
@@ -275,7 +275,7 @@ class E2E(ASRInterface, torch.nn.Module):
         loss_data = float(self.loss)
         if loss_data < CTC_LOSS_THRESHOLD and not math.isnan(loss_data):
             self.reporter.report(
-                loss_ctc_data, loss_att_data, self.acc, cer_ctc, cer, wer, loss_data
+                loss_ctc_data, loss_att_data, self.acc, cer_ctc, cer, wer, loss_data, is_pl=is_pl
             )
         else:
             logging.warning("loss (=%f) is not correct", loss_data)
@@ -296,6 +296,20 @@ class E2E(ASRInterface, torch.nn.Module):
         x = torch.as_tensor(x).unsqueeze(0)
         enc_output, *_ = self.encoder(x, None)
         return enc_output.squeeze(0)
+
+    def get_ctc_hypothesis(self, xs_pad, ilens):
+        from espnet.nets.pytorch_backend.nets_utils import pad_list
+
+        src_mask = make_non_pad_mask(ilens.tolist()).to(xs_pad.device).unsqueeze(-2)
+        enc_out, *_ = self.encoder(xs_pad, src_mask)
+
+        lpz = self.ctc.argmax(enc_out)
+        hyps = []
+        for l in lpz:
+            y_hat = torch.unique_consecutive(l)
+            hyps.append(y_hat[y_hat != 0])
+
+        return pad_list(hyps, self.ignore_id)
 
     def recognize(self, x, recog_args, char_list=None, rnnlm=None, use_jit=False):
         """Recognize input speech.

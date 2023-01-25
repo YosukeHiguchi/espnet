@@ -295,7 +295,7 @@ def load_trained_modules(idim, odim, args, interface=ASRInterface):
     """
 
     def print_new_keys(state_dict, modules, model_path):
-        logging.info(f"Loading {modules} from model: {model_path}")
+        logging.warning(f"Loading {modules} from model: {model_path}")
 
         for k in state_dict.keys():
             logging.warning(f"Overriding module {k}")
