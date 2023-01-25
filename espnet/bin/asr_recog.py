@@ -311,21 +311,6 @@ def get_parser():
         type=int,
         default=False,
     )
-    parser.add_argument(
-        "--ctc-frame-sync-decoding",
-        type=strtobool,
-        default=False,
-    )
-    parser.add_argument(
-        "--ctc-pruning-width",
-        type=float,
-        default=18.0,
-    )
-    parser.add_argument(
-        "--ctc-insertion-bonus",
-        type=float,
-        default=1.5,
-    )
 
     return parser
 

@@ -113,57 +113,42 @@ def recog_v2(args):
     else:
         ngram = None
 
-    if args.ctc_frame_sync_decoding and model.mtlalpha == 1.0:
-        # frame-synchronous decoding
-        logging.info("Frame-synchronous decoding")
-        from espnet.nets.beam_search_ctc import BeamSearchCTC
-
-        beam_search = BeamSearchCTC(
-            beam_size=args.beam_size,
-            sos=model.sos,
-            ctc=model.ctc,
-            lm=lm, # rnnlm only
-            lm_weight=args.lm_weight,
-            pruning_width=args.ctc_pruning_width,
-            insertion_bonus=args.ctc_insertion_bonus
-        )
-    else:
-        scorers = model.scorers()
-        scorers["lm"] = lm
-        scorers["ngram"] = ngram
-        scorers["length_bonus"] = LengthBonus(len(train_args.char_list))
-        weights = dict(
-            decoder=1.0 - args.ctc_weight,
-            ctc=args.ctc_weight,
-            lm=args.lm_weight,
-            ngram=args.ngram_weight,
-            length_bonus=args.penalty,
-        )
-        beam_search = BeamSearch(
-            beam_size=args.beam_size,
-            vocab_size=len(train_args.char_list),
-            weights=weights,
-            scorers=scorers,
-            sos=model.sos,
-            eos=model.eos,
-            token_list=train_args.char_list,
-            pre_beam_score_key=None if args.ctc_weight == 1.0 else "full",
-        )
-        # TODO(karita): make all scorers batchfied
-        if args.batchsize == 1:
-            non_batch = [
-                k
-                for k, v in beam_search.full_scorers.items()
-                if not isinstance(v, BatchScorerInterface)
-            ]
-            if len(non_batch) == 0:
-                beam_search.__class__ = BatchBeamSearch
-                logging.info("BatchBeamSearch implementation is selected.")
-            else:
-                logging.warning(
-                    f"As non-batch scorers {non_batch} are found, "
-                    f"fall back to non-batch implementation."
-                )
+    scorers = model.scorers()
+    scorers["lm"] = lm
+    scorers["ngram"] = ngram
+    scorers["length_bonus"] = LengthBonus(len(train_args.char_list))
+    weights = dict(
+        decoder=1.0 - args.ctc_weight,
+        ctc=args.ctc_weight,
+        lm=args.lm_weight,
+        ngram=args.ngram_weight,
+        length_bonus=args.penalty,
+    )
+    beam_search = BeamSearch(
+        beam_size=args.beam_size,
+        vocab_size=len(train_args.char_list),
+        weights=weights,
+        scorers=scorers,
+        sos=model.sos,
+        eos=model.eos,
+        token_list=train_args.char_list,
+        pre_beam_score_key=None if args.ctc_weight == 1.0 else "full",
+    )
+    # TODO(karita): make all scorers batchfied
+    if args.batchsize == 1:
+        non_batch = [
+            k
+            for k, v in beam_search.full_scorers.items()
+            if not isinstance(v, BatchScorerInterface)
+        ]
+        if len(non_batch) == 0:
+            beam_search.__class__ = BatchBeamSearch
+            logging.info("BatchBeamSearch implementation is selected.")
+        else:
+            logging.warning(
+                f"As non-batch scorers {non_batch} are found, "
+                f"fall back to non-batch implementation."
+            )
 
     if args.ngpu > 1:
         raise NotImplementedError("only single GPU decoding is supported")
@@ -186,12 +171,10 @@ def recog_v2(args):
             batch = [(name, js[name])]
             feat = load_inputs_and_targets(batch)[0][0]
             enc = model.encode(torch.as_tensor(feat).to(device=device, dtype=dtype))
-            if args.ctc_frame_sync_decoding:
-                nbest_hyps = beam_search(enc.unsqueeze(0))
-            else:
-                nbest_hyps = beam_search(
-                    x=enc, maxlenratio=args.maxlenratio, minlenratio=args.minlenratio
-                )
+
+            nbest_hyps = beam_search(
+                x=enc, maxlenratio=args.maxlenratio, minlenratio=args.minlenratio
+            )
             nbest_hyps = [
                 h.asdict() for h in nbest_hyps[: min(len(nbest_hyps), args.nbest)]
             ]
