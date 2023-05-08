@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; ESPnet 202211 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Installation &mdash; ESPnet 202304 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -29,14 +29,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> ESPnet
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ESPnet
           </a>
               <div class="version">
-                202211
+                202304
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -54,7 +58,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="parallelization.html">Using Job scheduling system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallelization.html">Using job scheduling system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker.html">Docker</a></li>
 </ul>
@@ -63,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="espnet2_tutorial.html">ESPnet2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_tutorial.html#instruction-for-run-sh">Instruction for run.sh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_training_option.html">Change the configuration for training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet2_format_wav_scp.html">Converting audio file formats using format_wav_scp.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_task.html">Task class and data input system for training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_distributed.html">Distributed training</a></li>
 </ul>
@@ -70,6 +75,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebook/asr_cli.html">Speech Recognition (Recipe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebook/asr_library.html">Speech Recognition (Library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_2pass_slu_demo.html">ESPNET 2 pass SLU Demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_asr_realtime_demo.html">ESPnet2-ASR realtime demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_asr_transfer_learning_demo.html"><strong>Use transfer learning for ASR in ESPnet2</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebook/espnet2_asr_transfer_learning_demo.html#Abstract">Abstract</a></li>
@@ -106,46 +112,47 @@
 </ul>
 <p><span class="caption-text">Package Reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.asr.html">espnet.asr package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet.mt.html">espnet.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.st.html">espnet.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.utils.html">espnet.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.transform.html">espnet.transform package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet.bin.html">espnet.bin package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet.vc.html">espnet.vc package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.tts.html">espnet.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.asr.html">espnet.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.nets.html">espnet.nets package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.utils.html">espnet.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.transform.html">espnet.transform package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.lm.html">espnet.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.st.html">espnet.st package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet.distributed.html">espnet.distributed package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.mt.html">espnet2.mt package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.layers.html">espnet2.layers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.fst.html">espnet2.fst package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.bin.html">espnet2.bin package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.slu.html">espnet2.slu package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.tts.html">espnet2.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.asr.html">espnet2.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.utils.html">espnet2.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.svs.html">espnet2.svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.diar.html">espnet2.diar package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.text.html">espnet2.text package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.enh.html">espnet2.enh package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.lm.html">espnet2.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.st.html">espnet2.st package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet.lm.html">espnet.lm package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.train.html">espnet2.train package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.slu.html">espnet2.slu package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.gan_tts.html">espnet2.gan_tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.fst.html">espnet2.fst package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.asr.html">espnet2.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.uasr.html">espnet2.uasr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.text.html">espnet2.text package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.mt.html">espnet2.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.st.html">espnet2.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.enh.html">espnet2.enh package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.utils.html">espnet2.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.bin.html">espnet2.bin package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.tts.html">espnet2.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.layers.html">espnet2.layers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.diar.html">espnet2.diar package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.svs.html">espnet2.svs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.lm.html">espnet2.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
 </ul>
 <p><span class="caption-text">Tool Reference:</span></p>
 <ul>
@@ -168,7 +175,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/installation.md.txt" rel="nofollow"> View page source</a>
@@ -179,46 +186,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="installation">
+  <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Python 3.6.1+</p></li>
-<li><p>gcc 4.9+ for PyTorch1.0.0+</p></li>
-</ul>
-<p>Optionally, GPU environment requires the following libraries:</p>
-<ul class="simple">
-<li><p>Cuda 8.0, 9.0, 9.1, 10.0 depending on each DNN library</p></li>
-<li><p>Cudnn 6+, 7+</p></li>
-<li><p>NCCL 2.0+ (for the use of multi-GPUs)</p></li>
+<li><p>Python 3.7+</p></li>
+<li><p>gcc 4.9+ for PyTorch1.4.0+</p></li>
 </ul>
 <p>(If you’ll use anaconda environment at installation step2,
-the following packages are installed using Anaconda, so you can skip them.)</p>
+the following packages are installed using conda, so you can skip them.)</p>
 <ul>
 <li><p>cmake3 for some extensions</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Ubuntu</span>
@@ -231,22 +208,6 @@ $<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </s
 $<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>sox
 <span class="c1"># For CentOS</span>
 $<span class="w"> </span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>sox
-</pre></div>
-</div>
-</li>
-<li><p>sndfile</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Ubuntu</span>
-$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>libsndfile1-dev
-<span class="c1"># For CentOS</span>
-$<span class="w"> </span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>libsndfile
-</pre></div>
-</div>
-</li>
-<li><p>ffmpeg (This is not required when installing, but used in some recipes)</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Ubuntu</span>
-$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ffmpeg
-<span class="c1"># For CentOS</span>
-$<span class="w"> </span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>ffmpeg
 </pre></div>
 </div>
 </li>
@@ -263,12 +224,18 @@ $<span class="w"> </span>sudo<span class="w"> </span>yum<span class="w"> </span>
 <section id="supported-linux-distributions-and-other-requirements">
 <h2>Supported Linux distributions and other requirements<a class="headerlink" href="#supported-linux-distributions-and-other-requirements" title="Permalink to this headline">¶</a></h2>
 <p>We support the following Linux distributions with CI. If you want to build your own Linux by yourself,
-please also check our <a class="reference external" href="https://github.com/espnet/espnet/tree/master/.github/workflows">CI configurations</a>.
-to prepare the appropriate environments</p>
+please also check our <a class="reference external" href="https://github.com/espnet/espnet/tree/master/.github/workflows">CI configurations</a>
+to prepare the appropriate environments.</p>
 <ul class="simple">
 <li><p>ubuntu18</p></li>
 <li><p>centos7</p></li>
-<li><p>debian9</p></li>
+<li><p>debian11</p></li>
+<li><p>Windows10 (installation only)</p>
+<ul>
+<li><p>We can conduct complete experiments based on WSL-2 (Ubuntu 20.04). See the <a class="reference external" href="https://github.com/espnet/espnet/files/10780845/Instructions.txt">link</a> and <a class="reference external" href="https://github.com/espnet/espnet/discussions/4909">#4909</a> for details (Thanks, <a class="reference external" href="https://github.com/Bereket-Desbele">&#64;Bereket-Desbele</a>!)</p></li>
+</ul>
+</li>
+<li><p>MacOS12 (installation only)</p></li>
 </ul>
 </section>
 <section id="step-1-optional-install-kaldi">
@@ -347,7 +314,7 @@ $<span class="w"> </span>make<span class="w"> </span>-j<span class="w"> </span>c
 </div></details></section>
 <section id="step-2-installation-espnet">
 <h2>Step 2) Installation ESPnet<a class="headerlink" href="#step-2-installation-espnet" title="Permalink to this headline">¶</a></h2>
-<ol>
+<div align="left"><img src="image/environment_structure.png" width="700"/></div><ol>
 <li><p>Git clone ESPnet</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>&lt;any-place&gt;
 $<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/espnet/espnet
@@ -360,27 +327,26 @@ $<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span
 $<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>&lt;kaldi-root&gt;<span class="w"> </span>.
 </pre></div>
 </div>
-<p>If you don’t have <code class="docutils literal notranslate"><span class="pre">espnet/tools/kaldi</span></code> when <code class="docutils literal notranslate"><span class="pre">make</span></code>, Kaldi repository is automatically put without compiling.</p>
 </li>
 <li><p>Setup Python environment</p>
 <p>You have to create <code class="docutils literal notranslate"><span class="pre">&lt;espnet-root&gt;/tools/activate_python.sh</span></code> to specify the Python interpreter used in espnet recipes.
 (To understand how ESPnet specifies Python, see <a class="reference external" href="https://github.com/espnet/espnet/blob/master/egs2/TEMPLATE/asr1/path.sh">path.sh</a> for example.)</p>
 <p>We also have some scripts to generate <code class="docutils literal notranslate"><span class="pre">tools/activate_python.sh</span></code>.</p>
 <ul>
-<li><p>Option A) Setup Anaconda environment</p>
+<li><p>Option A) Setup conda environment</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
 $<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span><span class="o">[</span>output-dir-name<span class="p">|</span><span class="nv">default</span><span class="o">=</span>venv<span class="o">]</span><span class="w"> </span><span class="o">[</span>conda-env-name<span class="p">|</span><span class="nv">default</span><span class="o">=</span>root<span class="o">]</span><span class="w"> </span><span class="o">[</span>python-version<span class="p">|</span><span class="nv">default</span><span class="o">=</span>none<span class="o">]</span>
 <span class="c1"># e.g.</span>
-$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span>anaconda<span class="w"> </span>espnet<span class="w"> </span><span class="m">3</span>.8
+$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span>miniconda<span class="w"> </span>espnet<span class="w"> </span><span class="m">3</span>.8
 </pre></div>
 </div>
 <p>This script tries to create a new miniconda if the output directory doesn’t exist.
-If you already have Anaconda and you’ll use it then,</p>
+If you already have conda and you’ll use it then,</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
-$<span class="w"> </span><span class="nv">CONDA_TOOLS_DIR</span><span class="o">=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="si">${</span><span class="nv">CONDA_EXE</span><span class="si">}</span><span class="k">)</span>/..
-$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span><span class="si">${</span><span class="nv">CONDA_TOOLS_DIR</span><span class="si">}</span><span class="w"> </span><span class="o">[</span>conda-env-name<span class="o">]</span><span class="w"> </span><span class="o">[</span>python-version<span class="o">]</span>
+$<span class="w"> </span><span class="nv">CONDA_ROOT</span><span class="o">=</span><span class="si">${</span><span class="nv">CONDA_EXE</span><span class="si">}</span>/../..<span class="w">  </span><span class="c1"># CONDA_EXE is an environment variable set by ${CONDA_ROOT}/etc/profile.d/conda.sh</span>
+$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span><span class="si">${</span><span class="nv">CONDA_ROOT</span><span class="si">}</span><span class="w"> </span><span class="o">[</span>conda-env-name<span class="o">]</span><span class="w"> </span><span class="o">[</span>python-version<span class="o">]</span>
 <span class="c1"># e.g.</span>
-$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span><span class="si">${</span><span class="nv">CONDA_TOOLS_DIR</span><span class="si">}</span><span class="w"> </span>espnet<span class="w"> </span><span class="m">3</span>.8
+$<span class="w"> </span>./setup_anaconda.sh<span class="w"> </span><span class="si">${</span><span class="nv">CONDA_ROOT</span><span class="si">}</span><span class="w"> </span>espnet<span class="w"> </span><span class="m">3</span>.8
 </pre></div>
 </div>
 </li>
@@ -396,7 +362,7 @@ $<span class="w"> </span>./setup_python.sh<span class="w"> </span><span class="k
 </pre></div>
 </div>
 </li>
-<li><p>Option D) Without setting Python environment.</p>
+<li><p>Option D) Without setting Python environment</p>
 <p><code class="docutils literal notranslate"><span class="pre">Option</span> <span class="pre">C</span></code> and <code class="docutils literal notranslate"><span class="pre">Option</span> <span class="pre">D</span></code> are almost same. This option might be suitable for Google colab.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
 $<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>activate_python.sh<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>touch<span class="w"> </span>activate_python.sh
@@ -438,23 +404,20 @@ so if you meet some installation error when running these recipe, you need to in
 <ul>
 <li><p>To install Warp Transducer</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
-.<span class="w"> </span>activate_python.sh
-.<span class="w"> </span>./setup_cuda_env.sh<span class="w"> </span>&lt;cuda-root&gt;<span class="w">  </span><span class="c1"># e.g. &lt;cuda-root&gt; = /usr/local/cuda</span>
-./installers/install_warp-transducer.sh
+<span class="nv">cuda_root</span><span class="o">=</span>&lt;cuda-root&gt;<span class="w">  </span><span class="c1"># e.g. &lt;cuda-root&gt; = /usr/local/cuda</span>
+bach<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;. activate_python.sh; . ./setup_cuda_env.sh </span><span class="nv">$cuda_root</span><span class="s2">; ./installers/install_warp-transducer.sh&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><p>To install PyOpenJTalk</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
-.<span class="w"> </span>activate_python.sh
-./installers/install_pyopenjtalk.sh
+bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;. activate_python.sh; ./installers/install_pyopenjtalk.sh&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><p>To install a module using pip: e.g. to intstall ipython</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
-.<span class="w"> </span>activate_python.sh
-pip<span class="w"> </span>install<span class="w"> </span>ipython
+bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;. activate_python.sh; pip install ipython&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -464,7 +427,7 @@ pip<span class="w"> </span>install<span class="w"> </span>ipython
 <h2>Check installation<a class="headerlink" href="#check-installation" title="Permalink to this headline">¶</a></h2>
 <p>You can check whether your installation is successfully finished by</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;espnet-root&gt;/tools
-.<span class="w"> </span>./activate_python.sh<span class="p">;</span><span class="w"> </span>python3<span class="w"> </span>check_install.py
+bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;. ./activate_python.sh; . ./extra_path.sh; python3 check_install.py&quot;</span>
 </pre></div>
 </div>
 <p>Note that this check is always called in the last stage of the above installation.</p>

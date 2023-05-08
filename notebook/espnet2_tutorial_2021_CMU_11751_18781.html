@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CMU 11751/18781 2021: ESPnet Tutorial &mdash; ESPnet 202211 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>CMU 11751/18781 2021: ESPnet Tutorial &mdash; ESPnet 202304 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -29,14 +39,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> ESPnet
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ESPnet
           </a>
               <div class="version">
-                202211
+                202304
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,7 +60,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../parallelization.html">Using Job scheduling system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallelization.html">Using job scheduling system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../docker.html">Docker</a></li>
 </ul>
@@ -55,6 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../espnet2_tutorial.html">ESPnet2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../espnet2_tutorial.html#instruction-for-run-sh">Instruction for run.sh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../espnet2_training_option.html">Change the configuration for training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../espnet2_format_wav_scp.html">Converting audio file formats using format_wav_scp.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../espnet2_task.html">Task class and data input system for training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../espnet2_distributed.html">Distributed training</a></li>
 </ul>
@@ -62,6 +77,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="asr_cli.html">Speech Recognition (Recipe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="asr_library.html">Speech Recognition (Library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="espnet2_2pass_slu_demo.html">ESPNET 2 pass SLU Demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_asr_realtime_demo.html">ESPnet2-ASR realtime demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_asr_transfer_learning_demo.html"><strong>Use transfer learning for ASR in ESPnet2</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="espnet2_asr_transfer_learning_demo.html#Abstract">Abstract</a></li>
@@ -91,8 +107,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Speech-synthesis-demo">Speech synthesis demo</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Installation">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Model Selection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Model Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-selection-1">Model Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-setup-1">Model Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Synthesis">Synthesis</a></li>
 </ul>
 </li>
@@ -103,7 +119,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Speech-Separation">Speech Separation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Model Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#model-selection-2">Model Selection</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Separate-the-example-in-wsj0_2mix-testing-set">Separate the example in wsj0_2mix testing set</a></li>
 </ul>
 </li>
@@ -141,46 +157,47 @@
 </ul>
 <p><span class="caption-text">Package Reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.asr.html">espnet.asr package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.mt.html">espnet.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.st.html">espnet.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.utils.html">espnet.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.transform.html">espnet.transform package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.bin.html">espnet.bin package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.vc.html">espnet.vc package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.tts.html">espnet.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.asr.html">espnet.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.nets.html">espnet.nets package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.utils.html">espnet.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.transform.html">espnet.transform package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.lm.html">espnet.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.st.html">espnet.st package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.distributed.html">espnet.distributed package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.mt.html">espnet2.mt package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.layers.html">espnet2.layers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.fst.html">espnet2.fst package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.bin.html">espnet2.bin package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.slu.html">espnet2.slu package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.tts.html">espnet2.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.asr.html">espnet2.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.utils.html">espnet2.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.svs.html">espnet2.svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.diar.html">espnet2.diar package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.text.html">espnet2.text package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.enh.html">espnet2.enh package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.lm.html">espnet2.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.st.html">espnet2.st package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet.lm.html">espnet.lm package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.train.html">espnet2.train package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.slu.html">espnet2.slu package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.gan_tts.html">espnet2.gan_tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.fst.html">espnet2.fst package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.asr.html">espnet2.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.uasr.html">espnet2.uasr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.text.html">espnet2.text package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.mt.html">espnet2.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.st.html">espnet2.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.enh.html">espnet2.enh package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.utils.html">espnet2.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.bin.html">espnet2.bin package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.tts.html">espnet2.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.layers.html">espnet2.layers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.diar.html">espnet2.diar package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.svs.html">espnet2.svs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.lm.html">espnet2.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
 </ul>
 <p><span class="caption-text">Tool Reference:</span></p>
 <ul>
@@ -203,7 +220,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">CMU 11751/18781 2021: ESPnet Tutorial</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebook/espnet2_tutorial_2021_CMU_11751_18781.ipynb.txt" rel="nofollow"> View page source</a>
@@ -214,286 +231,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars and line breaks on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-    white-space: pre;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt .copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-.jp-RenderedHTMLCommon table,
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-.jp-RenderedHTMLCommon thead,
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-.jp-RenderedHTMLCommon tr,
-.jp-RenderedHTMLCommon th,
-.jp-RenderedHTMLCommon td,
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-.jp-RenderedHTMLCommon th,
-div.rendered_html th {
-  font-weight: bold;
-}
-.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-.jp-RenderedHTMLCommon tbody tr:hover,
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="CMU-11751/18781-2021:-ESPnet-Tutorial">
+  <section id="CMU-11751/18781-2021:-ESPnet-Tutorial">
 <h1>CMU 11751/18781 2021: ESPnet Tutorial<a class="headerlink" href="#CMU-11751/18781-2021:-ESPnet-Tutorial" title="Permalink to this headline">¶</a></h1>
 <p>ESPnet is an end-to-end speech processing toolkit, initially focused on end-to-end speech recognition and end-to-end text-to-speech, but now extended to various other speech processing. ESPnet uses PyTorch as a main deep learning engine, and also follows Kaldi style data processing, feature extraction/format, and recipes to provide a complete setup for speech recognition and other speech processing experiments.</p>
 <p>This tutorial is based on the collection of espnet notebook demos <a class="reference external" href="https://github.com/espnet/notebook">https://github.com/espnet/notebook</a>, espnet documentations in <a class="reference external" href="https://espnet.github.io/espnet/">https://espnet.github.io/espnet/</a>, and README.md in <a class="reference external" href="https://github.com/espnet/espnet">https://github.com/espnet/espnet</a></p>
@@ -767,8 +505,8 @@ for index, row in egs.iterrows():
 </div>
 </div>
 </section>
-<section id="id1">
-<h3>Model Selection<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<section id="model-selection-1">
+<h3>Model Selection<a class="headerlink" href="#model-selection-1" title="Permalink to this headline">¶</a></h3>
 <p>Please select model: English, Japanese, and Mandarin are supported.</p>
 <div class="line-block">
 <div class="line">You can try end-to-end text2wav model &amp; combination of text2mel and vocoder.</div>
@@ -815,8 +553,8 @@ for index, row in egs.iterrows():
 </div>
 </div>
 </section>
-<section id="id2">
-<h3>Model Setup<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<section id="model-setup-1">
+<h3>Model Setup<a class="headerlink" href="#model-setup-1" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -956,8 +694,8 @@ display(Audio(mixwav_mc.T, rate=sr))
 </section>
 <section id="Speech-Separation">
 <h3>Speech Separation<a class="headerlink" href="#Speech-Separation" title="Permalink to this headline">¶</a></h3>
-<section id="id3">
-<h4>Model Selection<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<section id="model-selection-2">
+<h4>Model Selection<a class="headerlink" href="#model-selection-2" title="Permalink to this headline">¶</a></h4>
 <p>Please select model shown in <a class="reference external" href="https://github.com/espnet/espnet_model_zoo/blob/master/espnet_model_zoo/table.csv">espnet_model_zoo</a></p>
 <p>In this demonstration, we will show different speech separation models on wsj0_2mix.</p>
 <div class="nbinput nblast docutils container">
@@ -1129,7 +867,19 @@ display(Audio(waves_wsj[1].squeeze(), rate=sr))
 </pre></div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">egs2/an4/asr1/</span>&#160; <span class="pre">-</span> <span class="pre">conf/</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Configuration</span> <span class="pre">files</span> <span class="pre">for</span> <span class="pre">training,</span> <span class="pre">inference,</span> <span class="pre">etc.</span>&#160; <span class="pre">-</span> <span class="pre">scripts/</span>&#160;&#160; <span class="pre">#</span> <span class="pre">Bash</span> <span class="pre">utilities</span> <span class="pre">of</span> <span class="pre">espnet2</span>&#160; <span class="pre">-</span> <span class="pre">pyscripts/</span> <span class="pre">#</span> <span class="pre">Python</span> <span class="pre">utilities</span> <span class="pre">of</span> <span class="pre">espnet2</span>&#160; <span class="pre">-</span> <span class="pre">steps/</span>&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">From</span> <span class="pre">Kaldi</span> <span class="pre">utilities</span>&#160; <span class="pre">-</span> <span class="pre">utils/</span>&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">From</span> <span class="pre">Kaldi</span> <span class="pre">utilities</span>&#160; <span class="pre">-</span> <span class="pre">db.sh</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">The</span> <span class="pre">directory</span> <span class="pre">path</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">corpora</span>&#160; <span class="pre">-</span> <span class="pre">path.sh</span>&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Setup</span> <span class="pre">script</span> <span class="pre">for</span> <span class="pre">environment</span> <span class="pre">variables</span>&#160; <span class="pre">-</span> <span class="pre">cmd.sh</span>&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Configuration</span> <span class="pre">for</span> <span class="pre">your</span> <span class="pre">backend</span> <span class="pre">of</span> <span class="pre">job</span> <span class="pre">scheduler</span>&#160; <span class="pre">-</span> <span class="pre">run.sh</span>&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Entry</span> <span class="pre">point</span>&#160; <span class="pre">-</span> <span class="pre">asr.sh</span>&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Invoked</span> <span class="pre">by</span> <span class="pre">run.sh</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>egs2/an4/asr1/
+ - conf/      # Configuration files for training, inference, etc.
+ - scripts/   # Bash utilities of espnet2
+ - pyscripts/ # Python utilities of espnet2
+ - steps/     # From Kaldi utilities
+ - utils/     # From Kaldi utilities
+ - db.sh      # The directory path of each corpora
+ - path.sh    # Setup script for environment variables
+ - cmd.sh     # Configuration for your backend of job scheduler
+ - run.sh     # Entry point
+ - asr.sh     # Invoked by run.sh
+</pre></div>
+</div>
 <p>ESPnet is designed for various use cases (local machines or cluster machines) based on Kaldi tools. If you use it in the cluster machines, please also check <a class="reference external" href="https://kaldi-asr.org/doc/queue.html">https://kaldi-asr.org/doc/queue.html</a></p>
 <p>The main stages can be parallelized by various jobs.</p>
 <div class="nbinput nblast docutils container">

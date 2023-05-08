@@ -3,8 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>espnet2.asr.transducer.beam_search_transducer &mdash; ESPnet 202211 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <title>espnet2.asr.transducer.beam_search_transducer &mdash; ESPnet 202304 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/nbsphinx-code-cells.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -26,14 +43,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../../index.html" class="icon icon-home"> ESPnet
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ESPnet
           </a>
               <div class="version">
-                202211
+                202304
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -43,7 +64,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../parallelization.html">Using Job scheduling system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../parallelization.html">Using job scheduling system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../docker.html">Docker</a></li>
 </ul>
@@ -52,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_tutorial.html">ESPnet2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_tutorial.html#instruction-for-run-sh">Instruction for run.sh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_training_option.html">Change the configuration for training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_format_wav_scp.html">Converting audio file formats using format_wav_scp.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_task.html">Task class and data input system for training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../espnet2_distributed.html">Distributed training</a></li>
 </ul>
@@ -59,6 +81,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebook/asr_cli.html">Speech Recognition (Recipe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebook/asr_library.html">Speech Recognition (Library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebook/espnet2_2pass_slu_demo.html">ESPNET 2 pass SLU Demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebook/espnet2_asr_realtime_demo.html">ESPnet2-ASR realtime demonstration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebook/espnet2_asr_transfer_learning_demo.html"><strong>Use transfer learning for ASR in ESPnet2</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../notebook/espnet2_asr_transfer_learning_demo.html#Abstract">Abstract</a></li>
@@ -95,46 +118,47 @@
 </ul>
 <p><span class="caption-text">Package Reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.asr.html">espnet.asr package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.mt.html">espnet.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.st.html">espnet.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.utils.html">espnet.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.optimizer.html">espnet.optimizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.transform.html">espnet.transform package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.bin.html">espnet.bin package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.vc.html">espnet.vc package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.tts.html">espnet.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.asr.html">espnet.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.nets.html">espnet.nets package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.utils.html">espnet.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.transform.html">espnet.transform package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.lm.html">espnet.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.st.html">espnet.st package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.distributed.html">espnet.distributed package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.mt.html">espnet2.mt package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.layers.html">espnet2.layers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.fst.html">espnet2.fst package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.bin.html">espnet2.bin package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.slu.html">espnet2.slu package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.tts.html">espnet2.tts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.asr.html">espnet2.asr package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.utils.html">espnet2.utils package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.svs.html">espnet2.svs package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.diar.html">espnet2.diar package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.text.html">espnet2.text package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.enh.html">espnet2.enh package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.lm.html">espnet2.lm package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.st.html">espnet2.st package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.tts.html">espnet.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.scheduler.html">espnet.scheduler package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.nets.html">espnet.nets package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet.lm.html">espnet.lm package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.train.html">espnet2.train package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.iterators.html">espnet2.iterators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.slu.html">espnet2.slu package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.gan_tts.html">espnet2.gan_tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.torch_utils.html">espnet2.torch_utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.fst.html">espnet2.fst package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.asr.html">espnet2.asr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.fileio.html">espnet2.fileio package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.uasr.html">espnet2.uasr package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.text.html">espnet2.text package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.optimizers.html">espnet2.optimizers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.mt.html">espnet2.mt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.samplers.html">espnet2.samplers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.st.html">espnet2.st package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.enh.html">espnet2.enh package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.utils.html">espnet2.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.bin.html">espnet2.bin package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.main_funcs.html">espnet2.main_funcs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.asr_transducer.html">espnet2.asr_transducer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.hubert.html">espnet2.hubert package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.tts.html">espnet2.tts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.tasks.html">espnet2.tasks package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.layers.html">espnet2.layers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.schedulers.html">espnet2.schedulers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.diar.html">espnet2.diar package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.svs.html">espnet2.svs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.lm.html">espnet2.lm package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_gen/espnet2.gan_svs.html">espnet2.gan_svs package</a></li>
 </ul>
 <p><span class="caption-text">Tool Reference:</span></p>
 <ul>
@@ -157,7 +181,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">espnet2.asr.transducer.beam_search_transducer</li>
       <li class="wy-breadcrumbs-aside">
@@ -228,6 +252,8 @@
         <span class="n">prefix_alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">expansion_gamma</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">2.3</span><span class="p">,</span>
         <span class="n">expansion_beta</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">multi_blank_durations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">multi_blank_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">score_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">nbest</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">token_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -248,6 +274,8 @@
 <span class="sd">            expansion_beta:</span>
 <span class="sd">              Number of additional candidates for expanded hypotheses selection. (mAES)</span>
 <span class="sd">            expansion_gamma: Allowed logp difference for prune-by-value method. (mAES)</span>
+<span class="sd">            multi_blank_durations: The duration of each blank token. (MBG)</span>
+<span class="sd">            multi_blank_indices: The index of each blank token in token_list. (MBG)</span>
 <span class="sd">            score_norm: Normalize final scores by length. (&quot;default&quot;)</span>
 <span class="sd">            nbest: Number of final hypothesis.</span>
 
@@ -264,7 +292,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">blank_id</span> <span class="o">=</span> <span class="n">decoder</span><span class="o">.</span><span class="n">blank_id</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="s2">&quot;mbg&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_durations</span> <span class="o">=</span> <span class="n">multi_blank_durations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_indices</span> <span class="o">=</span> <span class="n">multi_blank_indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">search_algorithm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_greedy_search</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">search_algorithm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">greedy_search</span>
         <span class="k">elif</span> <span class="n">search_type</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">search_algorithm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_beam_search</span>
@@ -306,12 +340,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">max_candidates</span> <span class="o">=</span> <span class="n">beam_size</span> <span class="o">+</span> <span class="n">expansion_beta</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">search_algorithm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modified_adaptive_expansion_search</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">use_lm</span> <span class="o">=</span> <span class="n">lm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lm</span> <span class="o">=</span> <span class="n">lm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lm_weight</span> <span class="o">=</span> <span class="n">lm_weight</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_lm</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;LM is provided but not used, since this is greedy search.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">score_norm</span> <span class="o">=</span> <span class="n">score_norm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nbest</span> <span class="o">=</span> <span class="n">nbest</span>
@@ -1053,7 +1091,61 @@
                             <span class="n">list_b</span> <span class="o">+</span> <span class="n">list_exp</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
                         <span class="p">)[:</span><span class="n">beam</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_nbest</span><span class="p">(</span><span class="n">kept_hyps</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_nbest</span><span class="p">(</span><span class="n">kept_hyps</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BeamSearchTransducer.multi_blank_greedy_search"><a class="viewcode-back" href="../../../../_gen/espnet2.asr.html#espnet2.asr.transducer.beam_search_transducer.BeamSearchTransducer.multi_blank_greedy_search">[docs]</a>    <span class="k">def</span> <span class="nf">multi_blank_greedy_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enc_out</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Hypothesis</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Greedy Search for Multi-Blank Transducer (Multi-Blank Greedy, MBG).</span>
+
+<span class="sd">        In this implementation, we assume:</span>
+<span class="sd">        1. the index of standard blank is the last entry of self.multi_blank_indices</span>
+<span class="sd">           rather than self.blank_id (to avoid too much change on original transducer)</span>
+<span class="sd">        2. other entries in self.multi_blank_indices are big blanks that account for</span>
+<span class="sd">           multiple frames.</span>
+
+<span class="sd">        Based on https://arxiv.org/abs/2211.03541</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            enc_out: Encoder output sequence. (T, D_enc)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            hyp: 1-best hypothesis.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">big_blank_duration</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">blank_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">blank_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">dec_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">init_state</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">hyp</span> <span class="o">=</span> <span class="n">Hypothesis</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">yseq</span><span class="o">=</span><span class="p">[</span><span class="n">blank_end</span><span class="p">],</span> <span class="n">dec_state</span><span class="o">=</span><span class="n">dec_state</span><span class="p">)</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">enc_out_t</span> <span class="ow">in</span> <span class="n">enc_out</span><span class="p">:</span>
+            <span class="c1"># case 1: skip frames until big_blank_duration == 1</span>
+            <span class="k">if</span> <span class="n">big_blank_duration</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">big_blank_duration</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="n">symbols_added</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">symbols_added</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">dec_out</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">hyp</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+                <span class="n">logp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_network</span><span class="p">(</span><span class="n">enc_out_t</span><span class="p">,</span> <span class="n">dec_out</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">top_logp</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">logp</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># case 2: predict a blank token</span>
+                <span class="k">if</span> <span class="n">blank_start</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">blank_end</span><span class="p">:</span>
+                    <span class="n">big_blank_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_blank_durations</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="n">blank_start</span><span class="p">]</span>
+                    <span class="n">hyp</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="n">top_logp</span>
+                    <span class="k">break</span>
+
+                <span class="c1"># case 3: predict a non-blank token</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">symbols_added</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">hyp</span><span class="o">.</span><span class="n">yseq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                    <span class="n">hyp</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">top_logp</span><span class="p">)</span>
+                    <span class="n">hyp</span><span class="o">.</span><span class="n">dec_state</span> <span class="o">=</span> <span class="n">state</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">hyp</span><span class="p">]</span></div></div>
 </pre></div>
 
            </div>

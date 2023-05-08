@@ -32,6 +32,8 @@ asr_align.py
     [nltk_data]   Unzipping taggers/averaged_perceptron_tagger.zip.
     [nltk_data] Downloading package cmudict to /home/runner/nltk_data...
     [nltk_data]   Unzipping corpora/cmudict.zip.
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: asr_align.py [-h] [--config CONFIG]
                         [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                         [--ngpu NGPU] [--dtype {float16,float32,float64}]
@@ -132,6 +134,8 @@ asr_inference_streaming.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: asr_inference_streaming.py [-h] [--config CONFIG]
                                       [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                                       --output_dir OUTPUT_DIR [--ngpu NGPU]
@@ -292,6 +296,7 @@ asr_train.py
                         [--chunk_length CHUNK_LENGTH]
                         [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                         [--num_cache_chunks NUM_CACHE_CHUNKS]
+                        [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                         [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                         [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                         [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -309,10 +314,10 @@ asr_train.py
                         [--input_size INPUT_SIZE] [--ctc_conf CTC_CONF]
                         [--joint_net_conf JOINT_NET_CONF]
                         [--use_preprocessor USE_PREPROCESSOR]
-                        [--token_type {bpe,char,word,phn,hugging_face}]
+                        [--token_type {bpe,char,word,phn,hugging_face,whisper_en,whisper_multilingual}]
                         [--bpemodel BPEMODEL]
                         [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
-                        [--cleaner {None,tacotron,jaconv,vietnamese}]
+                        [--cleaner {None,tacotron,jaconv,vietnamese,whisper_en,whisper_basic}]
                         [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
                         [--speech_volume_normalize SPEECH_VOLUME_NORMALIZE]
                         [--rir_scp RIR_SCP] [--rir_apply_prob RIR_APPLY_PROB]
@@ -320,7 +325,8 @@ asr_train.py
                         [--noise_apply_prob NOISE_APPLY_PROB]
                         [--noise_db_range NOISE_DB_RANGE]
                         [--short_noise_thres SHORT_NOISE_THRES]
-                        [--frontend {default,sliding_window,s3prl,fused}]
+                        [--aux_ctc_tasks AUX_CTC_TASKS [AUX_CTC_TASKS ...]]
+                        [--frontend {default,sliding_window,s3prl,fused,whisper}]
                         [--frontend_conf FRONTEND_CONF] [--specaug {specaug,None}]
                         [--specaug_conf SPECAUG_CONF]
                         [--normalize {global_mvn,utterance_mvn,None}]
@@ -329,11 +335,11 @@ asr_train.py
                         [--model_conf MODEL_CONF]
                         [--preencoder {sinc,linear,None}]
                         [--preencoder_conf PREENCODER_CONF]
-                        [--encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,e_branchformer}]
+                        [--encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,whisper,e_branchformer}]
                         [--encoder_conf ENCODER_CONF]
                         [--postencoder {hugging_face_transformers,None}]
                         [--postencoder_conf POSTENCODER_CONF]
-                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers,s4}]
+                        [--decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,whisper,hugging_face_transformers,s4,None}]
                         [--decoder_conf DECODER_CONF]
                         [--preprocessor {default,multi}]
                         [--preprocessor_conf PREPROCESSOR_CONF]
@@ -548,6 +554,10 @@ asr_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -558,6 +568,13 @@ asr_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -622,6 +639,13 @@ asr_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -690,10 +714,10 @@ asr_train.py
     
       --use_preprocessor USE_PREPROCESSOR
                             Apply preprocessing to data or not (default: True)
-      --token_type {bpe,char,word,phn,hugging_face}
+      --token_type {bpe,char,word,phn,hugging_face,whisper_en,whisper_multilingual}
                             The text will be tokenized in the specified level token (default: bpe)
       --bpemodel BPEMODEL   The model file of sentencepiece (default: None)
-      --cleaner {None,tacotron,jaconv,vietnamese}
+      --cleaner {None,tacotron,jaconv,vietnamese,whisper_en,whisper_basic}
                             Apply text cleaning (default: None)
       --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
                             Specify g2p method if --token_type=phn (default: None)
@@ -710,7 +734,9 @@ asr_train.py
                             The range of noise decibel level. (default: 13_15)
       --short_noise_thres SHORT_NOISE_THRES
                             If len(noise) / len(speech) is smaller than this threshold during dynamic mixing, a warning will be displayed. (default: 0.5)
-      --frontend {default,sliding_window,s3prl,fused}
+      --aux_ctc_tasks AUX_CTC_TASKS [AUX_CTC_TASKS ...]
+                            Auxillary tasks to train on using CTC loss.  (default: [])
+      --frontend {default,sliding_window,s3prl,fused,whisper}
                             The frontend type (default: default)
       --frontend_conf FRONTEND_CONF
                             The keyword arguments for frontend (default: {})
@@ -730,7 +756,7 @@ asr_train.py
                             The preencoder type (default: None)
       --preencoder_conf PREENCODER_CONF
                             The keyword arguments for preencoder (default: {})
-      --encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,e_branchformer}
+      --encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,whisper,e_branchformer}
                             The encoder type (default: rnn)
       --encoder_conf ENCODER_CONF
                             The keyword arguments for encoder (default: {})
@@ -738,14 +764,16 @@ asr_train.py
                             The postencoder type (default: None)
       --postencoder_conf POSTENCODER_CONF
                             The keyword arguments for postencoder (default: {})
-      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers,s4}
-                            The decoder type (default: rnn)
+      --decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,whisper,hugging_face_transformers,s4,None}
+                            The decoder type (default: None)
       --decoder_conf DECODER_CONF
                             The keyword arguments for decoder (default: {})
       --preprocessor {default,multi}
                             The preprocessor type (default: default)
       --preprocessor_conf PREPROCESSOR_CONF
                             The keyword arguments for preprocessor (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _asr_transducer_inference.py:
 
 asr_transducer_inference.py
@@ -753,6 +781,8 @@ asr_transducer_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: asr_transducer_inference.py [-h] [--config CONFIG]
                                        [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                                        --output_dir OUTPUT_DIR [--ngpu NGPU]
@@ -934,6 +964,7 @@ asr_transducer_train.py
                                    [--chunk_length CHUNK_LENGTH]
                                    [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                                    [--num_cache_chunks NUM_CACHE_CHUNKS]
+                                   [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                                    [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                                    [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                                    [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -1180,6 +1211,10 @@ asr_transducer_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -1190,6 +1225,13 @@ asr_transducer_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -1254,6 +1296,13 @@ asr_transducer_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -1360,6 +1409,8 @@ asr_transducer_train.py
                             The decoder type (default: rnn)
       --decoder_conf DECODER_CONF
                             The keyword arguments for decoder (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _diar_inference.py:
 
 diar_inference.py
@@ -1367,6 +1418,8 @@ diar_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: diar_inference.py [-h] [--config CONFIG]
                              [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                              --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
@@ -1511,6 +1564,7 @@ diar_train.py
                          [--chunk_length CHUNK_LENGTH]
                          [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                          [--num_cache_chunks NUM_CACHE_CHUNKS]
+                         [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                          [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                          [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                          [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -1747,6 +1801,10 @@ diar_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -1757,6 +1815,13 @@ diar_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -1821,6 +1886,13 @@ diar_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -1914,6 +1986,8 @@ diar_train.py
                             The attractor type (default: None)
       --attractor_conf ATTRACTOR_CONF
                             The keyword arguments for attractor (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _enh_inference.py:
 
 enh_inference.py
@@ -1921,6 +1995,8 @@ enh_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: enh_inference.py [-h] [--config CONFIG]
                             [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                             --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
@@ -1992,11 +2068,82 @@ enh_inference.py
                             enhancement/separation (default: None)
       --normalize_segment_scale NORMALIZE_SEGMENT_SCALE
                             Whether to normalize the energy of the separated
-                            streams in each segment (default: False)
+                            streams in each segment (default: True)
       --show_progressbar SHOW_PROGRESSBAR
                             Whether to show a progress bar when performing
                             segment-wise speech enhancement/separation (default:
                             False)
+      --ref_channel REF_CHANNEL
+                            If not None, this will overwrite the ref_channel
+                            defined in the separator module (for multi-channel
+                            speech processing) (default: None)
+.. _enh_inference_streaming.py:
+
+enh_inference_streaming.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: none
+
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
+    usage: enh_inference_streaming.py [-h] [--config CONFIG]
+                                      [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
+                                      --output_dir OUTPUT_DIR [--ngpu NGPU]
+                                      [--seed SEED]
+                                      [--dtype {float16,float32,float64}]
+                                      [--fs FS] [--num_workers NUM_WORKERS]
+                                      --data_path_and_name_and_type
+                                      DATA_PATH_AND_NAME_AND_TYPE
+                                      [--key_file KEY_FILE]
+                                      [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
+                                      [--train_config TRAIN_CONFIG]
+                                      [--model_file MODEL_FILE]
+                                      [--model_tag MODEL_TAG]
+                                      [--inference_config INFERENCE_CONFIG]
+                                      [--enh_s2t_task ENH_S2T_TASK]
+                                      [--batch_size BATCH_SIZE]
+                                      [--ref_channel REF_CHANNEL]
+    
+    Frontend inference
+    
+    optional arguments:
+      --config CONFIG       Give config file in yaml format (default: None)
+      --log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
+                            The verbose level of logging (default: INFO)
+      --output_dir OUTPUT_DIR
+      --ngpu NGPU           The number of gpus. 0 indicates CPU mode (default: 0)
+      --seed SEED           Random seed (default: 0)
+      --dtype {float16,float32,float64}
+                            Data type (default: float32)
+      --fs FS               Sampling rate (default: 8000)
+      --num_workers NUM_WORKERS
+                            The number of workers used for DataLoader (default: 1)
+    
+    Input data related:
+      --data_path_and_name_and_type DATA_PATH_AND_NAME_AND_TYPE
+      --key_file KEY_FILE
+      --allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS
+    
+    The model configuration related:
+      --train_config TRAIN_CONFIG
+                            Training configuration file (default: None)
+      --model_file MODEL_FILE
+                            Model parameter file (default: None)
+      --model_tag MODEL_TAG
+                            Pretrained model tag. If specify this option,
+                            train_config and model_file will be overwritten
+                            (default: None)
+      --inference_config INFERENCE_CONFIG
+                            Optional configuration file for overwriting enh model
+                            attributes during inference (default: None)
+      --enh_s2t_task ENH_S2T_TASK
+                            enhancement and asr joint model (default: False)
+    
+    Data loading related:
+      --batch_size BATCH_SIZE
+                            The batch size for inference (default: 1)
+    
+    SeparateSpeech related:
       --ref_channel REF_CHANNEL
                             If not None, this will overwrite the ref_channel
                             defined in the separator module (for multi-channel
@@ -2071,6 +2218,7 @@ enh_s2t_train.py
                             [--chunk_length CHUNK_LENGTH]
                             [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                             [--num_cache_chunks NUM_CACHE_CHUNKS]
+                            [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                             [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                             [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                             [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -2107,13 +2255,13 @@ enh_s2t_train.py
                             [--text_name TEXT_NAME [TEXT_NAME ...]]
                             [--enh_encoder {stft,conv,same}]
                             [--enh_encoder_conf ENH_ENCODER_CONF]
-                            [--enh_separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube}]
+                            [--enh_separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube,tfgridnet}]
                             [--enh_separator_conf ENH_SEPARATOR_CONF]
                             [--enh_decoder {stft,conv,same}]
                             [--enh_decoder_conf ENH_DECODER_CONF]
                             [--enh_mask_module {multi_mask}]
                             [--enh_mask_module_conf ENH_MASK_MODULE_CONF]
-                            [--frontend {default,sliding_window,s3prl,fused}]
+                            [--frontend {default,sliding_window,s3prl,fused,whisper}]
                             [--frontend_conf FRONTEND_CONF]
                             [--specaug {specaug,None}]
                             [--specaug_conf SPECAUG_CONF]
@@ -2121,11 +2269,11 @@ enh_s2t_train.py
                             [--normalize_conf NORMALIZE_CONF]
                             [--asr_preencoder {sinc,linear,None}]
                             [--asr_preencoder_conf ASR_PREENCODER_CONF]
-                            [--asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,e_branchformer}]
+                            [--asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,whisper,e_branchformer}]
                             [--asr_encoder_conf ASR_ENCODER_CONF]
                             [--asr_postencoder {hugging_face_transformers,None}]
                             [--asr_postencoder_conf ASR_POSTENCODER_CONF]
-                            [--asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers,s4}]
+                            [--asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,whisper,hugging_face_transformers,s4,None}]
                             [--asr_decoder_conf ASR_DECODER_CONF]
                             [--st_preencoder {sinc,linear,None}]
                             [--st_preencoder_conf ST_PREENCODER_CONF]
@@ -2362,6 +2510,10 @@ enh_s2t_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -2372,6 +2524,13 @@ enh_s2t_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -2436,6 +2595,13 @@ enh_s2t_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -2508,7 +2674,7 @@ enh_s2t_train.py
       --enh_model_conf ENH_MODEL_CONF
                             The keyword arguments for enh submodel class. (default: {'stft_consistency': False, 'loss_type': 'mask_mse', 'mask_type': None})
       --asr_model_conf ASR_MODEL_CONF
-                            The keyword arguments for asr submodel class. (default: {'ctc_weight': 0.5, 'interctc_weight': 0.0, 'ignore_id': -1, 'lsm_weight': 0.0, 'length_normalized_loss': False, 'report_cer': True, 'report_wer': True, 'sym_space': '<space>', 'sym_blank': '<blank>', 'sym_sos': '<sos/eos>', 'sym_eos': '<sos/eos>', 'extract_feats_in_collect_stats': True, 'lang_token_id': -1})
+                            The keyword arguments for asr submodel class. (default: {'aux_ctc': None, 'ctc_weight': 0.5, 'interctc_weight': 0.0, 'ignore_id': -1, 'lsm_weight': 0.0, 'length_normalized_loss': False, 'report_cer': True, 'report_wer': True, 'sym_space': '<space>', 'sym_blank': '<blank>', 'transducer_multi_blank_durations': [], 'transducer_multi_blank_sigma': 0.05, 'sym_sos': '<sos/eos>', 'sym_eos': '<sos/eos>', 'extract_feats_in_collect_stats': True, 'lang_token_id': -1})
       --st_model_conf ST_MODEL_CONF
                             The keyword arguments for st submodel class. (default: {'stft_consistency': False, 'loss_type': 'mask_mse', 'mask_type': None})
       --diar_model_conf DIAR_MODEL_CONF
@@ -2541,7 +2707,7 @@ enh_s2t_train.py
                             The enh_encoder type (default: stft)
       --enh_encoder_conf ENH_ENCODER_CONF
                             The keyword arguments for enh_encoder (default: {})
-      --enh_separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube}
+      --enh_separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube,tfgridnet}
                             The enh_separator type (default: rnn)
       --enh_separator_conf ENH_SEPARATOR_CONF
                             The keyword arguments for enh_separator (default: {})
@@ -2553,7 +2719,7 @@ enh_s2t_train.py
                             The enh_mask_module type (default: multi_mask)
       --enh_mask_module_conf ENH_MASK_MODULE_CONF
                             The keyword arguments for enh_mask_module (default: {})
-      --frontend {default,sliding_window,s3prl,fused}
+      --frontend {default,sliding_window,s3prl,fused,whisper}
                             The frontend type (default: default)
       --frontend_conf FRONTEND_CONF
                             The keyword arguments for frontend (default: {})
@@ -2569,7 +2735,7 @@ enh_s2t_train.py
                             The asr_preencoder type (default: None)
       --asr_preencoder_conf ASR_PREENCODER_CONF
                             The keyword arguments for asr_preencoder (default: {})
-      --asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,e_branchformer}
+      --asr_encoder {conformer,transformer,transformer_multispkr,contextual_block_transformer,contextual_block_conformer,vgg_rnn,rnn,wav2vec2,hubert,hubert_pretrain,torchaudiohubert,longformer,branchformer,whisper,e_branchformer}
                             The asr_encoder type (default: rnn)
       --asr_encoder_conf ASR_ENCODER_CONF
                             The keyword arguments for asr_encoder (default: {})
@@ -2577,8 +2743,8 @@ enh_s2t_train.py
                             The asr_postencoder type (default: None)
       --asr_postencoder_conf ASR_POSTENCODER_CONF
                             The keyword arguments for asr_postencoder (default: {})
-      --asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,hugging_face_transformers,s4}
-                            The asr_decoder type (default: rnn)
+      --asr_decoder {transformer,lightweight_conv,lightweight_conv2d,dynamic_conv,dynamic_conv2d,rnn,transducer,mlm,whisper,hugging_face_transformers,s4,None}
+                            The asr_decoder type (default: None)
       --asr_decoder_conf ASR_DECODER_CONF
                             The keyword arguments for asr_decoder (default: {})
       --st_preencoder {sinc,linear,None}
@@ -2633,6 +2799,8 @@ enh_s2t_train.py
                             The diar_attractor type (default: None)
       --diar_attractor_conf DIAR_ATTRACTOR_CONF
                             The keyword arguments for diar_attractor (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _enh_scoring.py:
 
 enh_scoring.py
@@ -2731,6 +2899,7 @@ enh_train.py
                         [--chunk_length CHUNK_LENGTH]
                         [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                         [--num_cache_chunks NUM_CACHE_CHUNKS]
+                        [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                         [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                         [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                         [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -2758,7 +2927,7 @@ enh_train.py
                         [--dynamic_mixing DYNAMIC_MIXING] [--utt2spk UTT2SPK]
                         [--dynamic_mixing_gain_db DYNAMIC_MIXING_GAIN_DB]
                         [--encoder {stft,conv,same}] [--encoder_conf ENCODER_CONF]
-                        [--separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube}]
+                        [--separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube,tfgridnet}]
                         [--separator_conf SEPARATOR_CONF]
                         [--decoder {stft,conv,same}] [--decoder_conf DECODER_CONF]
                         [--mask_module {multi_mask}]
@@ -2974,6 +3143,10 @@ enh_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -2984,6 +3157,13 @@ enh_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -3048,6 +3228,13 @@ enh_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -3143,7 +3330,7 @@ enh_train.py
                             The encoder type (default: stft)
       --encoder_conf ENCODER_CONF
                             The keyword arguments for encoder (default: {})
-      --separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube}
+      --separator {asteroid,conformer,dan,dc_crn,dccrn,dpcl,dpcl_e2e,dprnn,dptnet,fasnet,rnn,skim,svoice,tcn,transformer,wpe_beamformer,tcn_nomask,ineube,tfgridnet}
                             The separator type (default: rnn)
       --separator_conf SEPARATOR_CONF
                             The keyword arguments for separator (default: {})
@@ -3159,6 +3346,8 @@ enh_train.py
                             The preprocessor type (default: None)
       --preprocessor_conf PREPROCESSOR_CONF
                             The keyword arguments for preprocessor (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _enh_tse_inference.py:
 
 enh_tse_inference.py
@@ -3166,6 +3355,8 @@ enh_tse_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: enh_tse_inference.py [-h] [--config CONFIG]
                                 [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                                 --output_dir OUTPUT_DIR [--ngpu NGPU]
@@ -3314,6 +3505,7 @@ enh_tse_train.py
                             [--chunk_length CHUNK_LENGTH]
                             [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                             [--num_cache_chunks NUM_CACHE_CHUNKS]
+                            [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                             [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                             [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                             [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -3558,6 +3750,10 @@ enh_tse_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -3568,6 +3764,13 @@ enh_tse_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -3632,6 +3835,13 @@ enh_tse_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -3742,6 +3952,8 @@ enh_tse_train.py
       --preprocessor {tse}  The preprocessor type (default: tse)
       --preprocessor_conf PREPROCESSOR_CONF
                             The keyword arguments for preprocessor (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _gan_svs_train.py:
 
 gan_svs_train.py
@@ -3812,6 +4024,7 @@ gan_svs_train.py
                             [--chunk_length CHUNK_LENGTH]
                             [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                             [--num_cache_chunks NUM_CACHE_CHUNKS]
+                            [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                             [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                             [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                             [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -3843,8 +4056,9 @@ gan_svs_train.py
                             [--feats_extract {fbank,log_spectrogram,linear_spectrogram}]
                             [--feats_extract_conf FEATS_EXTRACT_CONF]
                             [--normalize {global_mvn,utterance_mvn,None}]
-                            [--normalize_conf NORMALIZE_CONF] [--svs {vits}]
-                            [--svs_conf SVS_CONF] [--pitch_extract {dio,None}]
+                            [--normalize_conf NORMALIZE_CONF]
+                            [--svs {vits,joint_score2wav}] [--svs_conf SVS_CONF]
+                            [--pitch_extract {dio,None}]
                             [--pitch_extract_conf PITCH_EXTRACT_CONF]
                             [--pitch_normalize {global_mvn,utterance_mvn,None}]
                             [--pitch_normalize_conf PITCH_NORMALIZE_CONF]
@@ -4070,6 +4284,10 @@ gan_svs_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -4080,6 +4298,13 @@ gan_svs_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -4144,6 +4369,13 @@ gan_svs_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -4231,7 +4463,8 @@ gan_svs_train.py
                             The normalize type (default: None)
       --normalize_conf NORMALIZE_CONF
                             The keyword arguments for normalize (default: {})
-      --svs {vits}          The svs type (default: vits)
+      --svs {vits,joint_score2wav}
+                            The svs type (default: vits)
       --svs_conf SVS_CONF   The keyword arguments for svs (default: {})
       --pitch_extract {dio,None}
                             The pitch_extract type (default: None)
@@ -4249,6 +4482,8 @@ gan_svs_train.py
                             The energy_normalize type (default: None)
       --energy_normalize_conf ENERGY_NORMALIZE_CONF
                             The keyword arguments for energy_normalize (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _gan_tts_train.py:
 
 gan_tts_train.py
@@ -4319,6 +4554,7 @@ gan_tts_train.py
                             [--chunk_length CHUNK_LENGTH]
                             [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                             [--num_cache_chunks NUM_CACHE_CHUNKS]
+                            [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                             [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                             [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                             [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -4574,6 +4810,10 @@ gan_tts_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -4584,6 +4824,13 @@ gan_tts_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -4648,6 +4895,13 @@ gan_tts_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -4750,6 +5004,8 @@ gan_tts_train.py
                             The energy_normalize type (default: None)
       --energy_normalize_conf ENERGY_NORMALIZE_CONF
                             The keyword arguments for energy_normalize (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _hubert_train.py:
 
 hubert_train.py
@@ -4819,6 +5075,7 @@ hubert_train.py
                            [--chunk_length CHUNK_LENGTH]
                            [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                            [--num_cache_chunks NUM_CACHE_CHUNKS]
+                           [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                            [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                            [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                            [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -5076,6 +5333,10 @@ hubert_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -5086,6 +5347,13 @@ hubert_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -5150,6 +5418,13 @@ hubert_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -5263,6 +5538,8 @@ hubert_train.py
                             The model type (default: fairseq)
       --model_conf MODEL_CONF
                             The keyword arguments for model (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _hugging_face_export_vocabulary.py:
 
 hugging_face_export_vocabulary.py
@@ -5349,6 +5626,8 @@ lm_calc_perplexity.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: lm_calc_perplexity.py [-h] [--config CONFIG]
                                  [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                                  --output_dir OUTPUT_DIR [--ngpu NGPU]
@@ -5453,6 +5732,7 @@ lm_train.py
                        [--chunk_length CHUNK_LENGTH]
                        [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                        [--num_cache_chunks NUM_CACHE_CHUNKS]
+                       [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                        [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                        [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                        [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -5688,6 +5968,10 @@ lm_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -5698,6 +5982,13 @@ lm_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -5762,6 +6053,13 @@ lm_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -5832,6 +6130,8 @@ lm_train.py
       --lm {seq_rnn,transformer}
                             The lm type (default: seq_rnn)
       --lm_conf LM_CONF     The keyword arguments for lm (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _mt_inference.py:
 
 mt_inference.py
@@ -5839,6 +6139,8 @@ mt_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: mt_inference.py [-h] [--config CONFIG]
                            [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                            --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
@@ -5991,6 +6293,7 @@ mt_train.py
                        [--chunk_length CHUNK_LENGTH]
                        [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                        [--num_cache_chunks NUM_CACHE_CHUNKS]
+                       [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                        [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                        [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                        [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -6237,6 +6540,10 @@ mt_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -6247,6 +6554,13 @@ mt_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -6311,6 +6625,13 @@ mt_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -6406,6 +6727,8 @@ mt_train.py
                             The decoder type (default: rnn)
       --decoder_conf DECODER_CONF
                             The keyword arguments for decoder (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _pack.py:
 
 pack.py
@@ -6453,6 +6776,8 @@ st_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: st_inference.py [-h] [--config CONFIG]
                            [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                            --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
@@ -6607,6 +6932,7 @@ st_train.py
                        [--chunk_length CHUNK_LENGTH]
                        [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                        [--num_cache_chunks NUM_CACHE_CHUNKS]
+                       [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                        [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                        [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                        [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -6862,6 +7188,10 @@ st_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -6872,6 +7202,13 @@ st_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -6936,6 +7273,13 @@ st_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -7068,67 +7412,8 @@ st_train.py
                             The extra_mt_decoder type (default: rnn)
       --extra_mt_decoder_conf EXTRA_MT_DECODER_CONF
                             The keyword arguments for extra_mt_decoder (default: {})
-.. _tokenize_text.py:
-
-tokenize_text.py
-~~~~~~~~~~~~~~~~
-
-.. code-block:: none
-
-    usage: tokenize_text.py [-h]
-                            [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
-                            --input INPUT --output OUTPUT [--field FIELD]
-                            [--token_type {char,bpe,word,phn}]
-                            [--delimiter DELIMITER] [--space_symbol SPACE_SYMBOL]
-                            [--bpemodel BPEMODEL]
-                            [--non_linguistic_symbols NON_LINGUISTIC_SYMBOLS]
-                            [--remove_non_linguistic_symbols REMOVE_NON_LINGUISTIC_SYMBOLS]
-                            [--cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}]
-                            [--g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}]
-                            [--write_vocabulary WRITE_VOCABULARY]
-                            [--vocabulary_size VOCABULARY_SIZE] [--cutoff CUTOFF]
-                            [--add_symbol ADD_SYMBOL]
-    
-    Tokenize texts
-    
-    optional arguments:
-      --log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
-                            The verbose level of logging (default: INFO)
-      --input INPUT, -i INPUT
-                            Input text. - indicates sys.stdin (default: None)
-      --output OUTPUT, -o OUTPUT
-                            Output text. - indicates sys.stdout (default: None)
-      --field FIELD, -f FIELD
-                            The target columns of the input text as 1-based
-                            integer. e.g 2- (default: None)
-      --token_type {char,bpe,word,phn}, -t {char,bpe,word,phn}
-                            Token type (default: char)
-      --delimiter DELIMITER, -d DELIMITER
-                            The delimiter (default: None)
-      --space_symbol SPACE_SYMBOL
-                            The space symbol (default: <space>)
-      --bpemodel BPEMODEL   The bpemodel file path (default: None)
-      --non_linguistic_symbols NON_LINGUISTIC_SYMBOLS
-                            non_linguistic_symbols file path (default: None)
-      --remove_non_linguistic_symbols REMOVE_NON_LINGUISTIC_SYMBOLS
-                            Remove non-language-symbols from tokens (default:
-                            False)
-      --cleaner {None,tacotron,jaconv,vietnamese,korean_cleaner}
-                            Apply text cleaning (default: None)
-      --g2p {None,g2p_en,g2p_en_no_space,pyopenjtalk,pyopenjtalk_kana,pyopenjtalk_accent,pyopenjtalk_accent_with_pause,pyopenjtalk_prosody,pypinyin_g2p,pypinyin_g2p_phone,pypinyin_g2p_phone_without_prosody,espeak_ng_arabic,espeak_ng_german,espeak_ng_french,espeak_ng_spanish,espeak_ng_russian,espeak_ng_greek,espeak_ng_finnish,espeak_ng_hungarian,espeak_ng_dutch,espeak_ng_english_us_vits,espeak_ng_hindi,espeak_ng_italian,espeak_ng_ukrainian,espeak_ng_polish,g2pk,g2pk_no_space,g2pk_explicit_space,korean_jaso,korean_jaso_no_space,g2p_is}
-                            Specify g2p method if --token_type=phn (default: None)
-    
-    write_vocabulary mode related:
-      --write_vocabulary WRITE_VOCABULARY
-                            Write tokens list instead of tokenized text per line
-                            (default: False)
-      --vocabulary_size VOCABULARY_SIZE
-                            Vocabulary size (default: 0)
-      --cutoff CUTOFF       cut-off frequency used for write-vocabulary mode
-                            (default: 0)
-      --add_symbol ADD_SYMBOL
-                            Append symbol e.g. --add_symbol '<blank>:0'
-                            --add_symbol '<unk>:1' (default: [])
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
 .. _tts_inference.py:
 
 tts_inference.py
@@ -7136,6 +7421,8 @@ tts_inference.py
 
 .. code-block:: none
 
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
     usage: tts_inference.py [-h] [--config CONFIG]
                             [--log_level {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
                             --output_dir OUTPUT_DIR [--ngpu NGPU] [--seed SEED]
@@ -7297,6 +7584,7 @@ tts_train.py
                         [--chunk_length CHUNK_LENGTH]
                         [--chunk_shift_ratio CHUNK_SHIFT_RATIO]
                         [--num_cache_chunks NUM_CACHE_CHUNKS]
+                        [--chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]]
                         [--train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE]
                         [--valid_data_path_and_name_and_type VALID_DATA_PATH_AND_NAME_AND_TYPE]
                         [--allow_variable_data_keys ALLOW_VARIABLE_DATA_KEYS]
@@ -7320,7 +7608,7 @@ tts_train.py
                         [--feats_extract_conf FEATS_EXTRACT_CONF]
                         [--normalize {global_mvn,None}]
                         [--normalize_conf NORMALIZE_CONF]
-                        [--tts {tacotron2,transformer,fastspeech,fastspeech2,vits,joint_text2wav,jets}]
+                        [--tts {tacotron2,transformer,fastspeech,fastspeech2,prodiff,vits,joint_text2wav,jets}]
                         [--tts_conf TTS_CONF] [--pitch_extract {dio,None}]
                         [--pitch_extract_conf PITCH_EXTRACT_CONF]
                         [--pitch_normalize {global_mvn,None}]
@@ -7544,6 +7832,10 @@ tts_train.py
                             Specify the shift width of chunks. If it's less than 1, allows the overlapping and if bigger than 1, there are some gaps between each chunk. (default: 0.5)
       --num_cache_chunks NUM_CACHE_CHUNKS
                             Shuffle in the specified number of chunks and generate mini-batches More larger this value, more randomness can be obtained. (default: 1024)
+      --chunk_excluded_key_prefixes CHUNK_EXCLUDED_KEY_PREFIXES [CHUNK_EXCLUDED_KEY_PREFIXES ...]
+                            List of key prefixes. Keys that satisfy either condition below will be excluded from the length consistency check in ChunkIterFactory:
+                              - exactly match one of the prefixes in `chunk_excluded_key_prefixes`
+                              - have one of the prefixes in `chunk_excluded_key_prefixes` and end with numbers (default: [])
     
     Dataset related:
       --train_data_path_and_name_and_type TRAIN_DATA_PATH_AND_NAME_AND_TYPE
@@ -7554,6 +7846,13 @@ tts_train.py
                             
                                utterance_id_a a.wav
                                utterance_id_b b.wav
+                               ...
+                            
+                            "multi_columns_sound":
+                            Enable multi columns wav.scp. The following text file can be loaded as multi channels audio data
+                            
+                               utterance_id_a a.wav a2.wav
+                               utterance_id_b b.wav b2.wav
                                ...
                             
                             "score":
@@ -7618,6 +7917,13 @@ tts_train.py
                             
                                utterance_id_A hello world
                                utterance_id_B foo bar
+                               ...
+                            
+                            "random_text":
+                            Return text as is. The text must be converted to ndarray by 'preprocess'.
+                            
+                               hello world
+                               foo bar
                                ...
                             
                             "hdf5":
@@ -7693,7 +7999,7 @@ tts_train.py
                             The normalize type (default: global_mvn)
       --normalize_conf NORMALIZE_CONF
                             The keyword arguments for normalize (default: {})
-      --tts {tacotron2,transformer,fastspeech,fastspeech2,vits,joint_text2wav,jets}
+      --tts {tacotron2,transformer,fastspeech,fastspeech2,prodiff,vits,joint_text2wav,jets}
                             The tts type (default: tacotron2)
       --tts_conf TTS_CONF   The keyword arguments for tts (default: {})
       --pitch_extract {dio,None}
@@ -7712,3 +8018,5 @@ tts_train.py
                             The energy_normalize type (default: None)
       --energy_normalize_conf ENERGY_NORMALIZE_CONF
                             The keyword arguments for energy_normalize (default: {})
+    /home/runner/work/espnet/espnet/tools/venv/lib/python3.8/site-packages/whisper/timing.py:57: NumbaDeprecationWarning: [1mThe 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.[0m
+      def backtrace(trace: np.ndarray):
