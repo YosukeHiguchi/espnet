@@ -1,22 +1,21 @@
 # coding: utf-8
 
 import argparse
-from distutils.version import LooseVersion
+import json
 import tempfile
 
-import json
 import pytest
 import torch
+from packaging.version import parse as V
 
-from espnet.asr.pytorch_backend.asr_init import load_trained_model
 import espnet.lm.pytorch_backend.extlm as extlm_pytorch
+import espnet.nets.pytorch_backend.lm.default as lm_pytorch
+from espnet.asr.pytorch_backend.asr_init import load_trained_model
 from espnet.nets.beam_search_transducer import BeamSearchTransducer
 from espnet.nets.pytorch_backend.e2e_asr_transducer import E2E
-import espnet.nets.pytorch_backend.lm.default as lm_pytorch
 from espnet.nets.pytorch_backend.transducer.blocks import build_blocks
 
-is_torch_1_4_plus = LooseVersion(torch.__version__) >= LooseVersion("1.4.0")
-is_torch_1_5_plus = LooseVersion(torch.__version__) >= LooseVersion("1.5.0")
+is_torch_1_5_plus = V(torch.__version__) >= V("1.5.0")
 
 
 def make_train_args(**kwargs):
@@ -471,7 +470,6 @@ def test_invalid_input_layer_type():
 
 
 def test_invalid_architecture_layer_type():
-
     with pytest.raises(NotImplementedError):
         _, _, _ = build_blocks("encoder", 4, "linear", [{"type": "foo"}])
 
@@ -629,6 +627,7 @@ def test_invalid_block_io():
         {"mod": {torch.nn.Linear, torch.nn.LSTM}, "dtype": torch.float16},
     ],
 )
+@pytest.mark.execution_timeout(4)
 def test_dynamic_quantization(train_dic, recog_dic, quantize_dic):
     train_args = make_train_args(**train_dic)
     recog_args = make_recog_args(**recog_dic)

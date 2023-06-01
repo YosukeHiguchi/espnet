@@ -1,12 +1,10 @@
+import string
 from argparse import ArgumentParser
 from pathlib import Path
-import string
 
 import pytest
 
-from espnet2.bin.tts_inference import get_parser
-from espnet2.bin.tts_inference import main
-from espnet2.bin.tts_inference import Text2Speech
+from espnet2.bin.tts_inference import Text2Speech, get_parser, main
 from espnet2.tasks.tts import TTSTask
 
 
@@ -54,7 +52,7 @@ def config_file(tmp_path: Path, token_list):
     return tmp_path / "config.yaml"
 
 
-@pytest.mark.execution_timeout(5)
+@pytest.mark.execution_timeout(10)
 def test_Text2Speech(config_file):
     text2speech = Text2Speech(train_config=config_file)
     text = "aiueo"

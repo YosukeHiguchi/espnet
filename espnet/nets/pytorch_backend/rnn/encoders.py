@@ -1,15 +1,12 @@
 import logging
-import six
 
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.nn.utils.rnn import pack_padded_sequence
-from torch.nn.utils.rnn import pad_packed_sequence
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from espnet.nets.e2e_asr_common import get_vgg2l_odim
-from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
-from espnet.nets.pytorch_backend.nets_utils import to_device
+from espnet.nets.pytorch_backend.nets_utils import make_pad_mask, to_device
 
 
 class RNNP(torch.nn.Module):
@@ -27,7 +24,7 @@ class RNNP(torch.nn.Module):
     def __init__(self, idim, elayers, cdim, hdim, subsample, dropout, typ="blstm"):
         super(RNNP, self).__init__()
         bidir = typ[0] == "b"
-        for i in six.moves.range(elayers):
+        for i in range(elayers):
             if i == 0:
                 inputdim = idim
             else:
@@ -64,12 +61,13 @@ class RNNP(torch.nn.Module):
         """
         logging.debug(self.__class__.__name__ + " input lengths: " + str(ilens))
         elayer_states = []
-        for layer in six.moves.range(self.elayers):
+        for layer in range(self.elayers):
             if not isinstance(ilens, torch.Tensor):
                 ilens = torch.tensor(ilens)
             xs_pack = pack_padded_sequence(xs_pad, ilens.cpu(), batch_first=True)
             rnn = getattr(self, ("birnn" if self.bidir else "rnn") + str(layer))
-            rnn.flatten_parameters()
+            if self.training:
+                rnn.flatten_parameters()
             if prev_state is not None and rnn.bidirectional:
                 prev_state = reset_backward_rnn_state(prev_state)
             ys, states = rnn(
@@ -144,7 +142,8 @@ class RNN(torch.nn.Module):
         if not isinstance(ilens, torch.Tensor):
             ilens = torch.tensor(ilens)
         xs_pack = pack_padded_sequence(xs_pad, ilens.cpu(), batch_first=True)
-        self.nbrnn.flatten_parameters()
+        if self.training:
+            self.nbrnn.flatten_parameters()
         if prev_state is not None and self.nbrnn.bidirectional:
             # We assume that when previous state is passed,
             # it means that we're streaming the input

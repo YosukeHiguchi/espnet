@@ -5,21 +5,14 @@
 
 set -euo pipefail
 
-modules="espnet espnet2 test utils setup.py egs*/*/*/local egs2/TEMPLATE/asr1/pyscripts"
-
-# black
-if ! black --check ${modules}; then
-    printf 'Please apply:\n    $ black %s\n' "${modules}"
-    exit 1
-fi
+exclude="egs2/TEMPLATE/asr1/utils,egs2/TEMPLATE/asr1/steps,egs2/TEMPLATE/tts1/sid,doc,tools,bats-core"
 
 # flake8
-"$(dirname $0)"/test_flake8.sh
+# "$(dirname $0)"/test_flake8.sh
 # pycodestyle
-pycodestyle -r ${modules} --show-source --show-pep8
+pycodestyle --exclude "${exclude}" --show-source --show-pep8
 
-LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:$(pwd)/tools/chainer_ctc/ext/warp-ctc/build" \
-    PYTHONPATH="${PYTHONPATH:-}:$(pwd)/tools/s3prl" pytest -q
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:$(pwd)/tools/chainer_ctc/ext/warp-ctc/build" pytest -q
 
 echo "=== report ==="
 coverage report

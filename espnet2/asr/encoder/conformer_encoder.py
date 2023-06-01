@@ -3,46 +3,46 @@
 
 """Conformer encoder definition."""
 
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Union
-
 import logging
-import torch
+from typing import List, Optional, Tuple, Union
 
+import torch
 from typeguard import check_argument_types
 
-from espnet.nets.pytorch_backend.conformer.convolution import ConvolutionModule
-from espnet.nets.pytorch_backend.conformer.encoder_layer import EncoderLayer
-from espnet.nets.pytorch_backend.nets_utils import get_activation
-from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
-from espnet.nets.pytorch_backend.transformer.attention import (
-    MultiHeadedAttention,  # noqa: H301
-    RelPositionMultiHeadedAttention,  # noqa: H301
-    LegacyRelPositionMultiHeadedAttention,  # noqa: H301
-)
-from espnet.nets.pytorch_backend.transformer.embedding import (
-    PositionalEncoding,  # noqa: H301
-    ScaledPositionalEncoding,  # noqa: H301
-    RelPositionalEncoding,  # noqa: H301
-    LegacyRelPositionalEncoding,  # noqa: H301
-)
-from espnet.nets.pytorch_backend.transformer.layer_norm import LayerNorm
-from espnet.nets.pytorch_backend.transformer.multi_layer_conv import Conv1dLinear
-from espnet.nets.pytorch_backend.transformer.multi_layer_conv import MultiLayeredConv1d
-from espnet.nets.pytorch_backend.transformer.positionwise_feed_forward import (
-    PositionwiseFeedForward,  # noqa: H301
-)
-from espnet.nets.pytorch_backend.transformer.repeat import repeat
-from espnet.nets.pytorch_backend.transformer.subsampling import check_short_utt
-from espnet.nets.pytorch_backend.transformer.subsampling import Conv2dSubsampling
-from espnet.nets.pytorch_backend.transformer.subsampling import Conv2dSubsampling2
-from espnet.nets.pytorch_backend.transformer.subsampling import Conv2dSubsampling6
-from espnet.nets.pytorch_backend.transformer.subsampling import Conv2dSubsampling8
-from espnet.nets.pytorch_backend.transformer.subsampling import TooShortUttError
 from espnet2.asr.ctc import CTC
 from espnet2.asr.encoder.abs_encoder import AbsEncoder
+from espnet.nets.pytorch_backend.conformer.convolution import ConvolutionModule
+from espnet.nets.pytorch_backend.conformer.encoder_layer import EncoderLayer
+from espnet.nets.pytorch_backend.nets_utils import get_activation, make_pad_mask
+from espnet.nets.pytorch_backend.transformer.attention import (
+    LegacyRelPositionMultiHeadedAttention,
+    MultiHeadedAttention,
+    RelPositionMultiHeadedAttention,
+)
+from espnet.nets.pytorch_backend.transformer.embedding import (
+    LegacyRelPositionalEncoding,
+    PositionalEncoding,
+    RelPositionalEncoding,
+    ScaledPositionalEncoding,
+)
+from espnet.nets.pytorch_backend.transformer.layer_norm import LayerNorm
+from espnet.nets.pytorch_backend.transformer.multi_layer_conv import (
+    Conv1dLinear,
+    MultiLayeredConv1d,
+)
+from espnet.nets.pytorch_backend.transformer.positionwise_feed_forward import (
+    PositionwiseFeedForward,
+)
+from espnet.nets.pytorch_backend.transformer.repeat import repeat
+from espnet.nets.pytorch_backend.transformer.subsampling import (
+    Conv2dSubsampling,
+    Conv2dSubsampling1,
+    Conv2dSubsampling2,
+    Conv2dSubsampling6,
+    Conv2dSubsampling8,
+    TooShortUttError,
+    check_short_utt,
+)
 
 
 class ConformerEncoder(AbsEncoder):
@@ -107,6 +107,8 @@ class ConformerEncoder(AbsEncoder):
         interctc_layer_idx: List[int] = [],
         interctc_use_conditioning: bool = False,
         stochastic_depth_rate: Union[float, List[float]] = 0.0,
+        layer_drop_rate: float = 0.0,
+        max_pos_emb_len: int = 5000,
     ):
         assert check_argument_types()
         super().__init__()
@@ -145,49 +147,56 @@ class ConformerEncoder(AbsEncoder):
                 torch.nn.Linear(input_size, output_size),
                 torch.nn.LayerNorm(output_size),
                 torch.nn.Dropout(dropout_rate),
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer == "conv2d":
             self.embed = Conv2dSubsampling(
                 input_size,
                 output_size,
                 dropout_rate,
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
+            )
+        elif input_layer == "conv2d1":
+            self.embed = Conv2dSubsampling1(
+                input_size,
+                output_size,
+                dropout_rate,
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer == "conv2d2":
             self.embed = Conv2dSubsampling2(
                 input_size,
                 output_size,
                 dropout_rate,
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer == "conv2d6":
             self.embed = Conv2dSubsampling6(
                 input_size,
                 output_size,
                 dropout_rate,
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer == "conv2d8":
             self.embed = Conv2dSubsampling8(
                 input_size,
                 output_size,
                 dropout_rate,
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer == "embed":
             self.embed = torch.nn.Sequential(
                 torch.nn.Embedding(input_size, output_size, padding_idx=padding_idx),
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif isinstance(input_layer, torch.nn.Module):
             self.embed = torch.nn.Sequential(
                 input_layer,
-                pos_enc_class(output_size, positional_dropout_rate),
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
         elif input_layer is None:
             self.embed = torch.nn.Sequential(
-                pos_enc_class(output_size, positional_dropout_rate)
+                pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len)
             )
         else:
             raise ValueError("unknown input_layer: " + input_layer)
@@ -274,6 +283,7 @@ class ConformerEncoder(AbsEncoder):
                 concat_after,
                 stochastic_depth_rate[lnum],
             ),
+            layer_drop_rate,
         )
         if self.normalize_before:
             self.after_norm = LayerNorm(output_size)
@@ -311,6 +321,7 @@ class ConformerEncoder(AbsEncoder):
 
         if (
             isinstance(self.embed, Conv2dSubsampling)
+            or isinstance(self.embed, Conv2dSubsampling1)
             or isinstance(self.embed, Conv2dSubsampling2)
             or isinstance(self.embed, Conv2dSubsampling6)
             or isinstance(self.embed, Conv2dSubsampling8)

@@ -5,9 +5,9 @@
 
 import json
 import os
-import sys
-import subprocess
 import re
+import subprocess
+import sys
 
 idir = sys.argv[1]
 
@@ -28,7 +28,6 @@ for subset in ["train", "devel", "test"]:
     ) as text, open(os.path.join(odir, "wav.scp"), "w") as wavscp, open(
         os.path.join(odir, "utt2spk"), "w"
     ) as utt2spk:
-
         for line in meta:
             prompt = json.loads(line.strip())
             transcript = prompt["sentence"]

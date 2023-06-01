@@ -1,17 +1,14 @@
 """RNN decoder definition for Transducer model."""
 
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 
-from espnet.nets.transducer_decoder_interface import ExtendedHypothesis
-from espnet.nets.transducer_decoder_interface import Hypothesis
-from espnet.nets.transducer_decoder_interface import TransducerDecoderInterface
+from espnet.nets.transducer_decoder_interface import (
+    ExtendedHypothesis,
+    Hypothesis,
+    TransducerDecoderInterface,
+)
 
 
 class RNNDecoder(TransducerDecoderInterface, torch.nn.Module):
@@ -128,9 +125,12 @@ class RNNDecoder(TransducerDecoderInterface, torch.nn.Module):
 
         for layer in range(self.dlayers):
             if self.dtype == "lstm":
-                sequence, (
-                    h_next[layer : layer + 1],
-                    c_next[layer : layer + 1],
+                (
+                    sequence,
+                    (
+                        h_next[layer : layer + 1],
+                        c_next[layer : layer + 1],
+                    ),
                 ) = self.decoder[layer](
                     sequence, hx=(h_prev[layer : layer + 1], c_prev[layer : layer + 1])
                 )

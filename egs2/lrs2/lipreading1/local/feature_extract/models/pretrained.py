@@ -1,8 +1,7 @@
 # coding: utf-8
 import math
+
 import numpy as np
-
-
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -89,7 +88,6 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)

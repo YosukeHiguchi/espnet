@@ -5,11 +5,10 @@ import torch
 import torch.nn.functional as F
 from typeguard import check_argument_types
 
-from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
-from espnet.nets.pytorch_backend.nets_utils import to_device
-from espnet.nets.pytorch_backend.rnn.attentions import initial_att
 from espnet2.asr.decoder.abs_decoder import AbsDecoder
 from espnet2.utils.get_default_kwargs import get_default_kwargs
+from espnet.nets.pytorch_backend.nets_utils import make_pad_mask, to_device
+from espnet.nets.pytorch_backend.rnn.attentions import initial_att
 
 
 def build_attention_list(
@@ -31,7 +30,6 @@ def build_attention_list(
     han_conv_filts: int = 100,
     han_win: int = 5,
 ):
-
     att_list = torch.nn.ModuleList()
     if num_encs == 1:
         for i in range(num_att):

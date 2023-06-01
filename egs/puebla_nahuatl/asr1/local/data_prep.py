@@ -5,10 +5,8 @@ import re
 import shutil
 import string
 import sys
-
 from argparse import ArgumentParser
 from xml.dom.minidom import parse
-
 
 s = "".join(chr(c) for c in range(sys.maxunicode + 1))
 ws = "".join(re.findall(r"\s", s))
@@ -40,7 +38,6 @@ def ExtractAudioID(audioname, wav_spk_info=None):
 
 
 def XMLRefine(input_xml, output_xml, readable=False):
-
     """refine trs file into
 
     :param input_xml: original transcriber xml

@@ -1,21 +1,11 @@
-from contextlib import contextmanager
-from distutils.version import LooseVersion
 import logging
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from contextlib import contextmanager
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch
+from packaging.version import parse as V
 from typeguard import check_argument_types
 
-from espnet.nets.e2e_mt_common import ErrorCalculator as MTErrorCalculator
-from espnet.nets.pytorch_backend.nets_utils import th_accuracy
-from espnet.nets.pytorch_backend.transformer.add_sos_eos import add_sos_eos
-from espnet.nets.pytorch_backend.transformer.label_smoothing_loss import (
-    LabelSmoothingLoss,  # noqa: H301
-)
 from espnet2.asr.decoder.abs_decoder import AbsDecoder
 from espnet2.asr.encoder.abs_encoder import AbsEncoder
 from espnet2.asr.frontend.abs_frontend import AbsFrontend
@@ -23,8 +13,14 @@ from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
 from espnet2.asr.preencoder.abs_preencoder import AbsPreEncoder
 from espnet2.torch_utils.device_funcs import force_gatherable
 from espnet2.train.abs_espnet_model import AbsESPnetModel
+from espnet.nets.e2e_mt_common import ErrorCalculator as MTErrorCalculator
+from espnet.nets.pytorch_backend.nets_utils import th_accuracy
+from espnet.nets.pytorch_backend.transformer.add_sos_eos import add_sos_eos
+from espnet.nets.pytorch_backend.transformer.label_smoothing_loss import (  # noqa: H301
+    LabelSmoothingLoss,
+)
 
-if LooseVersion(torch.__version__) >= LooseVersion("1.6.0"):
+if V(torch.__version__) >= V("1.6.0"):
     from torch.cuda.amp import autocast
 else:
     # Nothing to do if torch<1.6.0
@@ -63,6 +59,8 @@ class ESPnetMTModel(AbsESPnetModel):
         # note that eos is the same as sos (equivalent ID)
         self.sos = vocab_size - 1
         self.eos = vocab_size - 1
+        self.src_sos = src_vocab_size - 1 if src_vocab_size else None
+        self.src_eos = src_vocab_size - 1 if src_vocab_size else None
         self.vocab_size = vocab_size
         self.src_vocab_size = src_vocab_size
         self.ignore_id = ignore_id
@@ -120,6 +118,7 @@ class ESPnetMTModel(AbsESPnetModel):
         text_lengths: torch.Tensor,
         src_text: torch.Tensor,
         src_text_lengths: torch.Tensor,
+        **kwargs,
     ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
         """Frontend + Encoder + Decoder + Calc loss
 
@@ -128,6 +127,7 @@ class ESPnetMTModel(AbsESPnetModel):
             text_lengths: (Batch,)
             src_text: (Batch, length)
             src_text_lengths: (Batch,)
+            kwargs: "utt_id" is among the input.
         """
         assert text_lengths.dim() == 1, text_lengths.shape
         # Check that batch_size is unified
@@ -171,6 +171,7 @@ class ESPnetMTModel(AbsESPnetModel):
         text_lengths: torch.Tensor,
         src_text: torch.Tensor,
         src_text_lengths: torch.Tensor,
+        **kwargs,
     ) -> Dict[str, torch.Tensor]:
         if self.extract_feats_in_collect_stats:
             feats, feats_lengths = self._extract_feats(src_text, src_text_lengths)
@@ -234,7 +235,7 @@ class ESPnetMTModel(AbsESPnetModel):
 
         # for data-parallel
         src_text = src_text[:, : src_text_lengths.max()]
-        src_text, _ = add_sos_eos(src_text, self.sos, self.eos, self.ignore_id)
+        src_text, _ = add_sos_eos(src_text, self.src_sos, self.src_eos, self.ignore_id)
         src_text_lengths = src_text_lengths + 1
 
         if self.frontend is not None:

@@ -11,14 +11,13 @@ import fnmatch
 import multiprocessing as mp
 import os
 
-from fastdtw import fastdtw
 import numpy as np
 import pysptk
 import pyworld as pw
 import scipy
+from fastdtw import fastdtw
 from scipy.io import wavfile
-from scipy.signal import firwin
-from scipy.signal import lfilter
+from scipy.signal import firwin, lfilter
 
 
 def find_files(root_dir, query="*.wav", include_root_dir=True):
@@ -177,7 +176,6 @@ def get_basename(path):
 
 
 def calculate(file_list, gt_file_list, args, MCD):
-
     for i, cvt_path in enumerate(file_list):
         corresponding_list = list(
             filter(lambda gt_path: get_basename(gt_path) in cvt_path, gt_file_list)
@@ -211,7 +209,6 @@ def calculate(file_list, gt_file_list, args, MCD):
 
 
 def get_parser():
-
     parser = argparse.ArgumentParser(description="calculate MCD.")
     parser.add_argument(
         "--wavdir",

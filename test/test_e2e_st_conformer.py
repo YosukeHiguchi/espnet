@@ -3,6 +3,7 @@
 # Copyright 2019 Hirofumi Inaguma
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 import argparse
+
 import pytest
 import torch
 
@@ -37,7 +38,7 @@ def make_arg(**kwargs):
         mtlalpha=0.0,  # for CTC-ASR
         lsm_weight=0.001,
         char_list=["<blank>", "a", "e", "i", "o", "u"],
-        ctc_type="warpctc",
+        ctc_type="builtin",
         asr_weight=0.0,
         mt_weight=0.0,
     )

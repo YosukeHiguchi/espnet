@@ -1,7 +1,5 @@
 from collections import OrderedDict
-from typing import List
-from typing import Tuple
-from typing import Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch
 from torch_complex.tensor import ComplexTensor
@@ -39,6 +37,7 @@ class SkiMSeparator(AbsSeparator):
         input_dim: int,
         causal: bool = True,
         num_spk: int = 2,
+        predict_noise: bool = False,
         nonlinear: str = "relu",
         layer: int = 3,
         unit: int = 512,
@@ -47,20 +46,21 @@ class SkiMSeparator(AbsSeparator):
         mem_type: str = "hc",
         seg_overlap: bool = False,
     ):
-
         super().__init__()
 
         self._num_spk = num_spk
+        self.predict_noise = predict_noise
 
         self.segment_size = segment_size
 
         if mem_type not in ("hc", "h", "c", "id", None):
             raise ValueError("Not supporting mem_type={}".format(mem_type))
 
+        self.num_outputs = self.num_spk + 1 if self.predict_noise else self.num_spk
         self.skim = SkiM(
             input_size=input_dim,
             hidden_size=unit,
-            output_size=input_dim * num_spk,
+            output_size=input_dim * self.num_outputs,
             dropout=dropout,
             num_blocks=layer,
             bidirectional=(not causal),
@@ -80,13 +80,18 @@ class SkiMSeparator(AbsSeparator):
         }[nonlinear]
 
     def forward(
-        self, input: Union[torch.Tensor, ComplexTensor], ilens: torch.Tensor
+        self,
+        input: Union[torch.Tensor, ComplexTensor],
+        ilens: torch.Tensor,
+        additional: Optional[Dict] = None,
     ) -> Tuple[List[Union[torch.Tensor, ComplexTensor]], torch.Tensor, OrderedDict]:
         """Forward.
 
         Args:
             input (torch.Tensor or ComplexTensor): Encoded feature [B, T, N]
             ilens (torch.Tensor): input lengths [Batch]
+            additional (Dict or None): other data included in model
+                NOTE: not used in this model
 
         Returns:
             masked (List[Union(torch.Tensor, ComplexTensor)]): [(B, T, N), ...]
@@ -109,16 +114,45 @@ class SkiMSeparator(AbsSeparator):
 
         processed = self.skim(feature)  # B,T, N
 
-        processed = processed.view(B, T, N, self.num_spk)
+        processed = processed.view(B, T, N, self.num_outputs)
         masks = self.nonlinear(processed).unbind(dim=3)
+        if self.predict_noise:
+            *masks, mask_noise = masks
 
         masked = [input * m for m in masks]
 
         others = OrderedDict(
             zip(["mask_spk{}".format(i + 1) for i in range(len(masks))], masks)
         )
+        if self.predict_noise:
+            others["noise1"] = input * mask_noise
 
         return masked, ilens, others
+
+    def forward_streaming(self, input_frame: torch.Tensor, states=None):
+        if is_complex(input_frame):
+            feature = abs(input_frame)
+        else:
+            feature = input_frame
+
+        B, _, N = feature.shape
+
+        processed, states = self.skim.forward_stream(feature, states=states)
+
+        processed = processed.view(B, 1, N, self.num_outputs)
+        masks = self.nonlinear(processed).unbind(dim=3)
+        if self.predict_noise:
+            *masks, mask_noise = masks
+
+        masked = [input_frame * m for m in masks]
+
+        others = OrderedDict(
+            zip(["mask_spk{}".format(i + 1) for i in range(len(masks))], masks)
+        )
+        if self.predict_noise:
+            others["noise1"] = input_frame * mask_noise
+
+        return masked, states, others
 
     @property
     def num_spk(self):

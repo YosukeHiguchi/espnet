@@ -5,9 +5,10 @@
 
 import os
 import re
-import sys
-import pandas as pd
 import string
+import sys
+
+import pandas as pd
 
 if len(sys.argv) != 2:
     print("Usage: python data_prep.py [fsc_root]")
@@ -29,7 +30,6 @@ for x in dir_dict:
     ) as transcript_f, open(
         os.path.join("data", x, "utt2spk"), "w"
     ) as utt2spk_f:
-
         text_f.truncate()
         wav_scp_f.truncate()
         utt2spk_f.truncate()

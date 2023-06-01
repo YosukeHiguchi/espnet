@@ -1,14 +1,13 @@
 from pathlib import Path
-from typing import Tuple
-from typing import Union
+from typing import Tuple, Union
 
 import numpy as np
 import torch
 from typeguard import check_argument_types
 
-from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
 from espnet2.layers.abs_normalize import AbsNormalize
 from espnet2.layers.inversible_interface import InversibleInterface
+from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
 
 
 class GlobalMVN(AbsNormalize, InversibleInterface):
@@ -53,8 +52,17 @@ class GlobalMVN(AbsNormalize, InversibleInterface):
             var = sum_square_v / count - mean * mean
         std = np.sqrt(np.maximum(var, eps))
 
-        self.register_buffer("mean", torch.from_numpy(mean))
-        self.register_buffer("std", torch.from_numpy(std))
+        if isinstance(mean, np.ndarray):
+            mean = torch.from_numpy(mean)
+        else:
+            mean = torch.tensor(mean).float()
+        if isinstance(std, np.ndarray):
+            std = torch.from_numpy(std)
+        else:
+            std = torch.tensor(std).float()
+
+        self.register_buffer("mean", mean)
+        self.register_buffer("std", std)
 
     def extra_repr(self):
         return (

@@ -6,7 +6,6 @@
 import argparse
 import codecs
 import logging
-import six
 import sys
 
 is_python2 = sys.version_info[0] == 2
@@ -76,8 +75,8 @@ if __name__ == "__main__":
         if args.output
         else codecs.getwriter("utf-8")(sys.stdout if is_python2 else sys.stdout.buffer)
     )
-    six.print_("<unk> 1", file=fd)
+    print("<unk> 1", file=fd)
     for n, w in enumerate(sorted(vocabulary)):
-        six.print_("%s %d" % (w, n + 2), file=fd)
+        print("%s %d" % (w, n + 2), file=fd)
     if args.output:
         fd.close()

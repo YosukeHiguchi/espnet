@@ -39,6 +39,8 @@ try:
     params.extend(["espeak_ng_dutch"])
     params.extend(["espeak_ng_english_us_vits"])
     params.extend(["espeak_ng_hindi"])
+    params.extend(["espeak_ng_italian"])
+    params.extend(["espeak_ng_polish"])
     del phonemizer
 except ImportError:
     pass
@@ -303,7 +305,7 @@ def test_text2tokens(phoneme_tokenizer: PhonemeTokenizer):
             "ei2",
             "uai4",
             "s",
-            "un1",
+            "uen1",
             "uan2",
             "h",
             "ua2",
@@ -358,6 +360,12 @@ def test_text2tokens(phoneme_tokenizer: PhonemeTokenizer):
     elif phoneme_tokenizer.g2p_type == "espeak_ng_hindi":
         input = "नमस्ते दुनिया"
         output = ["n", "ə", "m", "ˈʌ", "s", "t", "eː", "d", "ˈʊ", "n", "ɪ", "j", "ˌaː"]
+    elif phoneme_tokenizer.g2p_type == "espeak_ng_italian":
+        input = "Ciao mondo."
+        output = ["tʃ", "ˈa", "o", "m", "ˈo", "n", "d", "o", "."]
+    elif phoneme_tokenizer.g2p_type == "espeak_ng_polish":
+        input = "Witaj świecie."
+        output = ["v", "ˈi", "t", "a", "j", "ɕ", "fʲ", "ˈɛ", "tɕ", "ɛ", "."]
     elif phoneme_tokenizer.g2p_type == "g2pk":
         input = "안녕하세요 세계입니다."
         output = [
@@ -483,6 +491,30 @@ def test_text2tokens(phoneme_tokenizer: PhonemeTokenizer):
             "ᄃ",
             "ᅡ",
             ".",
+        ]
+    elif phoneme_tokenizer.g2p_type == "is_g2p":
+        input = "hlaupa í burtu í dag"
+        output = [
+            "l_0",
+            "9i:",
+            ".",
+            "p",
+            "a",
+            ",",
+            "i:",
+            ",",
+            "p",
+            "Y",
+            "r_0",
+            ".",
+            "t",
+            "Y",
+            ",",
+            "i:",
+            ",",
+            "t",
+            "a:",
+            "G",
         ]
     else:
         raise NotImplementedError

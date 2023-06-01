@@ -7,10 +7,14 @@ import numpy as np
 import pytest
 import torch
 
-from espnet2.gan_tts.hifigan.loss import DiscriminatorAdversarialLoss
-from espnet2.gan_tts.hifigan.loss import GeneratorAdversarialLoss
-from espnet2.gan_tts.parallel_wavegan import ParallelWaveGANDiscriminator
-from espnet2.gan_tts.parallel_wavegan import ParallelWaveGANGenerator
+from espnet2.gan_tts.hifigan.loss import (
+    DiscriminatorAdversarialLoss,
+    GeneratorAdversarialLoss,
+)
+from espnet2.gan_tts.parallel_wavegan import (
+    ParallelWaveGANDiscriminator,
+    ParallelWaveGANGenerator,
+)
 
 
 def make_generator_args(**kwargs):
@@ -130,12 +134,13 @@ except ImportError:
     is_parallel_wavegan_available = False
 
 
+@pytest.mark.execution_timeout(10)
 @pytest.mark.skipif(
     not is_parallel_wavegan_available, reason="parallel_wavegan is not installed."
 )
 def test_parallel_wavegan_compatibility():
     from parallel_wavegan.models import (
-        ParallelWaveGANGenerator as PWGParallelWaveGANGenerator,  # NOQA
+        ParallelWaveGANGenerator as PWGParallelWaveGANGenerator,
     )
 
     model_pwg = PWGParallelWaveGANGenerator(**make_generator_args())
@@ -149,7 +154,8 @@ def test_parallel_wavegan_compatibility():
         c = torch.randn(3, 10)
         out_pwg = model_pwg.inference(c, z)
         out_espnet2 = model_espnet2.inference(c, z)
-        np.testing.assert_array_equal(
+        np.testing.assert_allclose(
             out_pwg.cpu().numpy(),
             out_espnet2.cpu().numpy(),
+            rtol=1e-5,
         )

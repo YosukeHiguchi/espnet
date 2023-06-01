@@ -18,10 +18,10 @@ ${CXX:-g++} -v
     else
         ./setup_venv.sh "$(command -v python3)" venv
     fi
-    . ./activate_python.sh
-    make TH_VERSION="${TH_VERSION}"
 
-    make warp-ctc.done warp-transducer.done chainer_ctc.done nkf.done moses.done mwerSegmenter.done pesq pyopenjtalk.done py3mmseg.done s3prl.done transformers.done phonemizer.done fairseq.done k2.done gtn.done longformer.done
+    . ./activate_python.sh
+    # FIXME(kamo): Failed to compile pesq
+    make TH_VERSION="${TH_VERSION}" WITH_OMP="${WITH_OMP-ON}" all warp-transducer.done chainer_ctc.done nkf.done moses.done mwerSegmenter.done pyopenjtalk.done py3mmseg.done s3prl.done transformers.done phonemizer.done fairseq.done k2.done gtn.done longformer.done whisper.done parallel-wavegan.done muskits.done
     rm -rf kaldi
 )
 . tools/activate_python.sh
@@ -37,6 +37,9 @@ python3 -c "import matplotlib.pyplot"
 #   See: https://github.com/psf/black/issues/1707
 python3 -m pip uninstall -y typing
 
+# NOTE(kamo): Workaround for pip resolve issue (I think this is a bug of pip)
+python3 -m pip install "hacking>=2.0.0" "flake8>=3.7.8"
+
 # install espnet
 python3 -m pip install -e ".[test]"
 python3 -m pip install -e ".[doc]"
@@ -48,7 +51,7 @@ python3 -m pip freeze
 # Check pytorch version
 python3 <<EOF
 import torch
-from distutils.version import LooseVersion as L
+from packaging.version import parse as L
 version = '$TH_VERSION'.split(".")
 next_version = f"{version[0]}.{version[1]}.{int(version[2]) + 1}"
 

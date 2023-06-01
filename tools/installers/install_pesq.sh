@@ -6,10 +6,16 @@ if [ $# != 0 ]; then
     echo "Usage: $0"
     exit 1;
 fi
+unames="$(uname -s)"
+if [[ ! ${unames} =~ Linux && ! ${unames} =~ Darwin ]]; then
+    echo "Warning: This script may not work with ${unames}. Exit with doing nothing"
+    exit 0
+fi
+
 
 if [ ! -e PESQ.zip ]; then
     wget --tries=3 --no-check-certificate \
-        'http://www.itu.int/rec/dologin_pub.asp?lang=e&id=T-REC-P.862-200511-I!Amd2!SOFT-ZST-E&type=items' -O PESQ.zip
+        'https://github.com/LiChenda/itu_pesq/raw/main/T-REC-P.862-200511.zip' -O PESQ.zip
 fi
 if [ ! -e PESQ ]; then
     mkdir -p PESQ_P.862.2

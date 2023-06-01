@@ -4,9 +4,8 @@ import logging
 from pathlib import Path
 from typing import List
 
-import yaml
-
 import torch
+import yaml
 
 from espnet.nets.batch_beam_search import BatchBeamSearch
 from espnet.nets.beam_search import Hypothesis
@@ -249,6 +248,16 @@ class BatchBeamSearchOnlineSim(BatchBeamSearch):
                 "best hypo: "
                 + "".join([self.token_list[x] for x in best.yseq[1:-1]])
                 + "\n"
+            )
+        if best.yseq[1:-1].shape[0] == x.shape[0]:
+            logging.warning(
+                "best hypo length: {} == max output length: {}".format(
+                    best.yseq[1:-1].shape[0], maxlen
+                )
+            )
+            logging.warning(
+                "decoding may be stopped by the max output length limitation, "
+                + "please consider to increase the maxlenratio."
             )
         return nbest_hyps
 

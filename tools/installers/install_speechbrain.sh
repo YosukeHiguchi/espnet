@@ -7,8 +7,11 @@ if [ $# != 0 ]; then
     exit 1;
 fi
 
+if ! python -c "import packaging.version" &> /dev/null; then
+    python3 -m pip install packaging
+fi
 torch_18_plus=$(python3 <<EOF
-from distutils.version import LooseVersion as V
+from packaging.version import parse as V
 import torch
 
 if V(torch.__version__) >= V("1.8"):
@@ -22,7 +25,7 @@ EOF
 # Install speechbrain
 if [ ! -e speechbrain.done ]; then
     if "${torch_18_plus}"; then
-        python3 -m pip install speechbrain==0.5.11
+        python3 -m pip install speechbrain==0.5.14
         touch speechbrain.done
     else
         echo "[ERROR]: speechbrain requires pytorch>=1.8.0"

@@ -1,7 +1,5 @@
 from collections import OrderedDict
-from typing import List
-from typing import Tuple
-from typing import Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch
 from torch_complex.tensor import ComplexTensor
@@ -44,6 +42,7 @@ class NeuralBeamformer(AbsSeparator):
         rtf_iterations: int = 2,
         bdropout_rate: float = 0.0,
         shared_power: bool = True,
+        use_torchaudio_api: bool = False,
         # For numerical stability
         diagonal_loading: bool = True,
         diag_eps_wpe: float = 1e-7,
@@ -117,6 +116,7 @@ class NeuralBeamformer(AbsSeparator):
                 mask_flooring=mask_flooring,
                 flooring_thres=flooring_thres_bf,
                 use_torch_solver=use_torch_solver,
+                use_torchaudio_api=use_torchaudio_api,
             )
         else:
             self.beamformer = None
@@ -125,7 +125,10 @@ class NeuralBeamformer(AbsSeparator):
         self.shared_power = shared_power and use_wpe
 
     def forward(
-        self, input: Union[torch.Tensor, ComplexTensor], ilens: torch.Tensor
+        self,
+        input: Union[torch.Tensor, ComplexTensor],
+        ilens: torch.Tensor,
+        additional: Optional[Dict] = None,
     ) -> Tuple[List[Union[torch.Tensor, ComplexTensor]], torch.Tensor, OrderedDict]:
         """Forward.
 
@@ -133,6 +136,8 @@ class NeuralBeamformer(AbsSeparator):
             input (torch.complex64/ComplexTensor):
                 mixed speech [Batch, Frames, Channel, Freq]
             ilens (torch.Tensor): input lengths [Batch]
+            additional (Dict or None): other data included in model
+                NOTE: not used in this model
 
         Returns:
             enhanced speech (single-channel): List[torch.complex64/ComplexTensor]

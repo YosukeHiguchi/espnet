@@ -6,16 +6,15 @@
 # This code is ported from the following implementation written in Torch.
 # https://github.com/chainer/chainer/blob/master/examples/ptb/train_ptb_custom_loop.py
 
-import chainer
-import h5py
 import logging
-import numpy as np
 import os
 import random
-import six
-from tqdm import tqdm
 
+import chainer
+import h5py
+import numpy as np
 from chainer.training import extension
+from tqdm import tqdm
 
 
 def load_dataset(path, label_dict, outdir=None):
@@ -152,7 +151,7 @@ class ParallelSentenceIterator(chainer.dataset.Iterator):
                 # shuffle batches
                 random.shuffle(self.batch_indices)
         else:
-            self.batch_indices = [np.array([i]) for i in six.moves.range(length)]
+            self.batch_indices = [np.array([i]) for i in range(length)]
 
         # NOTE: this is not a count of parameter updates. It is just a count of
         # calls of ``__next__``.

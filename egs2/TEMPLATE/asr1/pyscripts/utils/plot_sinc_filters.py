@@ -12,10 +12,11 @@ Description:
 """
 
 import argparse
+import sys
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-import sys
 import torch
 
 
@@ -167,8 +168,9 @@ def plot_filter_kernels(filters: torch.Tensor, sample_rate: int, args):
     f_mins = np.abs(pre_filters[:, 0])
     f_maxs = np.abs(pre_filters[:, 0]) + np.abs(pre_filters[:, 1] - pre_filters[:, 0])
     F_mins, F_maxs = f_mins * sample_rate, f_maxs * sample_rate
-    pre_F_mins, pre_F_maxs = np.round(F_mins).astype(np.int), np.round(F_maxs).astype(
-        np.int
+    pre_F_mins, pre_F_maxs = (
+        np.round(F_mins).astype(np.int64),
+        np.round(F_maxs).astype(np.int64),
     )
 
     # learned
@@ -179,9 +181,13 @@ def plot_filter_kernels(filters: torch.Tensor, sample_rate: int, args):
     f_mins = np.abs(filters[:, 0])
     f_maxs = np.abs(filters[:, 0]) + np.abs(filters[:, 1] - filters[:, 0])
     F_mins, F_maxs = f_mins * sample_rate, f_maxs * sample_rate
-    F_mins, F_maxs = np.round(F_mins).astype(np.int), np.round(F_maxs).astype(np.int)
-    F_mins, F_maxs = np.clip(F_mins, 0, sample_rate / 2.0), np.clip(
-        F_maxs, 0, sample_rate / 2.0
+    F_mins, F_maxs = (
+        np.round(F_mins).astype(np.int64),
+        np.round(F_maxs).astype(np.int64),
+    )
+    F_mins, F_maxs = (
+        np.clip(F_mins, 0, sample_rate / 2.0),
+        np.clip(F_maxs, 0, sample_rate / 2.0),
     )
 
     x_f = np.linspace(0.0, np.max(F_maxs), int(np.max(F_maxs)) + 1)
@@ -301,7 +307,10 @@ def main(argv):
     f_mins = np.abs(filters[:, 0])
     f_maxs = np.abs(filters[:, 0]) + np.abs(filters[:, 1] - filters[:, 0])
     F_mins, F_maxs = f_mins * sample_rate, f_maxs * sample_rate
-    F_mins, F_maxs = np.round(F_mins).astype(np.int), np.round(F_maxs).astype(np.int)
+    F_mins, F_maxs = (
+        np.round(F_mins).astype(np.int64),
+        np.round(F_maxs).astype(np.int64),
+    )
 
     # Create output folder if it does not yet exist
     args.out_folder.mkdir(parents=True, exist_ok=True)

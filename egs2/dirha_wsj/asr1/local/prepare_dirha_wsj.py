@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
+import warnings
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
-import xml.etree.ElementTree as ET
-import warnings
 
 import numpy as np
 import soundfile
@@ -91,10 +91,13 @@ def prepare(
             if data_dir is not None:
                 # Create single channel dir
                 env2info = {}
-                for (env, real_sim, mic), (
-                    _info,
-                    _spk2utt,
-                    _spk2gender,
+                for (
+                    (env, real_sim, mic),
+                    (
+                        _info,
+                        _spk2utt,
+                        _spk2gender,
+                    ),
                 ) in info.items():
                     if not mic.startswith("Beam_"):
                         env2info.setdefault((env, real_sim), []).append(

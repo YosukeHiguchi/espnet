@@ -10,8 +10,8 @@ import pytest
 import torch
 
 import espnet.lm.pytorch_backend.extlm as extlm_pytorch
-from espnet.nets.pytorch_backend import e2e_asr
 import espnet.nets.pytorch_backend.lm.default as lm_pytorch
+from espnet.nets.pytorch_backend import e2e_asr
 
 
 def make_arg(**kwargs):
@@ -45,7 +45,7 @@ def make_arg(**kwargs):
         char_list=["a", "i", "u", "e", "o"],
         word_list=["<blank>", "<unk>", "ai", "iu", "ue", "eo", "oa", "<eos>"],
         outdir=None,
-        ctc_type="warpctc",
+        ctc_type="builtin",
         report_cer=False,
         report_wer=False,
         sym_space="<space>",

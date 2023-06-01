@@ -1,15 +1,12 @@
 """Tests for asr_align.py."""
+import string
 from argparse import ArgumentParser
 from pathlib import Path
-import string
 
 import numpy as np
 import pytest
 
-from espnet2.bin.asr_align import CTCSegmentation
-from espnet2.bin.asr_align import CTCSegmentationTask
-from espnet2.bin.asr_align import get_parser
-from espnet2.bin.asr_align import main
+from espnet2.bin.asr_align import CTCSegmentation, CTCSegmentationTask, get_parser, main
 from espnet2.tasks.asr import ASRTask
 
 
@@ -50,6 +47,8 @@ def asr_config_file(tmp_path: Path, token_list):
             str(token_list),
             "--token_type",
             "char",
+            "--decoder",
+            "rnn",
         ]
     )
     return tmp_path / "asr" / "config.yaml"

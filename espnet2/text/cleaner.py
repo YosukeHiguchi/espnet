@@ -1,7 +1,7 @@
 from typing import Collection
 
-from jaconv import jaconv
 import tacotron_cleaner.cleaners
+from jaconv import jaconv
 from typeguard import check_argument_types
 
 try:
@@ -10,6 +10,11 @@ except ImportError:
     vietnamese_cleaners = None
 
 from espnet2.text.korean_cleaner import KoreanCleaner
+
+try:
+    from whisper.normalizers import BasicTextNormalizer, EnglishTextNormalizer
+except (ImportError, SyntaxError):
+    BasicTextNormalizer = None
 
 
 class TextCleaner:
@@ -32,6 +37,14 @@ class TextCleaner:
         else:
             self.cleaner_types = list(cleaner_types)
 
+        self.whisper_cleaner = None
+        if BasicTextNormalizer is not None:
+            for t in self.cleaner_types:
+                if t == "whisper_en":
+                    self.whisper_cleaner = EnglishTextNormalizer()
+                elif t == "whisper_basic":
+                    self.whisper_cleaner = BasicTextNormalizer()
+
     def __call__(self, text: str) -> str:
         for t in self.cleaner_types:
             if t == "tacotron":
@@ -44,6 +57,8 @@ class TextCleaner:
                 text = vietnamese_cleaners.vietnamese_cleaner(text)
             elif t == "korean_cleaner":
                 text = KoreanCleaner.normalize_text(text)
+            elif "whisper" in t and self.whisper_cleaner is not None:
+                text = self.whisper_cleaner(text)
             else:
                 raise RuntimeError(f"Not supported: type={t}")
 

@@ -40,6 +40,7 @@ egs*/*/*/mfcc
 egs*/*/*/stft
 egs*/*/*/tensorboard
 egs*/*/*/wav*
+egs*/*/*/score*
 egs*/*/*/nltk*
 egs*/*/*/.cache*
 egs*/*/*/pretrained_models*
@@ -79,4 +80,12 @@ tools/festival*
 tools/speech_tools*
 tools/phonemizer*
 tools/py3mmseg
+tools/anaconda
+tools/ice-g2p
+tools/fairseq
+tools/RawNet
 tools/._*
+tools/ice-g2p*
+tools/fairseq*
+tools/featbin*
+tools/miniconda

@@ -6,12 +6,8 @@
 
 """Tacotron2 encoder related modules."""
 
-import six
-
 import torch
-
-from torch.nn.utils.rnn import pack_padded_sequence
-from torch.nn.utils.rnn import pad_packed_sequence
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 
 def encoder_init(m):
@@ -79,7 +75,7 @@ class Encoder(torch.nn.Module):
 
         if econv_layers > 0:
             self.convs = torch.nn.ModuleList()
-            for layer in six.moves.range(econv_layers):
+            for layer in range(econv_layers):
                 ichans = (
                     embed_dim if layer == 0 and input_layer == "embed" else econv_chans
                 )
@@ -143,9 +139,9 @@ class Encoder(torch.nn.Module):
         """
         xs = self.embed(xs).transpose(1, 2)
         if self.convs is not None:
-            for i in six.moves.range(len(self.convs)):
+            for i in range(len(self.convs)):
                 if self.use_residual:
-                    xs += self.convs[i](xs)
+                    xs = xs + self.convs[i](xs)
                 else:
                     xs = self.convs[i](xs)
         if self.blstm is None:

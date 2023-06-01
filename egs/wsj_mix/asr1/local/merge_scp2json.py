@@ -3,10 +3,10 @@
 
 import argparse
 import codecs
-from io import open
 import json
 import logging
 import sys
+from io import open
 
 from espnet.utils.cli_utils import get_commandline_args
 
@@ -221,7 +221,6 @@ if __name__ == "__main__":
             ("output", output_lines, output_infos),
             ("other", lines, infos),
         ]:
-
             lis = []
             for idx, (line_list, info_list) in enumerate(zip(_lines, _infos), 1):
                 if inout == "input":

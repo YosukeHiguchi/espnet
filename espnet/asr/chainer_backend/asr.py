@@ -6,40 +6,39 @@
 import json
 import logging
 import os
-import six
 
 # chainer related
 import chainer
-
 from chainer import training
-
 from chainer.datasets import TransformDataset
 from chainer.training import extensions
 
+# rnnlm
+import espnet.lm.chainer_backend.extlm as extlm_chainer
+import espnet.lm.chainer_backend.lm as lm_chainer
+
 # espnet related
-from espnet.asr.asr_utils import adadelta_eps_decay
-from espnet.asr.asr_utils import add_results_to_json
-from espnet.asr.asr_utils import chainer_load
-from espnet.asr.asr_utils import CompareValueTrigger
-from espnet.asr.asr_utils import get_model_conf
-from espnet.asr.asr_utils import restore_snapshot
+from espnet.asr.asr_utils import (
+    CompareValueTrigger,
+    adadelta_eps_decay,
+    add_results_to_json,
+    chainer_load,
+    get_model_conf,
+    restore_snapshot,
+)
 from espnet.nets.asr_interface import ASRInterface
 from espnet.utils.deterministic_utils import set_deterministic_chainer
 from espnet.utils.dynamic_import import dynamic_import
 from espnet.utils.io_utils import LoadInputsAndTargets
 from espnet.utils.training.batchfy import make_batchset
 from espnet.utils.training.evaluator import BaseEvaluator
-from espnet.utils.training.iterators import ShufflingEnabler
-from espnet.utils.training.iterators import ToggleableShufflingMultiprocessIterator
-from espnet.utils.training.iterators import ToggleableShufflingSerialIterator
-from espnet.utils.training.train_utils import check_early_stop
-from espnet.utils.training.train_utils import set_early_stop
-
-# rnnlm
-import espnet.lm.chainer_backend.extlm as extlm_chainer
-import espnet.lm.chainer_backend.lm as lm_chainer
-
+from espnet.utils.training.iterators import (
+    ShufflingEnabler,
+    ToggleableShufflingMultiprocessIterator,
+    ToggleableShufflingSerialIterator,
+)
 from espnet.utils.training.tensorboard_logger import TensorboardLogger
+from espnet.utils.training.train_utils import check_early_stop, set_early_stop
 
 
 def train(args):
@@ -112,7 +111,7 @@ def train(args):
     elif ngpu > 1:
         gpu_id = 0
         devices = {"main": gpu_id}
-        for gid in six.moves.xrange(1, ngpu):
+        for gid in range(1, ngpu):
             devices["sub_%d" % gid] = gid
         logging.info("multi gpu calculation (#gpus = %d)." % ngpu)
         logging.warning(
@@ -217,7 +216,7 @@ def train(args):
             )
         # set up minibatches
         train_subsets = []
-        for gid in six.moves.xrange(ngpu):
+        for gid in range(ngpu):
             # make subset
             train_json_subset = {
                 k: v for i, (k, v) in enumerate(train_json.items()) if i % ngpu == gid
@@ -237,7 +236,7 @@ def train(args):
         maxlen = max([len(train_subset) for train_subset in train_subsets])
         for train_subset in train_subsets:
             if maxlen != len(train_subset):
-                for i in six.moves.xrange(maxlen - len(train_subset)):
+                for i in range(maxlen - len(train_subset)):
                     train_subset += [train_subset[i]]
 
         # hack to make batchsize argument as 1
@@ -252,7 +251,7 @@ def train(args):
                     maxtasksperchild=20,
                     shuffle=not use_sortagrad,
                 )
-                for gid in six.moves.xrange(ngpu)
+                for gid in range(ngpu)
             ]
         else:
             train_iters = [
@@ -261,7 +260,7 @@ def train(args):
                     batch_size=1,
                     shuffle=not use_sortagrad,
                 )
-                for gid in six.moves.xrange(ngpu)
+                for gid in range(ngpu)
             ]
 
         # set up updater

@@ -9,6 +9,7 @@ import argparse
 import importlib
 import os
 import tempfile
+from test.utils_test import make_dummy_json
 
 import numpy as np
 import pytest
@@ -16,7 +17,6 @@ import torch
 
 from espnet.nets.pytorch_backend.nets_utils import pad_list
 from espnet.utils.training.batchfy import make_batchset
-from test.utils_test import make_dummy_json
 
 
 def make_arg(num_encs, **kwargs):
@@ -63,7 +63,7 @@ def make_arg(num_encs, **kwargs):
         verbose=2,
         char_list=["あ", "い"],
         outdir=None,
-        ctc_type="warpctc",
+        ctc_type="builtin",
         report_cer=False,
         report_wer=False,
         sym_space="<space>",

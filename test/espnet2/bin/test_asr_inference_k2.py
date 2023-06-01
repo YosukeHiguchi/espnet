@@ -1,13 +1,12 @@
+import string
 from argparse import ArgumentParser
 from pathlib import Path
-import string
 
 import numpy as np
 import pytest
 
 from espnet2.tasks.asr import ASRTask
 from espnet2.tasks.lm import LMTask
-
 
 pytest.importorskip("k2")
 
@@ -49,6 +48,8 @@ def asr_config_file(tmp_path: Path, token_list):
             str(token_list),
             "--token_type",
             "char",
+            "--decoder",
+            "rnn",
         ]
     )
     return tmp_path / "asr" / "config.yaml"

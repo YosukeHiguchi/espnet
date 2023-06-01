@@ -1,27 +1,24 @@
 #!/usr/bin/env python3
 import argparse
-from collections import Counter
 import logging
-from pathlib import Path
 import sys
-from typing import List
-from typing import Optional
+from collections import Counter
+from pathlib import Path
+from typing import List, Optional
 
 from typeguard import check_argument_types
 
-from espnet.utils.cli_utils import get_commandline_args
 from espnet2.text.build_tokenizer import build_tokenizer
 from espnet2.text.cleaner import TextCleaner
 from espnet2.text.phoneme_tokenizer import g2p_choices
-from espnet2.utils.types import str2bool
-from espnet2.utils.types import str_or_none
+from espnet2.utils.types import str2bool, str_or_none
+from espnet.utils.cli_utils import get_commandline_args
 
 
 def field2slice(field: Optional[str]) -> slice:
-    """Convert field string to slice
+    """Convert field string to slice.
 
     Note that field string accepts 1-based integer.
-
     Examples:
         >>> field2slice("1-")
         slice(0, None, None)
@@ -80,6 +77,7 @@ def tokenize(
     add_symbol: List[str],
     cleaner: Optional[str],
     g2p: Optional[str],
+    add_nonsplit_symbol: List[str],
 ):
     assert check_argument_types()
 
@@ -107,6 +105,7 @@ def tokenize(
         non_linguistic_symbols=non_linguistic_symbols,
         remove_non_linguistic_symbols=remove_non_linguistic_symbols,
         g2p_type=g2p,
+        nonsplit_symbol=add_nonsplit_symbol,
     )
 
     counter = Counter()
@@ -148,8 +147,8 @@ def tokenize(
             raise RuntimeError(f"vocabulary_size is too small: {vocabulary_size}")
         words_and_counts = words_and_counts[: vocabulary_size - len(add_symbol)]
 
-    # Parse the values of --add_symbol
-    for symbol_and_id in add_symbol:
+    # Parse the values of --add_symbol and --add_nonsplit_symbol
+    for symbol_and_id in add_symbol + add_nonsplit_symbol:
         # e.g symbol="<blank>:0"
         try:
             symbol, idx = symbol_and_id.split(":")
@@ -222,7 +221,15 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--cleaner",
         type=str_or_none,
-        choices=[None, "tacotron", "jaconv", "vietnamese", "korean_cleaner"],
+        choices=[
+            None,
+            "tacotron",
+            "jaconv",
+            "vietnamese",
+            "korean_cleaner",
+            "whisper_en",
+            "whisper_basic",
+        ],
         default=None,
         help="Apply text cleaning",
     )
@@ -254,6 +261,13 @@ def get_parser() -> argparse.ArgumentParser:
         default=[],
         action="append",
         help="Append symbol e.g. --add_symbol '<blank>:0' --add_symbol '<unk>:1'",
+    )
+    group.add_argument(
+        "--add_nonsplit_symbol",
+        type=str,
+        default=[],
+        action="append",
+        help="Append symbol that is nonsplit e.g. --add_nonsplit_symbol '<sc>:2",
     )
 
     return parser

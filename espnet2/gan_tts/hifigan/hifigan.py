@@ -9,11 +9,7 @@ This code is modified from https://github.com/kan-bayashi/ParallelWaveGAN.
 
 import copy
 import logging
-
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import torch
@@ -560,7 +556,7 @@ class HiFiGANScaleDiscriminator(torch.nn.Module):
         """Apply weight normalization module from all of the layers."""
 
         def _apply_weight_norm(m: torch.nn.Module):
-            if isinstance(m, torch.nn.Conv2d):
+            if isinstance(m, torch.nn.Conv1d):
                 torch.nn.utils.weight_norm(m)
                 logging.debug(f"Weight norm is applied to {m}.")
 
@@ -570,7 +566,7 @@ class HiFiGANScaleDiscriminator(torch.nn.Module):
         """Apply spectral normalization module from all of the layers."""
 
         def _apply_spectral_norm(m: torch.nn.Module):
-            if isinstance(m, torch.nn.Conv2d):
+            if isinstance(m, torch.nn.Conv1d):
                 torch.nn.utils.spectral_norm(m)
                 logging.debug(f"Spectral norm is applied to {m}.")
 

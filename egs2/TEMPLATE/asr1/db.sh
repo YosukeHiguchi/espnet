@@ -1,24 +1,35 @@
 # Set the path of your corpus
 # "downloads" means the corpus can be downloaded by the recipe automatically
 
+ACCENTED_FR=downloads
 AIDATATANG_200ZH=downloads
 AISHELL=downloads
+AISHELL2=
 AISHELL3=downloads
 AISHELL4=downloads
 ALFFA=downloads
+AMERICASNLP22=downloads
 AN4=downloads
+ASVTutorial=espnet_tutorial_asvspoof
+APHASIABANK=
+AUDIOSET=
 DIRHA_ENGLISH_PHDEV=
 DIRHA_WSJ=
 DIRHA_WSJ_PROCESSED="${PWD}/data/local/dirha_wsj_processed"  # Output file path
 DNS=
+DNS2=
+DNS3=
+DNS4=downloads
 DSING=downloads
 WSJ0=
 WSJ1=
 WSJCAM0=
+REAZONSPEECH=downloads
 REVERB=
 REVERB_OUT="${PWD}/REVERB"  # Output file path
 CHIME3=
 CHIME4=
+CHIME5=
 CSJDATATOP=
 CSJVER=dvd  ## Set your CSJ format (dvd or usb).
             ## Usage    :
@@ -37,33 +48,46 @@ HUI_ACG=downloads
 HUB4_SPANISH=
 LABOROTV=
 TEDXJP=
-LIBRISPEECH=
+LIBRISPEECH=downloads
 LIBRILIGHT_LIMITED=
 FSC=
+MELD=downloads
 SLURP=
+SLURP_S= # Output file path
+LIBRITRANS_S= # Output file path
 VOXCELEB=
+MAGICDATA=downloads
+MEDIASPEECH=downloads
 MINI_LIBRISPEECH=downloads
 MISP2021=
+MSUPERB=/ocean/projects/cis210027p/shared/corpora/MultilingualSUPERB
+L3DAS22=
 LIBRIMIX=downloads
 LIBRITTS=
 LJSPEECH=downloads
+MUSAN=
+MUST_C=downloads
 NSC=
 JMD=downloads
 JSSS=downloads
 JSUT=downloads
 JTUBESPEECH=downloads
 JVS=downloads
+KSC=downloads
 KSS=
+QASR_TTS=downloads
 SNIPS= # smart-light-en-closed-field data path
 SPGISPEECH=
 SWBD=
 SWBD_NXT=
 THCHS30=downloads
-TIMIT=$(realpath ../../../../TIMIT)
+TIMIT=
 TSUKUYOMI=downloads
 VOXFORGE=downloads
 AMI=
 COMMONVOICE=downloads
+FLEURS=downloads
+MICROSOFT_SPEECH_CORPUS=
 BABEL_101=
 BABEL_102=
 BABEL_103=
@@ -98,6 +122,7 @@ YESNO=downloads
 YOLOXOCHITL_MIXTEC=downloads
 HOW2_TEXT=downloads/how2-300h-v1
 HOW2_FEATS=downloads/fbank_pitch_181516
+HOW2_2kH=downloads/how2_release
 ZEROTH_KOREAN=downloads
 JAVA=downloads
 RU_OPEN_STT=downloads
@@ -114,6 +139,7 @@ CMU_ARCTIC=downloads
 CMU_INDIC=downloads
 INDIC_SPEECH=downloads
 IWSLT22_DIALECT=
+IWSLT22_LOW_RESOURCE=downloads
 JKAC=
 MUCS_SUBTASK1=downloads
 MUCS_SUBTASK2=downloads
@@ -128,6 +154,32 @@ PRIMEWORDS_CHINESE=downloads
 SEAME=
 BENGALI=downloads
 IWSLT14=
+BURMESE=downloads
+MALAYALAM=downloads
+ST_CMDS=downloads
+MS_INDIC_IS18=
+MARATHI=downloads
+MLS=downloads
+VOXPOPULI=downloads
+HARPERVALLEY=downloads
+TALROMUR=downloads
+TALROMUR2=downloads
+DCASE=
+TEDX_SPANISH=downloads
+IAM=downloads
+OFUTON=
+OPENCPOP=
+M_AILABS=downloads
+CATSLU=downloads
+ELRA_E0024=
+ELRA_S0272=
+ELRA_S0371=
+M4SINGER=
+ONIKU=
+PJS=
+AMEBOSHI=
+ITAKO=
+NATSUME=
 
 # For only CMU TIR environment
 if [[ "$(hostname)" == tir* ]]; then
@@ -162,6 +214,10 @@ if [[ "$(hostname)" == tir* ]]; then
     PRIMEWORDS_CHINESE=/projects/tir5/data/speech_corpora/Primewords_Chinese
     FISHER_CALLHOME_SPANISH=/projects/tir5/data/speech_corpora/fisher_callhome_spanish
     DSING=/projects/tir5/data/speech_corpora/sing_300x30x2
+    MS_INDIC_IS18=/projects/tir6/general/cnariset/corpora/microsoft_speech_corpus_indian_languages
+    AISHELL=/projects/tir5/data/speech_corpora/Aishell
+    LIBRISPEECH=/projects/tir5/data/speech_corpora/LibriSpeech
+    SLURP=/projects/tir5/data/speech_corpora/SLURP
 fi
 
 # For only JHU environment
@@ -204,6 +260,7 @@ if [[ "$(hostname -d)" == clsp.jhu.edu ]]; then
     FSC=
     SNIPS= # smart-light-en-closed-field data path
     SLURP=
+    MEDIASPEECH=downloads
     MINI_LIBRISPEECH=downloads
     LIBRITTS=
     LJSPEECH=downloads
@@ -269,4 +326,6 @@ if [[ "$(hostname -d)" == clsp.jhu.edu ]]; then
     IWSLT21LR=downloads/iwslt21
     TOTONAC=downloads
     GOOGLEI18N=downloads
+    MALAYALAM=
+
 fi

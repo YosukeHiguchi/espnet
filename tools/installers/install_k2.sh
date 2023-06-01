@@ -25,12 +25,21 @@ else
     use_conda=$([[ $(conda list -e -c -f --no-pip pytorch 2>/dev/null) =~ pytorch ]] && echo true || echo false)
 fi
 
+if [[ ! $(uname -s) =~ Linux ]]; then
+    echo "Warning: This script doesn't support MacOS and Windows. Please install k2 manually."
+    exit 0
+fi
+
+
+if ! python -c "import packaging.version" &> /dev/null; then
+    python3 -m pip install packaging
+fi
 
 python_36_plus=$(python3 <<EOF
-from distutils.version import LooseVersion as V
+from packaging.version import parse as V
 import sys
 
-if V(sys.version) >= V("3.6"):
+if V("{}.{}.{}".format(*sys.version_info[:3])) >= V("3.6"):
     print("true")
 else:
     print("false")
@@ -58,13 +67,12 @@ torch_version=torch.__version__.split("+")[0]
 print(torch_version)
 EOF
 )
-libc_path="$(ldd /bin/bash | grep libc.so | awk '{ print $3 }')"
-libc_version="$(${libc_path} | grep "GNU C Library" | grep -oP "version [0-9]*.[0-9]*" | cut -d" " -f2)"
+libc_version="$(ldd --version | awk 'NR==1 {print $NF}')"
 
 pytorch_plus(){
     python3 <<EOF
 import sys
-from distutils.version import LooseVersion as L
+from packaging.version import parse as L
 if L('$torch_version') >= L('$1'):
     print("true")
 else:
@@ -74,7 +82,7 @@ EOF
 libc_plus(){
     python3 <<EOF
 import sys
-from distutils.version import LooseVersion as L
+from packaging.version import parse as L
 if L('$libc_version') >= L('$1'):
     print("true")
 else:

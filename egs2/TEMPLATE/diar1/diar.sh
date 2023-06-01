@@ -139,7 +139,7 @@ EOF
 
 log "$0 $*"
 # Save command line args for logging (they will be lost after utils/parse_options.sh)
-run_args=$(pyscripts/utils/print_args.py $0 "$@")
+run_args=$(scripts/utils/print_args.sh $0 "$@")
 . utils/parse_options.sh
 
 if [ $# -ne 0 ]; then
@@ -348,7 +348,7 @@ if ! "${skip_train}"; then
         # NOTE: --*_shape_file doesn't require length information if --batch_type=unsorted,
         #       but it's used only for deciding the sample ids.
 
-        # shellcheck disable=SC2086
+        # shellcheck disable=SC2046,SC2086
         ${train_cmd} JOB=1:"${_nj}" "${_logdir}"/stats.JOB.log \
             ${python} -m espnet2.bin.diar_train \
                 --collect_stats true \
@@ -360,13 +360,17 @@ if ! "${skip_train}"; then
                 --train_shape_file "${_logdir}/train.JOB.scp" \
                 --valid_shape_file "${_logdir}/valid.JOB.scp" \
                 --output_dir "${_logdir}/stats.JOB" \
-                ${_opts} ${diar_args} || { cat "${_logdir}"/stats.1.log; exit 1; }
+                ${_opts} ${diar_args} || { cat $(grep -l -i error "${_logdir}"/stats.*.log) ; exit 1; }
 
         # 4. Aggregate shape files
         _opts=
         for i in $(seq "${_nj}"); do
             _opts+="--input_dir ${_logdir}/stats.${i} "
         done
+        if [ "${feats_normalize}" != global_mvn ]; then
+            # Skip summerizaing stats if not using global MVN
+            _opts+="--skip_sum_stats"
+        fi
         # shellcheck disable=SC2086
         ${python} -m espnet2.bin.aggregate_stats_dirs ${_opts} --output_dir "${diar_stats_dir}"
 
@@ -510,7 +514,7 @@ if ! "${skip_eval}"; then
 
             # 2. Submit inference jobs
             log "Diarization started... log: '${_logdir}/diar_inference.*.log'"
-            # shellcheck disable=SC2086
+            # shellcheck disable=SC2046,SC2086
             ${_cmd} --gpu "${_ngpu}" JOB=1:"${_nj}" "${_logdir}"/diar_inference.JOB.log \
                 ${python} -m espnet2.bin.diar_inference \
                     --ngpu "${_ngpu}" \
@@ -520,7 +524,7 @@ if ! "${skip_eval}"; then
                     --train_config "${diar_exp}"/config.yaml \
                     --model_file "${diar_exp}"/"${inference_model}" \
                     --output_dir "${_logdir}"/output.JOB \
-                    ${_opts}
+                    ${_opts} || { cat $(grep -l -i error "${_logdir}"/diar_inference.*.log) ; exit 1; }
 
             # 3. Concatenates the output files from each jobs
             for i in $(seq "${_nj}"); do
