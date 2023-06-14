@@ -1036,6 +1036,35 @@ def train(args):
                     file_name="loss.png",
                 )
             )
+        elif "hierctc" in args.model_module or "paractc" in args.model_module:
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/loss"]
+                    + ["main/loss_ctc{}".format(i) for i in range(num_out)]
+                    + ["validation/main/loss_ctc{}".format(i) for i in range(num_out)],
+                    "epoch",
+                    file_name="loss.png",
+                )
+            )
+            trainer.extend(
+                extensions.PlotReport(
+                    ["main/cer_ctc{}".format(i) for i in range(num_out)]
+                    + ["validation/main/cer_ctc{}".format(i) for i in range(num_out)],
+                    "epoch",
+                    file_name="cer.png",
+                )
+            )
+            if "hierctc_ar" in args.model_module:
+                trainer.extend(
+                    extensions.PlotReport(
+                        ["main/loss_att", "validation/main/loss_att"], "epoch", file_name="loss_att.png"
+                    )
+                )
+                trainer.extend(
+                    extensions.PlotReport(
+                        ["main/acc", "validation/main/acc"], "epoch", file_name="acc.png"
+                    )
+                )
         else:
             trainer.extend(
                 extensions.PlotReport(
@@ -1058,38 +1087,6 @@ def train(args):
                 ["main/acc", "validation/main/acc"], "epoch", file_name="acc.png"
             )
         )
-
-    elif "hierctc" in args.model_module or "paractc" in args.model_module:
-        trainer.extend(
-            extensions.PlotReport(
-                ["main/loss"]
-                + ["main/loss_ctc{}".format(i) for i in range(num_out)]
-                + ["validation/main/loss_ctc{}".format(i) for i in range(num_out)],
-                "epoch",
-                file_name="loss.png",
-            )
-        )
-        trainer.extend(
-            extensions.PlotReport(
-                ["main/cer_ctc{}".format(i) for i in range(num_out)]
-                + ["validation/main/cer_ctc{}".format(i) for i in range(num_out)],
-                "epoch",
-                file_name="cer.png",
-            )
-        )
-        if "hierctc_ar" in args.model_module:
-            trainer.extend(
-                extensions.PlotReport(
-                    ["main/loss_att", "validation/main/loss_att"], "epoch", file_name="loss_att.png"
-                )
-            )
-            trainer.extend(
-                extensions.PlotReport(
-                    ["main/acc", "validation/main/acc"], "epoch", file_name="acc.png"
-                )
-            )
-
-    else:
         trainer.extend(
             extensions.PlotReport(
                 ["main/cer_ctc", "validation/main/cer_ctc"]
@@ -1099,23 +1096,23 @@ def train(args):
             )
         )
 
-        # Save best models
+    # Save best models
+    trainer.extend(
+        snapshot_object(model, "model.loss.best"),
+        trigger=training.triggers.MinValueTrigger("validation/main/loss"),
+    )
+    if mtl_mode not in ["ctc", "transducer", "custom_transducer"]:
         trainer.extend(
-            snapshot_object(model, "model.loss.best"),
-            trigger=training.triggers.MinValueTrigger("validation/main/loss"),
+            snapshot_object(model, "model.acc.best"),
+            trigger=training.triggers.MaxValueTrigger("validation/main/acc"),
         )
-        if mtl_mode not in ["ctc", "transducer", "custom_transducer"]:
-            trainer.extend(
-                snapshot_object(model, "model.acc.best"),
-                trigger=training.triggers.MaxValueTrigger("validation/main/acc"),
-            )
 
-        # save snapshot which contains model and optimizer states
-        if args.save_interval_iters > 0:
-            trainer.extend(
-                torch_snapshot(filename="snapshot.iter.{.updater.iteration}"),
-                trigger=(args.save_interval_iters, "iteration"),
-            )
+    # save snapshot which contains model and optimizer states
+    if args.save_interval_iters > 0:
+        trainer.extend(
+            torch_snapshot(filename="snapshot.iter.{.updater.iteration}"),
+            trigger=(args.save_interval_iters, "iteration"),
+        )
 
         # save snapshot at every epoch - for model averaging
         trainer.extend(torch_snapshot(), trigger=(1, "epoch"))
