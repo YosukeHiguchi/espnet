@@ -196,6 +196,24 @@ preprocessor_choices = ClassChoices(
     default="default",
 )
 
+aux_am_choices = ClassChoices(
+    name="aux_am",
+    classes=dict(
+        s3prl=S3prlFrontend,
+    ),
+    type_check=AbsFrontend,
+    default=None,
+    optional=True,
+)
+aux_am_postnet_choices = ClassChoices(
+    name="aux_am_postnet",
+    classes=dict(
+        linear=LinearProjection,
+    ),
+    type_check=AbsPreEncoder,
+    default=None,
+    optional=True,
+)
 
 class ASRTask(AbsTask):
     # If you need more than one optimizers, change this value
@@ -221,6 +239,10 @@ class ASRTask(AbsTask):
         decoder_choices,
         # --preprocessor and --preprocessor_conf
         preprocessor_choices,
+        # --aux_am and --aux_am_conf
+        aux_am_choices,
+        # --aux_am_postnet and --aux_am_postnet_conf
+        aux_am_postnet_choices,
     ]
 
     # If you need to modify train() or eval() procedures, change Trainer class here
@@ -584,25 +606,52 @@ class ASRTask(AbsTask):
             odim=vocab_size, encoder_output_size=encoder_output_size, **args.ctc_conf
         )
 
+        if args.aux_am is not None:
+            aux_am_class = aux_am_choices.get_class(args.aux_am)
+            aux_am = aux_am_class(**args.aux_am_conf)
+
+            assert args.aux_am_postnet is not None
+            aux_am_postnet_class = aux_am_postnet_choices.get_class(args.aux_am_postnet)
+            aux_am_postnet = aux_am_postnet_class(**args.aux_am_postnet_conf)
+
         # 7. Build model
         try:
             model_class = model_choices.get_class(args.model)
         except AttributeError:
             model_class = model_choices.get_class("espnet")
-        model = model_class(
-            vocab_size=vocab_size,
-            frontend=frontend,
-            specaug=specaug,
-            normalize=normalize,
-            preencoder=preencoder,
-            encoder=encoder,
-            postencoder=postencoder,
-            decoder=decoder,
-            ctc=ctc,
-            joint_network=joint_network,
-            token_list=token_list,
-            **args.model_conf,
-        )
+
+        if args.aux_am is not None:
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                joint_network=joint_network,
+                aux_am=aux_am,
+                aux_am_postnet=aux_am_postnet,
+                token_list=token_list,
+                **args.model_conf,
+            )
+        else:
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                joint_network=joint_network,
+                token_list=token_list,
+                **args.model_conf,
+            )
 
         # FIXME(kamo): Should be done in model?
         # 8. Initialize

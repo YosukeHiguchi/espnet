@@ -26,6 +26,7 @@ from espnet.nets.pytorch_backend.transformer.embedding import (
     ScaledPositionalEncoding,
 )
 from espnet.nets.pytorch_backend.transformer.layer_norm import LayerNorm
+from espnet.nets.pytorch_backend.transformer.mask import subsequent_mask
 from espnet.nets.pytorch_backend.transformer.multi_layer_conv import (
     Conv1dLinear,
     MultiLayeredConv1d,
@@ -109,10 +110,13 @@ class ConformerEncoder(AbsEncoder):
         stochastic_depth_rate: Union[float, List[float]] = 0.0,
         layer_drop_rate: float = 0.0,
         max_pos_emb_len: int = 5000,
+        is_causal: bool = False,
     ):
         assert check_argument_types()
         super().__init__()
+        self._input_size = input_size
         self._output_size = output_size
+        self._dropout_rate = dropout_rate
 
         if rel_pos_type == "legacy":
             if pos_enc_layer_type == "rel_pos":
@@ -194,7 +198,7 @@ class ConformerEncoder(AbsEncoder):
                 input_layer,
                 pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len),
             )
-        elif input_layer is None:
+        elif input_layer is None or input_layer == 'none':
             self.embed = torch.nn.Sequential(
                 pos_enc_class(output_size, positional_dropout_rate, max_pos_emb_len)
             )
@@ -259,7 +263,7 @@ class ConformerEncoder(AbsEncoder):
             raise ValueError("unknown encoder_attn_layer: " + selfattention_layer_type)
 
         convolution_layer = ConvolutionModule
-        convolution_layer_args = (output_size, cnn_module_kernel, activation)
+        convolution_layer_args = (output_size, cnn_module_kernel, activation, is_causal)
 
         if isinstance(stochastic_depth_rate, float):
             stochastic_depth_rate = [stochastic_depth_rate] * num_blocks
@@ -294,6 +298,8 @@ class ConformerEncoder(AbsEncoder):
         self.interctc_use_conditioning = interctc_use_conditioning
         self.conditioning_layer = None
 
+        self.is_causal = is_causal
+
     def output_size(self) -> int:
         return self._output_size
 
@@ -303,6 +309,7 @@ class ConformerEncoder(AbsEncoder):
         ilens: torch.Tensor,
         prev_states: torch.Tensor = None,
         ctc: CTC = None,
+        masks: torch.Tensor = None,
     ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
         """Calculate forward propagation.
 
@@ -317,7 +324,8 @@ class ConformerEncoder(AbsEncoder):
             torch.Tensor: Not to be used now.
 
         """
-        masks = (~make_pad_mask(ilens)[:, None, :]).to(xs_pad.device)
+        if masks is None and ilens is not None:
+            masks = (~make_pad_mask(ilens)[:, None, :]).to(xs_pad.device)
 
         if (
             isinstance(self.embed, Conv2dSubsampling)
@@ -337,6 +345,15 @@ class ConformerEncoder(AbsEncoder):
             xs_pad, masks = self.embed(xs_pad, masks)
         else:
             xs_pad = self.embed(xs_pad)
+
+        if self.is_causal and ilens is not None:
+            m = subsequent_mask(masks.size(-1), device=masks.device).unsqueeze(0)
+            masks_tmp = masks & m
+
+            pad_max = masks.size(-1)
+            pad_masks = masks.transpose(1, 2).repeat(1, 1, pad_max)
+
+            masks = masks_tmp & pad_masks
 
         intermediate_outs = []
         if len(self.interctc_layer_idx) == 0:

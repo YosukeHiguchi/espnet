@@ -21,6 +21,7 @@ class S3prlFrontend(AbsFrontend):
         download_dir: str = None,
         multilayer_feature: bool = False,
         layer: int = -1,
+        return_raw_output: bool = False,
     ):
         try:
             import s3prl
@@ -72,6 +73,8 @@ class S3prlFrontend(AbsFrontend):
         self.hop_length = self.featurizer.downsample_rate
         self.tile_factor = frontend_conf.get("tile_factor", 1)
 
+        self.return_raw_output = return_raw_output
+
     def _tile_representations(self, feature):
         """Tile up the representations by `tile_factor`.
 
@@ -97,6 +100,10 @@ class S3prlFrontend(AbsFrontend):
         self, input: torch.Tensor, input_lengths: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         feats, feats_lens = self.upstream(input, input_lengths)
+
+        if self.return_raw_output:
+            return feats, feats_lens
+
         if self.layer != -1:
             layer = self.layer
             feats, feats_lens = feats[layer], feats_lens[layer]

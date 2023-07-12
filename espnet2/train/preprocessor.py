@@ -287,6 +287,15 @@ class CommonPreprocessor(AbsPreprocessor):
     ) -> Dict[str, Union[str, np.ndarray]]:
         assert check_argument_types()
         if self.speech_name in data:
+            if np.any(data[self.speech_name] == np.inf):
+                speech = data[self.speech_name]
+                split_index = np.where(speech == np.inf)[0]
+                assert split_index.shape[0] == 1
+                assert self.rirs is None or self.noises is None
+
+                data['speech'] = speech[:split_index[0]]
+                data['speech_aux'] = speech[split_index[0]+1:]
+
             if self.train and (self.rirs is not None or self.noises is not None):
                 speech = data[self.speech_name]
 

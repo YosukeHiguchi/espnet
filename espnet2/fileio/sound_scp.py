@@ -1,5 +1,6 @@
 import collections.abc
 from pathlib import Path
+import random
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -17,6 +18,7 @@ def soundfile_read(
     start: int = 0,
     end: int = None,
     return_subtype: bool = False,
+    splitter: int = None,
 ) -> Tuple[np.array, int]:
     if isinstance(wavs, str):
         wavs = [wavs]
@@ -63,6 +65,10 @@ def soundfile_read(
                     f"{1 - concat_axis} axis, but gut {dim1} and {dim2}"
                 )
 
+        if splitter is not None and prev_wav is not None:
+            arrays.append(
+                np.array([splitter], dtype=np.float32)[:, None]
+            )
         prev_rate = rate
         prev_wav = wav
         arrays.append(array)
@@ -138,12 +144,24 @@ class SoundScpReader(collections.abc.Mapping):
     def __getitem__(self, key) -> Tuple[int, np.ndarray]:
         wavs = self.data[key]
 
-        array, rate = soundfile_read(
-            wavs,
-            dtype=self.dtype,
-            always_2d=self.always_2d,
-            concat_axis=self.concat_axis,
-        )
+        if isinstance(wavs, list) and self.multi_columns:
+            wav1 = wavs[0]
+            wav2 = random.choice(wavs[1:])
+            array, rate = soundfile_read(
+                [wav1, wav2],
+                dtype=self.dtype,
+                always_2d=True,
+                concat_axis=0,
+                splitter=np.inf,
+            )
+        else:
+            array, rate = soundfile_read(
+                wavs,
+                dtype=self.dtype,
+                always_2d=self.always_2d,
+                concat_axis=self.concat_axis,
+            )
+
         # Returned as scipy.io.wavread's order
         return rate, array
 

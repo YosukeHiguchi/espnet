@@ -373,7 +373,7 @@ class Speech2Text:
 
     @torch.no_grad()
     def __call__(
-        self, speech: Union[torch.Tensor, np.ndarray]
+        self, speech: Union[torch.Tensor, np.ndarray], **kwargs
     ) -> Union[
         ListOfHypothesis,
         Tuple[
@@ -402,11 +402,24 @@ class Speech2Text:
         batch = {"speech": speech, "speech_lengths": lengths}
         logging.info("speech length: " + str(speech.size(1)))
 
+        if self.asr_model.aux_am is not None:
+            speech_aux = kwargs["speech_aux"].unsqueeze(0).to(getattr(torch, self.dtype))
+            lengths_aux = speech_aux.new_full(
+                [1], dtype=torch.long, fill_value=speech_aux.size(1)
+            )
+            batch["speech_aux"] = speech_aux
+            batch["speech_aux_lengths"] = lengths_aux
+            logging.info("speech_aux length: " + str(speech_aux.size(1)))
+
         # a. To device
         batch = to_device(batch, device=self.device)
 
         # b. Forward Encoder
-        enc, enc_olens = self.asr_model.encode(**batch)
+        if self.asr_model.aux_am is not None:
+            enc, enc_olens = self.asr_model.encode_aux(**batch)
+        else:
+            enc, enc_olens = self.asr_model.encode(**batch)
+
         if self.multi_asr:
             enc = enc.unbind(dim=1)  # (batch, num_inf, ...) -> num_inf x [batch, ...]
         if self.enh_s2t_task or self.multi_asr:

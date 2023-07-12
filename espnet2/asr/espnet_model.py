@@ -19,11 +19,14 @@ from espnet2.layers.abs_normalize import AbsNormalize
 from espnet2.torch_utils.device_funcs import force_gatherable
 from espnet2.train.abs_espnet_model import AbsESPnetModel
 from espnet.nets.e2e_asr_common import ErrorCalculator
+from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
 from espnet.nets.pytorch_backend.nets_utils import th_accuracy
 from espnet.nets.pytorch_backend.transformer.add_sos_eos import add_sos_eos
 from espnet.nets.pytorch_backend.transformer.label_smoothing_loss import (  # noqa: H301
     LabelSmoothingLoss,
 )
+from espnet.nets.pytorch_backend.transformer.mask import subsequent_mask
+from espnet.nets.pytorch_backend.transformer.subsampling import Conv2dSubsampling
 
 if V(torch.__version__) >= V("1.6.0"):
     from torch.cuda.amp import autocast
@@ -50,6 +53,12 @@ class ESPnetASRModel(AbsESPnetModel):
         decoder: Optional[AbsDecoder],
         ctc: CTC,
         joint_network: Optional[torch.nn.Module],
+        #
+        aux_am: AbsFrontend = None,
+        aux_am_postnet: AbsPreEncoder = None,
+        aux_am_conditioning_type: str = None,
+        enc_input_layer: str = "conv2d",
+        #
         aux_ctc: dict = None,
         ctc_weight: float = 0.5,
         interctc_weight: float = 0.0,
@@ -201,6 +210,25 @@ class ESPnetASRModel(AbsESPnetModel):
         else:
             self.lang_token_id = None
 
+        self.aux_am = None
+        if aux_am is not None:
+            self.aux_am = aux_am
+            self.aux_am_postnet = aux_am_postnet
+
+            self.enc_input_layer = enc_input_layer
+            if self.enc_input_layer == "conv2d":
+                self.enc_embed = Conv2dSubsampling(
+                    self.encoder._input_size,
+                    self.encoder._output_size,
+                    self.encoder._dropout_rate,
+                    torch.nn.Identity(),
+                )
+            else:
+                raise ValueError(f"Unknown enc_input_layer {enc_input_layer}")
+
+            assert aux_am_conditioning_type in ["raw", "average_pooling"]
+            self.aux_am_conditioning_type = aux_am_conditioning_type
+
     def forward(
         self,
         speech: torch.Tensor,
@@ -234,7 +262,16 @@ class ESPnetASRModel(AbsESPnetModel):
         text = text[:, : text_lengths.max()]
 
         # 1. Encoder
-        encoder_out, encoder_out_lens = self.encode(speech, speech_lengths)
+        if 'speech_aux' in kwargs:
+            encoder_out, encoder_out_lens = self.encode_aux(
+                speech,
+                speech_lengths,
+                kwargs['speech_aux'],
+                kwargs['speech_aux_lengths'],
+            )
+        else:
+            encoder_out, encoder_out_lens = self.encode(speech, speech_lengths)
+
         intermediate_outs = None
         if isinstance(encoder_out, tuple):
             intermediate_outs = encoder_out[1]
@@ -445,6 +482,111 @@ class ESPnetASRModel(AbsESPnetModel):
             # No frontend and no feature extract
             feats, feats_lengths = speech, speech_lengths
         return feats, feats_lengths
+
+    def encode_aux(
+        self,
+        speech: torch.Tensor,
+        speech_lengths: torch.Tensor,
+        speech_aux: torch.Tensor,
+        speech_aux_lengths: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        # Feature extraction
+        with autocast(False):
+            # 1. Extract feats
+            feats, feats_lengths = self._extract_feats(speech, speech_lengths)
+
+            # 2. Data augmentation
+            if self.specaug is not None and self.training:
+                feats, feats_lengths = self.specaug(feats, feats_lengths)
+
+            # 3. Normalization for feature: e.g. Global-CMVN, Utterance-CMVN
+            if self.normalize is not None:
+                feats, feats_lengths = self.normalize(feats, feats_lengths)
+
+        # Pre-encoder, e.g. used for raw input data
+        if self.preencoder is not None:
+            feats, feats_lengths = self.preencoder(feats, feats_lengths)
+
+        feats_masks = (~make_pad_mask(feats_lengths)[:, None, :]).to(speech.device)
+        feats, feats_masks = self.enc_embed(feats, feats_masks)
+        feats_lengths = feats_masks.sum(-1).squeeze(-1)
+
+        # Pre-trained AM
+        with autocast(False):
+            aux_am_feats, aux_am_feats_lengths = self.aux_am(speech_aux, speech_aux_lengths)
+
+        if self.aux_am_conditioning_type == "raw":
+            aux_am_feats, aux_am_feats_lengths = self.aux_am_postnet(aux_am_feats, aux_am_feats_lengths)
+            aux_am_feats_masks = (
+                ~make_pad_mask(aux_am_feats_lengths)[:, None, :]
+            ).to(speech.device)
+
+            encoder_in = torch.cat([aux_am_feats, feats], dim=1)
+            encoder_masks = torch.cat([aux_am_feats_masks, feats_masks], dim=2)
+            encoder_sep_idx = aux_am_feats_lengths.max()
+
+        elif self.aux_am_conditioning_type == "average_pooling":
+            num_aux_am_layer = len(aux_am_feats)
+            aux_am_feats = torch.cat(aux_am_feats)
+            aux_am_feats_lengths = torch.cat(aux_am_feats_lengths)
+            aux_am_feats_masks = (~make_pad_mask(aux_am_feats_lengths)).to(speech.device)
+            avg_masks = aux_am_feats_masks.int().unsqueeze(-1)
+            avg_denom = aux_am_feats_lengths.unsqueeze(-1)
+            aux_am_feats_avg = torch.sum(aux_am_feats * avg_masks, dim=1) / avg_denom
+
+            aux_am_feats_avg, _ = self.aux_am_postnet(aux_am_feats_avg, None)
+            aux_am_feats_avg = aux_am_feats_avg.view(-1, num_aux_am_layer, self.aux_am_postnet.output_size())
+            assert aux_am_feats_avg.size(0) == speech.size(0)
+
+            # combine
+            encoder_in = torch.cat([aux_am_feats_avg, feats], dim=1)
+            # num_aux_am_layer = 5; feats_lengths = torch.Tensor([4, 6, 7, 10]).to(speech.device)
+            encoder_masks = (
+                ~make_pad_mask(feats_lengths + num_aux_am_layer)[:, None, :]
+            ).to(speech.device)
+            encoder_sep_idx = num_aux_am_layer
+
+        # Attention causal masking
+        if self.encoder.is_causal:
+            m = subsequent_mask(encoder_masks.size(-1), device=encoder_masks.device).unsqueeze(0)
+            encoder_masks_tmp = encoder_masks & (m | m[:, encoder_sep_idx - 1])
+            # [1, 1, 0, 0, 0, 0]
+            # [1, 1, 0, 0, 0, 0]
+            # [1, 1, 1, 0, 0, 0]
+            # [1, 1, 1, 1, 0, 0]
+            # [1, 1, 1, 1, 1, 0]
+            # [1, 1, 1, 1, 1, 1]
+
+            pad_max = encoder_masks.size(-1)
+            pad_masks = encoder_masks.transpose(1, 2).repeat(1, 1, pad_max)
+            # [1, 1, 1, 1, 1, 1]
+            # [1, 1, 1, 1, 1, 1]
+            # [1, 1, 1, 1, 1, 1]
+            # [1, 1, 1, 1, 1, 1]
+            # [0, 0, 0, 0, 0, 0]
+            # [0, 0, 0, 0, 0, 0]
+
+            encoder_masks = encoder_masks_tmp & pad_masks
+            # [1, 1, 0, 0, 0, 0]
+            # [1, 1, 0, 0, 0, 0]
+            # [1, 1, 1, 0, 0, 0]
+            # [1, 1, 1, 1, 0, 0]
+            # [0, 0, 0, 0, 0, 0]
+            # [0, 0, 0, 0, 0, 0]
+
+        # 4. Forward encoder
+        # feats: (Batch, Length, Dim)
+        # -> encoder_out: (Batch, Length2, Dim2)
+        assert not self.encoder.interctc_use_conditioning
+        encoder_out, encoder_out_lens, _ = self.encoder(
+            encoder_in,
+            None, # length not used,
+            masks=encoder_masks,
+        )
+        assert not isinstance(encoder_out, tuple)
+
+        return encoder_out[:, encoder_sep_idx:], feats_lengths
+
 
     def nll(
         self,
