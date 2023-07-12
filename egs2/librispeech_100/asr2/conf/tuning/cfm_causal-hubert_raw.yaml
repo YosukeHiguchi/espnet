@@ -1,0 +1,82 @@
+batch_type: folded
+batch_size: 8
+accum_grad: 32
+max_epoch: 50
+patience: none
+init: none
+best_model_criterion:
+-   - valid
+    - cer_ctc
+    - min
+keep_nbest_models: 10
+
+freeze_param: [
+    "aux_am.upstream"
+]
+
+frontend: default
+
+aux_am: s3prl
+aux_am_conf:
+    frontend_conf:
+        upstream: hubert_large_ll60k
+    download_dir: ./hub
+    return_raw_output: false
+
+aux_am_postnet: linear
+aux_am_postnet_conf:
+    input_size: 1024
+    output_size: 256
+
+encoder: conformer
+encoder_conf:
+    output_size: 256
+    attention_heads: 4
+    linear_units: 1024
+    num_blocks: 18
+    dropout_rate: 0.1
+    positional_dropout_rate: 0.1
+    attention_dropout_rate: 0.1
+    input_layer: none # posemb only
+    normalize_before: true
+    macaron_style: true
+    rel_pos_type: latest
+    pos_enc_layer_type: rel_pos
+    selfattention_layer_type: rel_selfattn
+    activation_type: swish
+    use_cnn_module: true
+    cnn_module_kernel: 31
+    is_causal: true
+
+model_conf:
+    ctc_weight: 1.0
+    lsm_weight: 0.1
+    length_normalized_loss: false
+    aux_am_conditioning_type: raw
+    enc_input_layer: conv2d
+
+optim: adam
+optim_conf:
+    lr: 0.002
+    weight_decay: 0.000001
+scheduler: warmuplr
+scheduler_conf:
+    warmup_steps: 15000
+
+num_att_plot: 3
+
+specaug: specaug
+specaug_conf:
+    apply_time_warp: true
+    time_warp_window: 5
+    time_warp_mode: bicubic
+    apply_freq_mask: true
+    freq_mask_width_range:
+    - 0
+    - 27
+    num_freq_mask: 2
+    apply_time_mask: true
+    time_mask_width_ratio_range:
+    - 0.
+    - 0.05
+    num_time_mask: 5
