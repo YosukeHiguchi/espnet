@@ -388,7 +388,11 @@ class ConformerEncoder(AbsEncoder):
         if self.normalize_before:
             xs_pad = self.after_norm(xs_pad)
 
-        olens = masks.squeeze(1).sum(1)
+        if self.is_causal:
+            olens = masks[:, :, 0].sum(-1)
+        else:
+            olens = masks.squeeze(1).sum(1)
+
         if len(intermediate_outs) > 0:
             return (xs_pad, intermediate_outs), olens, None
         return xs_pad, olens, None
