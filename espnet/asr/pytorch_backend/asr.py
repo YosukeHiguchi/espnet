@@ -1114,8 +1114,8 @@ def train(args):
             trigger=(args.save_interval_iters, "iteration"),
         )
 
-        # save snapshot at every epoch - for model averaging
-        trainer.extend(torch_snapshot(), trigger=(1, "epoch"))
+    # save snapshot at every epoch - for model averaging
+    trainer.extend(torch_snapshot(), trigger=(1, "epoch"))
 
     # epsilon decay in the optimizer
     if args.opt == "adadelta":
@@ -1494,7 +1494,7 @@ def recog(args):
 
                 if "hierctc" in train_args.model_module:
                     new_js[name] = add_results_to_json(
-                        js[name], nbest_hyps, train_args.char_list[-1]
+                        js[name], nbest_hyps, train_args.char_list[args.ctc_index]
                     )
                 elif "paractc" in train_args.model_module:
                     new_js[name] = add_results_to_json(
