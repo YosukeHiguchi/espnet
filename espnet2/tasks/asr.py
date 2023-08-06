@@ -199,6 +199,7 @@ preprocessor_choices = ClassChoices(
 aux_am_choices = ClassChoices(
     name="aux_am",
     classes=dict(
+        default=DefaultFrontend,
         s3prl=S3prlFrontend,
     ),
     type_check=AbsFrontend,
@@ -209,6 +210,7 @@ aux_am_postnet_choices = ClassChoices(
     name="aux_am_postnet",
     classes=dict(
         linear=LinearProjection,
+        conv_subsampling=ConvSubsamplingProjection,
     ),
     type_check=AbsPreEncoder,
     default=None,
