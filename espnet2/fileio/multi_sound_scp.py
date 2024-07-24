@@ -1,4 +1,5 @@
 import collections.abc
+import random
 from typing import Tuple
 
 import numpy as np
@@ -34,18 +35,28 @@ class MultiSoundScpReader(collections.abc.Mapping):
 
     @typechecked
     def __init__(
-        self, fname, dtype=None, always_2d: bool = False, stack_axis=0, pad=np.nan
+        self,
+        fname,
+        dtype=None,
+        always_2d: bool = False,
+        stack_axis=0,
+        pad=np.nan,
+        num_auxiliary_utterances=-1,
     ):
         self.fname = fname
         self.dtype = dtype
         self.always_2d = always_2d
         self.stack_axis = stack_axis
         self.pad = pad
+        self.num_auxiliary_utterances = num_auxiliary_utterances
 
         self.data, _ = read_multi_columns_text(fname)
 
     def __getitem__(self, key) -> Tuple[int, np.ndarray]:
         wavs = self.data[key]
+        if self.num_auxiliary_utterances > 0:
+            wavs = [wavs[0]] + random.sample(wavs[1:], self.num_auxiliary_utterances)
+
         arrays, prev_rate = [], None
         for wav in wavs:
             if self.dtype == "float16":

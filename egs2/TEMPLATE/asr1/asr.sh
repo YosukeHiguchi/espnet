@@ -1323,6 +1323,8 @@ if [ ${stage} -le 11 ] && [ ${stop_stage} -ge 11 ] && ! [[ " ${skip_stages} " =~
             _type=kaldi_ark
         elif [[ "${_audio_format}" == *multi* ]]; then
             _type=multi_columns_sound
+        elif [[ "${_audio_format}" == *custom* ]]; then
+            _type=custom_variable_columns_sound
         else
             _type=sound
         fi
@@ -1545,6 +1547,8 @@ if [ ${stage} -le 12 ] && [ ${stop_stage} -ge 12 ] && ! [[ " ${skip_stages} " =~
                 _type=kaldi_ark
             elif [[ "${_audio_format}" == *multi* ]]; then
                 _type=multi_columns_sound
+            elif [[ "${_audio_format}" == *custom* ]]; then
+                _type=custom_variable_columns_sound
             else
                 _type=sound
             fi

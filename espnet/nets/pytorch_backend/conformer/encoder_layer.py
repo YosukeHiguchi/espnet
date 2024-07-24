@@ -51,6 +51,7 @@ class EncoderLayer(nn.Module):
         normalize_before=True,
         concat_after=False,
         stochastic_depth_rate=0.0,
+        cross_attn=None,
     ):
         """Construct an EncoderLayer object."""
         super(EncoderLayer, self).__init__()
@@ -75,6 +76,11 @@ class EncoderLayer(nn.Module):
         if self.concat_after:
             self.concat_linear = nn.Linear(size + size, size)
         self.stochastic_depth_rate = stochastic_depth_rate
+
+        self.cross_attn = cross_attn
+        self.norm_cross_attn = LayerNorm(size)
+        if self.concat_after:
+            self.concat_linear_cross_attn = nn.Linear(size + size, size)
 
     def forward(self, x_input, mask, cache=None):
         """Compute encoded features.
@@ -147,6 +153,118 @@ class EncoderLayer(nn.Module):
             x = residual + stoch_layer_coeff * self.dropout(x_att)
         if not self.normalize_before:
             x = self.norm_mha(x)
+
+        # convolution module
+        if self.conv_module is not None:
+            residual = x
+            if self.normalize_before:
+                x = self.norm_conv(x)
+            x = residual + stoch_layer_coeff * self.dropout(self.conv_module(x))
+            if not self.normalize_before:
+                x = self.norm_conv(x)
+
+        # feed forward module
+        residual = x
+        if self.normalize_before:
+            x = self.norm_ff(x)
+        x = residual + stoch_layer_coeff * self.ff_scale * self.dropout(
+            self.feed_forward(x)
+        )
+        if not self.normalize_before:
+            x = self.norm_ff(x)
+
+        if self.conv_module is not None:
+            x = self.norm_final(x)
+
+        if cache is not None:
+            x = torch.cat([cache, x], dim=1)
+
+        if pos_emb is not None:
+            return (x, pos_emb), mask
+
+        return x, mask
+
+    def forward_with_cross_attention(
+        self,
+        x_input,
+        mask,
+        memory,
+        memory_mask,
+        cache=None
+    ):
+        if isinstance(x_input, tuple):
+            x, pos_emb = x_input[0], x_input[1]
+        else:
+            x, pos_emb = x_input, None
+
+        skip_layer = False
+        # with stochastic depth, residual connection `x + f(x)` becomes
+        # `x <- x + 1 / (1 - p) * f(x)` at training time.
+        stoch_layer_coeff = 1.0
+        if self.training and self.stochastic_depth_rate > 0:
+            skip_layer = torch.rand(1).item() < self.stochastic_depth_rate
+            stoch_layer_coeff = 1.0 / (1 - self.stochastic_depth_rate)
+
+        if skip_layer:
+            if cache is not None:
+                x = torch.cat([cache, x], dim=1)
+            if pos_emb is not None:
+                return (x, pos_emb), mask
+            return x, mask
+
+        # whether to use macaron style
+        if self.feed_forward_macaron is not None:
+            residual = x
+            if self.normalize_before:
+                x = self.norm_ff_macaron(x)
+            x = residual + stoch_layer_coeff * self.ff_scale * self.dropout(
+                self.feed_forward_macaron(x)
+            )
+            if not self.normalize_before:
+                x = self.norm_ff_macaron(x)
+
+        # multi-headed self-attention module
+        residual = x
+        if self.normalize_before:
+            x = self.norm_mha(x)
+
+        if cache is None:
+            x_q = x
+        else:
+            assert cache.shape == (x.shape[0], x.shape[1] - 1, self.size)
+            x_q = x[:, -1:, :]
+            residual = residual[:, -1:, :]
+            mask = None if mask is None else mask[:, -1:, :]
+
+        if pos_emb is not None:
+            x_att = self.self_attn(x_q, x, x, pos_emb, mask)
+        else:
+            x_att = self.self_attn(x_q, x, x, mask)
+
+        if self.concat_after:
+            x_concat = torch.cat((x, x_att), dim=-1)
+            x = residual + stoch_layer_coeff * self.concat_linear(x_concat)
+        else:
+            x = residual + stoch_layer_coeff * self.dropout(x_att)
+        if not self.normalize_before:
+            x = self.norm_mha(x)
+
+        # multi-headed cross-attention module
+        residual = x
+        if self.normalize_before:
+            x = self.norm_cross_attn(x)
+
+        ## standard multi-headed attention
+        x_att = self.cross_attn(x, memory, memory, memory_mask)
+
+        if self.concat_after:
+            x_concat = torch.cat((x, x_att), dim=-1)
+            x = residual + stoch_layer_coeff * self.concat_linear_cross_attn(x_concat)
+        else:
+            x = residual + stoch_layer_coeff * self.dropout(x_att)
+
+        if not self.normalize_before:
+            x = self.norm_cross_attn(x)
 
         # convolution module
         if self.conv_module is not None:

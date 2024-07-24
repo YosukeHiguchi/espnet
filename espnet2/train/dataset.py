@@ -198,6 +198,16 @@ def variable_columns_sound_loader(path, float_dtype=None, allow_multi_rates=Fals
     loader = MultiSoundScpReader(path, always_2d=False, dtype=float_dtype, stack_axis=0)
     return AdapterForSoundScpReader(loader, allow_multi_rates=allow_multi_rates)
 
+def custom_variable_columns_sound_loader(path, float_dtype=None, num_auxiliary_utterances=-1):
+    assert num_auxiliary_utterances > 0
+    loader = MultiSoundScpReader(
+        path,
+        always_2d=False,
+        dtype=float_dtype,
+        stack_axis=0,
+        num_auxiliary_utterances=num_auxiliary_utterances,
+    )
+    return AdapterForSoundScpReader(loader)
 
 def score_loader(path):
     loader = SingingScoreReader(fname=path)
@@ -260,6 +270,11 @@ DATA_TYPES = {
         "Note that audios of different lengths will be right-padded with np.nan "
         "to the longest audio in the sample.\n"
         "A preprocessor must be used to remove these paddings.",
+    ),
+    "custom_variable_columns_sound": dict(
+        func=custom_variable_columns_sound_loader,
+        kwargs=["float_dtype", "num_auxiliary_utterances"],
+        help="",
     ),
     "score": dict(
         func=score_loader,
@@ -440,6 +455,7 @@ class ESPnetDataset(AbsDataset):
         max_cache_size: Union[float, int, str] = 0.0,
         max_cache_fd: int = 0,
         allow_multi_rates: bool = False,
+        num_auxiliary_utterances: int = -1,
     ):
         if len(path_name_type_list) == 0:
             raise ValueError(
@@ -454,6 +470,7 @@ class ESPnetDataset(AbsDataset):
         self.max_cache_fd = max_cache_fd
         # allow audios to have different sampling rates
         self.allow_multi_rates = allow_multi_rates
+        self.num_auxiliary_utterances = num_auxiliary_utterances
 
         self.loader_dict = {}
         self.debug_info = {}
@@ -502,6 +519,8 @@ class ESPnetDataset(AbsDataset):
                         kwargs["max_cache_fd"] = self.max_cache_fd
                     elif key2 == "allow_multi_rates":
                         kwargs["allow_multi_rates"] = self.allow_multi_rates
+                    elif key2 == "num_auxiliary_utterances":
+                        kwargs["num_auxiliary_utterances"] = self.num_auxiliary_utterances
                     else:
                         raise RuntimeError(f"Not implemented keyword argument: {key2}")
 

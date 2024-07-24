@@ -115,8 +115,10 @@ class ConformerEncoder(AbsEncoder):
         stochastic_depth_rate: Union[float, List[float]] = 0.0,
         layer_drop_rate: float = 0.0,
         max_pos_emb_len: int = 5000,
+        use_cross_attention: bool = False,
     ):
         super().__init__()
+        self._input_size = input_size
         self._output_size = output_size
 
         if rel_pos_type == "legacy":
@@ -275,6 +277,7 @@ class ConformerEncoder(AbsEncoder):
                 f"should be equal to num_blocks ({num_blocks})"
             )
 
+        self.use_cross_attention = use_cross_attention
         self.encoders = repeat(
             num_blocks,
             lambda lnum: EncoderLayer(
@@ -287,6 +290,10 @@ class ConformerEncoder(AbsEncoder):
                 normalize_before,
                 concat_after,
                 stochastic_depth_rate[lnum],
+                # cross-attention
+                MultiHeadedAttention(
+                    attention_heads, output_size, attention_dropout_rate,
+                ) if use_cross_attention else None,
             ),
             layer_drop_rate,
         )
@@ -310,6 +317,8 @@ class ConformerEncoder(AbsEncoder):
         prev_states: torch.Tensor = None,
         ctc: CTC = None,
         return_all_hs: bool = False,
+        memory_pad: torch.Tensor = None,
+        mlens: torch.Tensor = None,
     ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
         """Calculate forward propagation.
 
@@ -350,7 +359,15 @@ class ConformerEncoder(AbsEncoder):
         intermediate_outs = []
         if len(self.interctc_layer_idx) == 0:
             for layer_idx, encoder_layer in enumerate(self.encoders):
-                xs_pad, masks = encoder_layer(xs_pad, masks)
+                if self.use_cross_attention:
+                    assert memory_pad is not None
+                    memory_masks = (~make_pad_mask(mlens)[:, None, :]).to(ilens.device)
+                    xs_pad, masks = encoder_layer.forward_with_cross_attention(
+                        xs_pad, masks, memory_pad, memory_masks
+                    )
+                else:
+                    xs_pad, masks = encoder_layer(xs_pad, masks)
+
                 if return_all_hs:
                     if isinstance(xs_pad, tuple):
                         intermediate_outs.append(xs_pad[0])
@@ -358,7 +375,14 @@ class ConformerEncoder(AbsEncoder):
                         intermediate_outs.append(xs_pad)
         else:
             for layer_idx, encoder_layer in enumerate(self.encoders):
-                xs_pad, masks = encoder_layer(xs_pad, masks)
+                if self.use_cross_attention:
+                    assert memory_pad is not None
+                    memory_masks = (~make_pad_mask(mlens)[:, None, :]).to(ilens.device)
+                    xs_pad, masks = encoder_layer.forward_with_cross_attention(
+                        xs_pad, masks, memory_pad, memory_masks
+                    )
+                else:
+                    xs_pad, masks = encoder_layer(xs_pad, masks)
 
                 if layer_idx + 1 in self.interctc_layer_idx:
                     encoder_out = xs_pad

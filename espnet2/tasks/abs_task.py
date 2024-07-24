@@ -970,6 +970,12 @@ class AbsTask(ABC):
                 help="The keyword arguments for lr scheduler",
             )
 
+        group.add_argument(
+            "--num_auxiliary_utterances",
+            type=int,
+            default=-1,
+        )
+
         cls.trainer.add_arguments(parser)
         cls.add_task_arguments(parser)
 
@@ -1672,6 +1678,7 @@ class AbsTask(ABC):
             max_cache_size=iter_options.max_cache_size,
             max_cache_fd=iter_options.max_cache_fd,
             allow_multi_rates=iter_options.allow_multi_rates,
+            num_auxiliary_utterances=args.num_auxiliary_utterances,
         )
         cls.check_task_requirements(
             dataset, args.allow_variable_data_keys, train=iter_options.train

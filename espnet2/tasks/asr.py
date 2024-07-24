@@ -7,6 +7,7 @@ import torch
 from typeguard import typechecked
 
 from espnet2.asr.ctc import CTC
+from espnet2.asr.custom_espnet_model import CustomESPnetASRModel
 from espnet2.asr.decoder.abs_decoder import AbsDecoder
 from espnet2.asr.decoder.hugging_face_transformers_decoder import (  # noqa: H301
     HuggingFaceTransformersDecoder,
@@ -124,6 +125,7 @@ model_choices = ClassChoices(
         espnet=ESPnetASRModel,
         maskctc=MaskCTCModel,
         pit_espnet=PITESPnetModel,
+        custom_espnet=CustomESPnetASRModel,
     ),
     type_check=AbsESPnetModel,
     default="espnet",

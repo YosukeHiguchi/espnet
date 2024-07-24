@@ -374,6 +374,15 @@ class CommonPreprocessor(AbsPreprocessor):
         self, data: Dict[str, Union[str, np.ndarray]]
     ) -> Dict[str, Union[str, np.ndarray]]:
         if self.speech_name in data:
+            if len(data[self.speech_name].shape) > 1:
+                assert self.speech_name == "speech"
+
+                speech = data["speech"]
+                data["speech"] = speech[0][~np.isnan(speech[0])]
+
+                for i, speech_aux in enumerate(speech[1:]):
+                    data["speech_aux{}".format(i)] = speech_aux[~np.isnan(speech_aux)]
+
             if self.train and (self.rirs is not None or self.noises is not None):
                 speech = data[self.speech_name]
 
