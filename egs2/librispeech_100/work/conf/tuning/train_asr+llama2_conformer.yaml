@@ -1,0 +1,93 @@
+batch_type: numel
+batch_bins: 32000000
+accum_grad: 2
+max_epoch: 50
+patience: none
+init: none
+best_model_criterion:
+-   - valid
+    - acc
+    - max
+keep_nbest_models: 10
+
+use_amp: true
+num_att_plot: 0
+
+model: llm_guided_asr
+model_conf:
+    lsm_weight: 0.1
+    length_normalized_loss: false
+    is_encoder_eval: false
+    is_llm_eval: true
+
+encoder: conformer
+encoder_conf:
+    output_size: 256
+    attention_heads: 4
+    linear_units: 1024
+    num_blocks: 12
+    dropout_rate: 0.1
+    positional_dropout_rate: 0.1
+    attention_dropout_rate: 0.1
+    input_layer: conv2d
+    normalize_before: true
+    macaron_style: true
+    rel_pos_type: latest
+    pos_enc_layer_type: rel_pos
+    selfattention_layer_type: rel_selfattn
+    activation_type: swish
+    use_cnn_module: true
+    cnn_module_kernel: 31
+
+decoder: llm_guided_transformer_decoder
+decoder_conf:
+    attention_heads: 4
+    linear_units: 2048
+    num_blocks: 6
+    dropout_rate: 0.1
+    positional_dropout_rate: 0.1
+    self_attention_dropout_rate: 0.1
+    src_attention_dropout_rate: 0.1
+
+llm: llama
+llm_conf:
+    model_name_or_path: "meta-llama/Llama-2-7b-chat-hf"
+    template_prompt: "[INST] <<SYS>>\nYou will be provided with a statement in quotes. Correct the wrong words and provide your revised version.\n<</SYS>>\n\nCorrect \"((HYP))\" [/INST] Here's the corrected version:\n\n"
+    dtype: "bfloat16"
+    cache_dir: "/home/yhiguchi/.cache"
+    pad_token: "<unk>"
+
+init_param: [
+    "exp_v2/asr_train_asr_conformer_llama2_vocab_raw_en_hugging_face_meta-llama-Llama-2-7b-hf_sp/valid.acc.ave_10best.pth:encoder:encoder",
+    "exp_v2/asr_train_asr_conformer_llama2_vocab_raw_en_hugging_face_meta-llama-Llama-2-7b-hf_sp/valid.acc.ave_10best.pth:ctc:ctc",
+]
+
+freeze_param: [
+    "encoder",
+    "ctc",
+    "decoder.llm.lm",
+]
+
+optim: adam
+optim_conf:
+    lr: 0.002
+    weight_decay: 0.000001
+scheduler: warmuplr
+scheduler_conf:
+    warmup_steps: 25000
+
+specaug: specaug
+specaug_conf:
+    apply_time_warp: true
+    time_warp_window: 5
+    time_warp_mode: bicubic
+    apply_freq_mask: true
+    freq_mask_width_range:
+    - 0
+    - 27
+    num_freq_mask: 2
+    apply_time_mask: true
+    time_mask_width_ratio_range:
+    - 0.
+    - 0.05
+    num_time_mask: 5
