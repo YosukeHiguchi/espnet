@@ -2,7 +2,7 @@
 #  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
 
 """Decoder definition."""
-from typing import Any, List, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 
 import torch
 from typeguard import typechecked
@@ -941,4 +941,297 @@ class TransformerMDDecoder(BaseTransformerDecoder):
 
         # transpose state of [layer, batch] into [batch, layer]
         state_list = [[states[i][b] for i in range(n_layers)] for b in range(n_batch)]
+        return logp, state_list
+
+class LLMGuidedTransformerDecoder(BaseTransformerDecoder):
+    @typechecked
+    def __init__(
+        self,
+        vocab_size: int,
+        encoder_output_size: int,
+        attention_heads: int = 4,
+        linear_units: int = 2048,
+        num_blocks: int = 6,
+        dropout_rate: float = 0.1,
+        positional_dropout_rate: float = 0.1,
+        self_attention_dropout_rate: float = 0.0,
+        src_attention_dropout_rate: float = 0.0,
+        use_output_layer: bool = True,
+        pos_enc_class=PositionalEncoding,
+        normalize_before: bool = True,
+        concat_after: bool = False,
+        layer_drop_rate: float = 0.0,
+        ctc_vocab_path: Optional[str] = None,
+    ):
+        super().__init__(
+            vocab_size=vocab_size,
+            encoder_output_size=encoder_output_size,
+            dropout_rate=dropout_rate,
+            positional_dropout_rate=positional_dropout_rate,
+            use_output_layer=use_output_layer,
+            pos_enc_class=pos_enc_class,
+            normalize_before=normalize_before,
+        )
+
+        self.output_size = encoder_output_size
+        attention_dim = encoder_output_size
+        self.decoders = repeat(
+            num_blocks,
+            lambda lnum: DecoderLayer(
+                attention_dim,
+                MultiHeadedAttention(
+                    attention_heads, attention_dim, self_attention_dropout_rate
+                ),
+                MultiHeadedAttention(
+                    attention_heads, attention_dim, src_attention_dropout_rate
+                ),
+                PositionwiseFeedForward(attention_dim, linear_units, dropout_rate),
+                dropout_rate,
+                normalize_before,
+                concat_after,
+            ),
+            layer_drop_rate,
+        )
+
+        # v defined later
+        self.llm = None
+        self.embed = None
+        self.ctc = None
+        self.ctc_tokenizer = None
+        self.ctc_token_id_converter = None
+        if ctc_vocab_path is not None:
+            from espnet2.text.sentencepiece_tokenizer import SentencepiecesTokenizer
+            from espnet2.text.token_id_converter import TokenIDConverter
+            self.ctc_tokenizer = SentencepiecesTokenizer(
+                ctc_vocab_path + "/bpe.model"
+            )
+            self.ctc_token_id_converter = TokenIDConverter(
+                ctc_vocab_path + "/tokens.txt"
+            )
+
+        self.use_cache = False
+
+    def forward(
+        self,
+        hs_pad: torch.Tensor,
+        hlens: torch.Tensor,
+        ys_in_pad: torch.Tensor,
+        ys_in_lens: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        # CTC decoding
+        lpz = self.ctc.argmax(hs_pad).data
+        hyps = []
+        hyps_lengths = []
+        for l in lpz:
+            y_hat = torch.unique_consecutive(l)
+            y = y_hat[y_hat != 0] # Blank id is always 0
+
+            if self.ctc_tokenizer is not None:
+                hyps.append(
+                    self.ctc_tokenizer.tokens2text(
+                        self.ctc_token_id_converter.ids2tokens(y)
+                    )
+                )
+                hyps_lengths.append(-1)
+            else:
+                hyps.append(y)
+                hyps_lengths.append(y.size(0))
+        hyps_lengths = hlens.new(hyps_lengths)
+
+        llm_out, llm_out_lengths = self.llm(hyps, hyps_lengths, ys_in_pad, ys_in_lens)
+
+        tgt = llm_out
+        # tgt_mask: (B, 1, L)
+        tgt_mask = (~make_pad_mask(ys_in_lens)[:, None, :]).to(tgt.device)
+        # m: (1, L, L)
+        m = subsequent_mask(tgt_mask.size(-1), device=tgt_mask.device).unsqueeze(0)
+        # tgt_mask: (B, L, L)
+        tgt_mask = tgt_mask & m
+
+        memory = hs_pad
+        memory_mask = (~make_pad_mask(hlens, maxlen=memory.size(1)))[:, None, :].to(
+            memory.device
+        )
+
+        x = self.embed(tgt)
+        x, tgt_mask, memory, memory_mask = self.decoders(
+            x, tgt_mask, memory, memory_mask
+        )
+        if self.normalize_before:
+            x = self.after_norm(x)
+        if self.output_layer is not None:
+            x = self.output_layer(x)
+
+        return x, ys_in_lens
+
+    def forward_one_step(
+        self,
+        tgt: torch.Tensor,
+        tgt_mask: torch.Tensor,
+        memory: torch.Tensor,
+        cache: List[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+        # CTC decoding
+        # when sos
+        if tgt.size(1) == 1:
+            lpz = self.ctc.argmax(memory).data
+
+            y_hat = torch.unique_consecutive(lpz[0])
+            self.hyp = y_hat[y_hat != 0]
+
+            if self.ctc_tokenizer is not None:
+                self.hyp = self.ctc_tokenizer.tokens2text(
+                    self.ctc_token_id_converter.ids2tokens(self.hyp)
+                )
+
+        hyps = [self.hyp] * tgt.size(0)
+        if self.ctc_tokenizer is not None:
+            hyps_lengths = tgt.new([-1] * tgt.size(0))
+        else:
+            hyps_lengths = tgt.new([self.hyp.size(0)] * tgt.size(0))
+
+        tgt[:, 0] = self.llm.start_of_response_token_id # Unecessary?
+        llm_out, llm_out_lengths = self.llm.forward_inference(
+            hyps, hyps_lengths, tgt, tgt.new([tgt.size(1)] * tgt.size(0))
+        )
+
+        if cache is None:
+            cache = [[None] * tgt.size(0)] * len(self.decoders)
+
+        x = self.embed(llm_out)
+        x, tgt_mask, memory, memory_mask = self.decoders(
+            x, tgt_mask, memory, None
+        )
+
+        if self.normalize_before:
+            y = self.after_norm(x[:, -1])
+        else:
+            y = x[:, -1]
+        if self.output_layer is not None:
+            y = torch.log_softmax(self.output_layer(y), dim=-1)
+
+        return y, cache
+
+    def batch_score(
+        self, ys: torch.Tensor, states: List[Any], xs: torch.Tensor
+    ) -> Tuple[torch.Tensor, List[Any]]:
+        if self.use_cache:
+            return self.batch_score_cached(ys, states, xs)
+
+        # merge states
+        n_batch = len(ys)
+        n_layers = len(self.decoders)
+        batch_state = None
+
+        # batch decoding
+        ys_mask = subsequent_mask(ys.size(-1), device=xs.device).unsqueeze(0)
+        logp, states = self.forward_one_step(ys, ys_mask, xs, cache=batch_state)
+
+        # transpose state of [layer, batch] into [batch, layer]
+        state_list = [[states[i][b] for i in range(n_layers)] for b in range(n_batch)]
+        return logp, state_list
+
+    def forward_one_step_cached(
+        self,
+        tgt: torch.Tensor,
+        tgt_mask: torch.Tensor,
+        memory: torch.Tensor,
+        cache_llm: List[Any] = None,
+        cache_dec: List[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, List[Any], List[torch.Tensor]]:
+        # CTC decoding
+        # when sos
+        if tgt.size(1) == 1:
+            lpz = self.ctc.argmax(memory).data
+
+            y_hat = torch.unique_consecutive(lpz[0])
+            hyp = y_hat[y_hat != 0]
+
+            if self.ctc_tokenizer is not None:
+                hyp = self.ctc_tokenizer.tokens2text(
+                    self.ctc_token_id_converter.ids2tokens(hyp)
+                )
+                hyps_lengths = tgt.new([-1] * tgt.size(0))
+            else:
+                hyps_lengths = tgt.new([hyp.size(0)] * tgt.size(0))
+
+            hyps = [hyp] * tgt.size(0)
+        else:
+            hyps, hyps_lengths = None, None
+
+        tgt[:, 0] = self.llm.start_of_response_token_id # Unecessary?
+        llm_out, new_cache_llm = self.llm.forward_inference_cached(
+            hyps,
+            hyps_lengths,
+            tgt,
+            tgt.new([tgt.size(1)] * tgt.size(0)),
+            cache=cache_llm,
+        )
+
+        if cache_dec is None:
+            cache_dec = [None] * (len(self.decoders) + 1)
+        new_cache_dec = []
+
+        x = self.embed(llm_out)
+        if cache_dec[0] is not None:
+            x = torch.cat([cache_dec[0], x], dim=1)
+        new_cache_dec.append(x)
+
+        for c, decoder in zip(cache_dec[1:], self.decoders):
+            x, tgt_mask, memory, memory_mask = decoder(
+                x, tgt_mask, memory, None, cache=c
+            )
+            new_cache_dec.append(x)
+
+        if self.normalize_before:
+            y = self.after_norm(x[:, -1])
+        else:
+            y = x[:, -1]
+        if self.output_layer is not None:
+            y = torch.log_softmax(self.output_layer(y), dim=-1)
+
+        return y, new_cache_llm, new_cache_dec
+
+    def batch_score_cached(
+        self, ys: torch.Tensor, states: List[Any], xs: torch.Tensor
+    ) -> Tuple[torch.Tensor, List[Any]]:
+        # merge states
+        n_batch = len(ys)
+        n_dec_layers = len(self.decoders) + 1 # include embed layer
+        n_llm_layers = self.llm.lm.config.num_hidden_layers
+
+        if states[0] is None:
+            batch_state_dec = None
+            batch_state_llm = None
+        else:
+            batch_state_dec = [
+                torch.stack([states[b][0][i] for b in range(n_batch)])
+                for i in range(n_dec_layers)
+            ]
+            batch_state_llm = [
+                (
+                    torch.stack([states[b][1][i][0] for b in range(n_batch)]),
+                    torch.stack([states[b][1][i][1] for b in range(n_batch)])
+                )
+                for i in range(n_llm_layers)
+            ]
+
+        # batch decoding
+        ys_mask = subsequent_mask(ys.size(-1), device=xs.device).unsqueeze(0)
+        logp, states_llm, states_dec = self.forward_one_step_cached(
+            ys, ys_mask, xs, cache_llm=batch_state_llm, cache_dec=batch_state_dec
+        )
+
+        # transpose state of [layer, batch] into [batch, layer]
+        state_dec_list = [
+            [states_dec[i][b] for i in range(n_dec_layers)] for b in range(n_batch)
+        ]
+        state_llm_list = [
+            [(states_llm[i][0][b], states_llm[i][1][b]) for i in range(n_llm_layers)]
+            for b in range(n_batch)
+        ]
+        state_list = [
+            (state_dec_list[b], state_llm_list[b]) for b in range(n_batch)
+        ]
+        # self.states_llm = states_llm
         return logp, state_list

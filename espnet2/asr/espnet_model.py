@@ -78,16 +78,22 @@ class ESPnetASRModel(AbsESPnetModel):
         #                  which doesn't use <blank> token
         if sym_blank in token_list:
             self.blank_id = token_list.index(sym_blank)
+            logging.info(f"blank: {sym_blank}")
         else:
             self.blank_id = 0
+        logging.info(f"blank_id: {self.blank_id}")
         if sym_sos in token_list:
             self.sos = token_list.index(sym_sos)
+            logging.info(f"sos: {sym_sos}")
         else:
             self.sos = vocab_size - 1
+        logging.info(f"sos_id: {self.sos}")
         if sym_eos in token_list:
             self.eos = token_list.index(sym_eos)
+            logging.info(f"eos: {sym_eos}")
         else:
             self.eos = vocab_size - 1
+        logging.info(f"eos_id: {self.eos}")
         self.vocab_size = vocab_size
         self.ignore_id = ignore_id
         self.ctc_weight = ctc_weight

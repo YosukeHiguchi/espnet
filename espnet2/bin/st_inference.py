@@ -16,6 +16,7 @@ from espnet2.tasks.enh_s2t import EnhS2TTask
 from espnet2.tasks.lm import LMTask
 from espnet2.tasks.st import STTask
 from espnet2.text.build_tokenizer import build_tokenizer
+from espnet2.text.hugging_face_token_id_converter import HuggingFaceTokenIDConverter
 from espnet2.text.token_id_converter import TokenIDConverter
 from espnet2.text.whisper_token_id_converter import OpenAIWhisperTokenIDConverter
 from espnet2.torch_utils.device_funcs import to_device
@@ -92,6 +93,7 @@ class Speech2Text:
         ctc_greedy: bool = False,
         hugging_face_decoder: bool = False,
         hugging_face_decoder_max_length: int = 256,
+        llm_use_cache: bool = False,
     ):
 
         task = STTask if not enh_s2t_task else EnhS2TTask
@@ -118,6 +120,8 @@ class Speech2Text:
 
         if hasattr(st_model, "decoder"):
             decoder = st_model.decoder
+            decoder.use_cache = llm_use_cache
+            logging.info(f"llm_use_cache: {decoder.use_cache}")
         else:
             decoder = None
         token_list = st_model.token_list
@@ -132,7 +136,7 @@ class Speech2Text:
             scorers.update(ctc=ctc)
 
         src_token_list = st_model.src_token_list
-        if st_model.use_multidecoder:
+        if hasattr(st_model, "use_multidecoder") and st_model.use_multidecoder:
             asr_decoder = st_model.extra_asr_decoder
             asr_ctc = CTCPrefixScorer(ctc=st_model.ctc, eos=st_model.src_eos)
             asr_scorers.update(
@@ -393,7 +397,12 @@ class Speech2Text:
                 tokenizer = None
         else:
             tokenizer = build_tokenizer(token_type=token_type)
-        if "whisper" in token_type:
+
+        if token_type == "hugging_face":
+            converter = HuggingFaceTokenIDConverter(
+                model_name_or_path=bpemodel
+            )
+        elif "whisper" in token_type:
             converter = OpenAIWhisperTokenIDConverter(
                 model_type=bpemodel,
                 language=token_lang or "en",
@@ -491,12 +500,16 @@ class Speech2Text:
         batch = to_device(batch, device=self.device)
 
         # b. Forward Encoder
-        enc, _, asr_enc, _ = self.st_model.encode(**batch, return_int_enc=True)
+        if hasattr(self.st_model.decoder, "llm"):
+            enc, _ = self.st_model.encode(**batch)
+        else:
+            enc, _, asr_enc, _ = self.st_model.encode(**batch, return_int_enc=True)
         assert len(enc) == 1, len(enc)
         x = enc[0]
 
         # Multi-decoder ASR beam search
-        if self.st_model.use_multidecoder:
+        # if self.st_model.use_multidecoder:
+        if hasattr(self.st_model, "use_multidecoder") and self.st_model.use_multidecoder:
             asr_nbest_hyps = self.asr_beam_search(
                 x=asr_enc[0],
                 maxlenratio=self.asr_maxlenratio,
@@ -562,7 +575,13 @@ class Speech2Text:
                 )
                 for hyp in nbest_hyps
             ]
-        elif self.st_model.use_multidecoder and self.st_model.use_speech_attn:
+        # elif self.st_model.use_multidecoder and self.st_model.use_speech_attn:
+        elif (
+            hasattr(self.st_model, "use_multidecoder") and
+            hasattr(self.st_model, "use_speech_attn") and
+            self.st_model.use_multidecoder and
+            self.st_model.use_speech_attn
+        ):
             nbest_hyps = self.beam_search(
                 x=x,
                 maxlenratio=self.maxlenratio,
@@ -610,7 +629,7 @@ class Speech2Text:
                 text = None
             results.append((text, token, token_int, hyp))
 
-        if self.st_model.use_multidecoder:
+        if hasattr(self.st_model, "use_multidecoder") and self.st_model.use_multidecoder:
             return (results, asr_results)
         return results
 
@@ -695,6 +714,7 @@ def inference(
     ctc_greedy: bool,
     hugging_face_decoder: bool,
     hugging_face_decoder_max_length: int,
+    llm_use_cache: bool,
 ):
     if batch_size > 1:
         raise NotImplementedError("batch decoding is not implemented")
@@ -754,6 +774,7 @@ def inference(
         ctc_greedy=ctc_greedy,
         hugging_face_decoder=hugging_face_decoder,
         hugging_face_decoder_max_length=hugging_face_decoder_max_length,
+        llm_use_cache=llm_use_cache,
     )
     speech2text = Speech2Text.from_pretrained(
         model_tag=model_tag,
@@ -1015,6 +1036,8 @@ def get_parser():
         default=None,
         help="The keyword arguments for transducer beam search.",
     )
+
+    group.add_argument("--llm_use_cache", type=str2bool, default=False)
 
     group = parser.add_argument_group("Text converter related")
     group.add_argument(

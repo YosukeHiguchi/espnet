@@ -165,75 +165,75 @@ class MultiHeadedAttention(nn.Module):
             torch.Tensor: Output tensor (#batch, time1, d_model).
 
         """
-        if self.training and self.use_flash_attn:
-            try:
-                # In the causal case, the last row will be the key mask
-                key_nonpad_mask = mask[:, -1, :]  # (#batch, time2)
-                if self.cross_attn:
-                    # For cross attention, we do not know the query padding
-                    query_nonpad_mask = torch.ones(
-                        size=query.shape[:2], dtype=torch.bool, device=query.device
-                    )
-                else:
-                    query_nonpad_mask = key_nonpad_mask
+        # if self.training and self.use_flash_attn:
+        #     try:
+        #         # In the causal case, the last row will be the key mask
+        #         key_nonpad_mask = mask[:, -1, :]  # (#batch, time2)
+        #         if self.cross_attn:
+        #             # For cross attention, we do not know the query padding
+        #             query_nonpad_mask = torch.ones(
+        #                 size=query.shape[:2], dtype=torch.bool, device=query.device
+        #             )
+        #         else:
+        #             query_nonpad_mask = key_nonpad_mask
 
-                if key_nonpad_mask.eq(0).any():
-                    q, indices_q, cu_seqlens_q, max_seqlen_q = unpad_input(
-                        query, query_nonpad_mask
-                    )
-                    k, indices_k, cu_seqlens_k, max_seqlen_k = unpad_input(
-                        key, key_nonpad_mask
-                    )
-                    v, _, _, _ = unpad_input(value, key_nonpad_mask)
+        #         if key_nonpad_mask.eq(0).any():
+        #             q, indices_q, cu_seqlens_q, max_seqlen_q = unpad_input(
+        #                 query, query_nonpad_mask
+        #             )
+        #             k, indices_k, cu_seqlens_k, max_seqlen_k = unpad_input(
+        #                 key, key_nonpad_mask
+        #             )
+        #             v, _, _, _ = unpad_input(value, key_nonpad_mask)
 
-                    q = self.linear_q(q).reshape(-1, self.h, self.d_k)
-                    k = self.linear_k(k).reshape(-1, self.h, self.d_k)
-                    v = self.linear_v(v).reshape(-1, self.h, self.d_k)
+        #             q = self.linear_q(q).reshape(-1, self.h, self.d_k)
+        #             k = self.linear_k(k).reshape(-1, self.h, self.d_k)
+        #             v = self.linear_v(v).reshape(-1, self.h, self.d_k)
 
-                    q = self.q_norm(q)
-                    k = self.k_norm(k)
+        #             q = self.q_norm(q)
+        #             k = self.k_norm(k)
 
-                    out = flash_attn_varlen_func(
-                        q,
-                        k,
-                        v,
-                        cu_seqlens_q,
-                        cu_seqlens_k,
-                        max_seqlen_q,
-                        max_seqlen_k,
-                        dropout_p=self.dropout_rate if self.training else 0.0,
-                        causal=self.causal,
-                    )  # (total, nheads, headdim)
+        #             out = flash_attn_varlen_func(
+        #                 q,
+        #                 k,
+        #                 v,
+        #                 cu_seqlens_q,
+        #                 cu_seqlens_k,
+        #                 max_seqlen_q,
+        #                 max_seqlen_k,
+        #                 dropout_p=self.dropout_rate if self.training else 0.0,
+        #                 causal=self.causal,
+        #             )  # (total, nheads, headdim)
 
-                    out = out.reshape(out.shape[0], -1)
-                    out = self.linear_out(out)
+        #             out = out.reshape(out.shape[0], -1)
+        #             out = self.linear_out(out)
 
-                    out = pad_input(out, indices_q, query.shape[0], query.shape[1])
-                    return out
+        #             out = pad_input(out, indices_q, query.shape[0], query.shape[1])
+        #             return out
 
-                else:
-                    del key_nonpad_mask
-                    q, k, v = self.forward_qkv(query, key, value)
-                    del query, key, value
+        #         else:
+        #             del key_nonpad_mask
+        #             q, k, v = self.forward_qkv(query, key, value)
+        #             del query, key, value
 
-                    out = flash_attn_func(
-                        q.transpose(1, 2),
-                        k.transpose(1, 2),
-                        v.transpose(1, 2),
-                        dropout_p=self.dropout_rate if self.training else 0.0,
-                        causal=self.causal,
-                    )  # (batch_size, seqlen, nheads, headdim)
-                    del q, k, v
+        #             out = flash_attn_func(
+        #                 q.transpose(1, 2),
+        #                 k.transpose(1, 2),
+        #                 v.transpose(1, 2),
+        #                 dropout_p=self.dropout_rate if self.training else 0.0,
+        #                 causal=self.causal,
+        #             )  # (batch_size, seqlen, nheads, headdim)
+        #             del q, k, v
 
-                    out = out.reshape(out.shape[0], out.shape[1], -1)
-                    out = self.linear_out(out)
-                    return out
-            except Exception as e:
-                if self.training:
-                    import logging
+        #             out = out.reshape(out.shape[0], out.shape[1], -1)
+        #             out = self.linear_out(out)
+        #             return out
+        #     except Exception as e:
+        #         if self.training:
+        #             import logging
 
-                    logging.warning(f"Flash attn has exception: {e}")
-                pass
+        #             logging.warning(f"Flash attn has exception: {e}")
+        #         pass
         q, k, v = self.forward_qkv(query, key, value, expand_kv)
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.d_k)
         return self.forward_attention(v, scores, mask)

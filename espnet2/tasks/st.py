@@ -20,6 +20,7 @@ from espnet2.asr.decoder.transformer_decoder import (
     LightweightConvolutionTransformerDecoder,
     TransformerDecoder,
     TransformerMDDecoder,
+    LLMGuidedTransformerDecoder,
 )
 from espnet2.asr.decoder.whisper_decoder import OpenAIWhisperDecoder
 from espnet2.asr.encoder.abs_encoder import AbsEncoder
@@ -48,6 +49,8 @@ from espnet2.asr.frontend.abs_frontend import AbsFrontend
 from espnet2.asr.frontend.default import DefaultFrontend
 from espnet2.asr.frontend.s3prl import S3prlFrontend
 from espnet2.asr.frontend.windowing import SlidingWindow
+from espnet2.asr.llm.abs_llm import AbsLLM
+from espnet2.asr.llm.llama import Llama
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
 from espnet2.asr.postencoder.hugging_face_transformers_postencoder import (
     HuggingFaceTransformersPostEncoder,
@@ -63,8 +66,10 @@ from espnet2.layers.abs_normalize import AbsNormalize
 from espnet2.layers.global_mvn import GlobalMVN
 from espnet2.layers.utterance_mvn import UtteranceMVN
 from espnet2.st.espnet_model import ESPnetSTModel
+from espnet2.st.llm_guided_st_model import LLMGuidedSTModel
 from espnet2.tasks.abs_task import AbsTask
 from espnet2.text.phoneme_tokenizer import g2p_choices
+from espnet2.train.abs_espnet_model import AbsESPnetModel
 from espnet2.torch_utils.initialize import initialize
 from espnet2.train.class_choices import ClassChoices
 from espnet2.train.collate_fn import CommonCollateFn
@@ -100,6 +105,15 @@ normalize_choices = ClassChoices(
     type_check=AbsNormalize,
     default="utterance_mvn",
     optional=True,
+)
+model_choices = ClassChoices(
+    "model",
+    classes=dict(
+        espnet=ESPnetSTModel,
+        llm_guided_st=LLMGuidedSTModel,
+    ),
+    type_check=AbsESPnetModel,
+    default="espnet",
 )
 preencoder_choices = ClassChoices(
     name="preencoder",
@@ -153,6 +167,7 @@ decoder_choices = ClassChoices(
         transducer=TransducerDecoder,
         whisper=OpenAIWhisperDecoder,
         hugging_face_transformers=HuggingFaceTransformersDecoder,
+        llm_guided_transformer_decoder=LLMGuidedTransformerDecoder,
     ),
     type_check=AbsDecoder,
     default="rnn",
@@ -169,6 +184,15 @@ extra_asr_decoder_choices = ClassChoices(
         rnn=RNNDecoder,
     ),
     type_check=AbsDecoder,
+    default=None,
+    optional=True,
+)
+llm_choices = ClassChoices(
+    name="llm",
+    classes=dict(
+        llama=Llama,
+      ),
+    type_check=AbsLLM,
     default=None,
     optional=True,
 )
@@ -257,6 +281,8 @@ class STTask(AbsTask):
         specaug_choices,
         # --normalize and --normalize_conf
         normalize_choices,
+        # --model and --model_conf
+        model_choices,
         # --preencoder and --preencoder_conf
         preencoder_choices,
         # --encoder and --encoder_conf
@@ -275,6 +301,8 @@ class STTask(AbsTask):
         hier_encoder_choices,
         # --extra_mt_encoder and --extra_mt_encoder_conf
         extra_mt_encoder_choices,
+        # --llm and --llm_conf
+        llm_choices,
         # --preprocessor and --preprocessor_conf
         preprocessor_choices,
     ]
@@ -337,12 +365,12 @@ class STTask(AbsTask):
             default=None,
             help="The keyword arguments for joint network class.",
         )
-        group.add_argument(
-            "--model_conf",
-            action=NestedDictAction,
-            default=get_default_kwargs(ESPnetSTModel),
-            help="The keyword arguments for model class.",
-        )
+        # group.add_argument(
+        #     "--model_conf",
+        #     action=NestedDictAction,
+        #     default=get_default_kwargs(ESPnetSTModel),
+        #     help="The keyword arguments for model class.",
+        # )
 
         group = parser.add_argument_group(description="Preprocess related")
         group.add_argument(
@@ -554,7 +582,7 @@ class STTask(AbsTask):
 
     @classmethod
     @typechecked
-    def build_model(cls, args: argparse.Namespace) -> Union[ESPnetSTModel]:
+    def build_model(cls, args: argparse.Namespace) -> Union[ESPnetSTModel, AbsESPnetModel]:
         if isinstance(args.token_list, str):
             with open(args.token_list, encoding="utf-8") as f:
                 token_list = [line.rstrip() for line in f]
@@ -673,6 +701,10 @@ class STTask(AbsTask):
 
         # 6. CTC
         if src_token_list is not None:
+            if hasattr(decoder, "ctc_tokenizer") and decoder.ctc_tokenizer is not None:
+                decoder.ctc_tokenizer._build_sentence_piece_processor()
+                assert decoder.ctc_tokenizer.sp.vocab_size() == src_vocab_size
+
             ctc = CTC(
                 odim=src_vocab_size,
                 encoder_output_size=asr_encoder_output_size,
@@ -737,28 +769,60 @@ class STTask(AbsTask):
         else:
             extra_mt_encoder = None
 
-        model = ESPnetSTModel(
-            vocab_size=vocab_size,
-            src_vocab_size=src_vocab_size,
-            frontend=frontend,
-            specaug=specaug,
-            normalize=normalize,
-            preencoder=preencoder,
-            encoder=encoder,
-            hier_encoder=hier_encoder,
-            md_encoder=md_encoder,
-            postencoder=postencoder,
-            decoder=decoder,
-            ctc=ctc,
-            st_ctc=st_ctc,
-            st_joint_network=st_joint_network,
-            extra_asr_decoder=extra_asr_decoder,
-            extra_mt_decoder=extra_mt_decoder,
-            extra_mt_encoder=extra_mt_encoder,
-            token_list=token_list,
-            src_token_list=src_token_list,
-            **args.model_conf,
-        )
+        # (optional) LLM
+        if getattr(args, "llm", None) is not None:
+            llm_class = llm_choices.get_class(args.llm)
+            llm = llm_class(**args.llm_conf)
+        else:
+            llm = None
+
+        # 10. Build model
+        try:
+            model_class = model_choices.get_class(args.model)
+        except AttributeError:
+            model_class = model_choices.get_class("espnet")
+
+        if llm is None:
+            model = model_class(
+                vocab_size=vocab_size,
+                src_vocab_size=src_vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                hier_encoder=hier_encoder,
+                md_encoder=md_encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                st_ctc=st_ctc,
+                st_joint_network=st_joint_network,
+                extra_asr_decoder=extra_asr_decoder,
+                extra_mt_decoder=extra_mt_decoder,
+                extra_mt_encoder=extra_mt_encoder,
+                token_list=token_list,
+                src_token_list=src_token_list,
+                **args.model_conf,
+            )
+        else:
+            model = model_class(
+                vocab_size=vocab_size,
+                token_list=token_list,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                extra_asr_decoder=extra_asr_decoder,
+                ctc=ctc,
+                llm=llm,
+                src_vocab_size=src_vocab_size,
+                src_token_list=src_token_list,
+                **args.model_conf,
+            )
 
         # FIXME(kamo): Should be done in model?
         # 9. Initialize

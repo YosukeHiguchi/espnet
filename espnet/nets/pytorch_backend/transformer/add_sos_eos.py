@@ -9,7 +9,7 @@
 import torch
 
 
-def add_sos_eos(ys_pad, sos, eos, ignore_id, repeat=1):
+def add_sos_eos(ys_pad, sos, eos, ignore_id, repeat=1, pad_input_with_eos=True):
     """Add <sos> and <eos> labels.
 
     :param torch.Tensor ys_pad: batch of padded target sequences (B, Lmax)
@@ -28,4 +28,8 @@ def add_sos_eos(ys_pad, sos, eos, ignore_id, repeat=1):
     ys = [y[y != ignore_id] for y in ys_pad]  # parse padded ys
     ys_in = [torch.cat([_sos, y], dim=0) for y in ys]
     ys_out = [torch.cat([y, _eos], dim=0) for y in ys]
-    return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
+
+    if pad_input_with_eos:
+        return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
+    else:
+        return pad_list(ys_in, ignore_id), pad_list(ys_out, ignore_id)

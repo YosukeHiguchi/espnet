@@ -1,3 +1,5 @@
+import logging
+
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
 
@@ -35,7 +37,8 @@ class TokenIDConverter:
         self.token2id: Dict[str, int] = {}
         for i, t in enumerate(self.token_list):
             if t in self.token2id:
-                raise RuntimeError(f'Symbol "{t}" is duplicated')
+                # raise RuntimeError(f'Symbol "{t}" is duplicated')
+                logging.warning(f'Symbol "{t}" is duplicated')
             self.token2id[t] = i
 
         self.unk_symbol = unk_symbol

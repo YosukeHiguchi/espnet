@@ -21,6 +21,7 @@ from espnet2.asr.decoder.transformer_decoder import (
     LightweightConvolution2DTransformerDecoder,
     LightweightConvolutionTransformerDecoder,
     TransformerDecoder,
+    LLMGuidedTransformerDecoder,
 )
 from espnet2.asr.decoder.whisper_decoder import OpenAIWhisperDecoder
 from espnet2.asr.encoder.abs_encoder import AbsEncoder
@@ -56,6 +57,9 @@ from espnet2.asr.frontend.fused import FusedFrontends
 from espnet2.asr.frontend.s3prl import S3prlFrontend
 from espnet2.asr.frontend.whisper import WhisperFrontend
 from espnet2.asr.frontend.windowing import SlidingWindow
+from espnet2.asr.llm.abs_llm import AbsLLM
+from espnet2.asr.llm.llama import Llama
+from espnet2.asr.llm_guided_asr_model import LLMGuidedASRModel
 from espnet2.asr.maskctc_model import MaskCTCModel
 from espnet2.asr.pit_espnet_model import ESPnetASRModel as PITESPnetModel
 from espnet2.asr.postencoder.abs_postencoder import AbsPostEncoder
@@ -125,6 +129,7 @@ model_choices = ClassChoices(
         espnet=ESPnetASRModel,
         maskctc=MaskCTCModel,
         pit_espnet=PITESPnetModel,
+        llm_guided_asr=LLMGuidedASRModel,
     ),
     type_check=AbsESPnetModel,
     default="espnet",
@@ -187,8 +192,18 @@ decoder_choices = ClassChoices(
         whisper=OpenAIWhisperDecoder,
         hugging_face_transformers=HuggingFaceTransformersDecoder,
         s4=S4Decoder,
+        llm_guided_transformer_decoder=LLMGuidedTransformerDecoder,
     ),
     type_check=AbsDecoder,
+    default=None,
+    optional=True,
+)
+llm_choices = ClassChoices(
+    name="llm",
+    classes=dict(
+        llama=Llama,
+      ),
+    type_check=AbsLLM,
     default=None,
     optional=True,
 )
@@ -225,6 +240,8 @@ class ASRTask(AbsTask):
         postencoder_choices,
         # --decoder and --decoder_conf
         decoder_choices,
+        # --llm and --llm_conf
+        llm_choices,
         # --preprocessor and --preprocessor_conf
         preprocessor_choices,
     ]
@@ -497,7 +514,7 @@ class ASRTask(AbsTask):
 
     @classmethod
     @typechecked
-    def build_model(cls, args: argparse.Namespace) -> ESPnetASRModel:
+    def build_model(cls, args: argparse.Namespace) -> AbsESPnetModel:
         if isinstance(args.token_list, str):
             with open(args.token_list, encoding="utf-8") as f:
                 token_list = [line.rstrip() for line in f]
@@ -603,29 +620,62 @@ class ASRTask(AbsTask):
             joint_network = None
 
         # 6. CTC
-        ctc = CTC(
-            odim=vocab_size, encoder_output_size=encoder_output_size, **args.ctc_conf
-        )
+        if hasattr(decoder, "ctc_tokenizer") and decoder.ctc_tokenizer is not None:
+            decoder.ctc_tokenizer._build_sentence_piece_processor()
+            logging.info(f"Vocabulary size for CTC: {decoder.ctc_tokenizer.sp.vocab_size()}")
+            ctc = CTC(
+                odim=decoder.ctc_tokenizer.sp.vocab_size(),
+                encoder_output_size=encoder_output_size,
+                **args.ctc_conf,
+            )
+        else:
+            ctc = CTC(
+                odim=vocab_size, encoder_output_size=encoder_output_size, **args.ctc_conf
+            )
+
+        # (optional) LLM
+        if getattr(args, "llm", None) is not None:
+            llm_class = llm_choices.get_class(args.llm)
+            llm = llm_class(**args.llm_conf)
+        else:
+            llm = None
 
         # 7. Build model
         try:
             model_class = model_choices.get_class(args.model)
         except AttributeError:
             model_class = model_choices.get_class("espnet")
-        model = model_class(
-            vocab_size=vocab_size,
-            frontend=frontend,
-            specaug=specaug,
-            normalize=normalize,
-            preencoder=preencoder,
-            encoder=encoder,
-            postencoder=postencoder,
-            decoder=decoder,
-            ctc=ctc,
-            joint_network=joint_network,
-            token_list=token_list,
-            **args.model_conf,
-        )
+
+        if llm is None:
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                joint_network=joint_network,
+                token_list=token_list,
+                **args.model_conf,
+            )
+        elif llm is not None and args.model == "llm_guided_asr":
+            model = model_class(
+                vocab_size=vocab_size,
+                frontend=frontend,
+                specaug=specaug,
+                normalize=normalize,
+                preencoder=preencoder,
+                encoder=encoder,
+                postencoder=postencoder,
+                decoder=decoder,
+                ctc=ctc,
+                llm=llm,
+                token_list=token_list,
+                **args.model_conf,
+            )
 
         # FIXME(kamo): Should be done in model?
         # 8. Initialize

@@ -229,16 +229,29 @@ class Trainer:
                 raise RuntimeError("Requiring S3PRL. ")
 
         if trainer_options.resume and (output_dir / "checkpoint.pth").exists():
-            cls.resume(
-                checkpoint=output_dir / "checkpoint.pth",
-                model=model,
-                optimizers=optimizers,
-                schedulers=schedulers,
-                reporter=reporter,
-                scaler=scaler,
-                ngpu=trainer_options.ngpu,
-                strict=not use_adapter,
-            )
+            if hasattr(model, "decoder") and hasattr(model.decoder, "llm"):
+                logging.warning("Not loading LLM parameters")
+                cls.resume(
+                    checkpoint=output_dir / "checkpoint.pth",
+                    model=model,
+                    optimizers=optimizers,
+                    schedulers=schedulers,
+                    reporter=reporter,
+                    scaler=scaler,
+                    ngpu=trainer_options.ngpu,
+                    strict=False,
+                )
+            else:
+                cls.resume(
+                    checkpoint=output_dir / "checkpoint.pth",
+                    model=model,
+                    optimizers=optimizers,
+                    schedulers=schedulers,
+                    reporter=reporter,
+                    scaler=scaler,
+                    ngpu=trainer_options.ngpu,
+                    strict=not use_adapter,
+                )
 
         start_epoch = reporter.get_epoch() + 1
         if start_epoch == trainer_options.max_epoch + 1:
@@ -391,6 +404,17 @@ class Trainer:
                         for n, p in model.named_parameters():
                             if not p.requires_grad:
                                 model_state_dict.pop(n)
+
+                if hasattr(model, "decoder") and hasattr(model.decoder, "llm"):
+                    logging.info("Remove LLM state_dict from the checkpoint")
+                    del_keys = []
+
+                    for key in model_state_dict.keys():
+                        if key.startswith("decoder.llm."):
+                            del_keys.append(key)
+
+                    for key in del_keys:
+                        del model_state_dict[key]
 
                 torch.save(
                     {
