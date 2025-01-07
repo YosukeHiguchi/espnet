@@ -19,11 +19,18 @@ class ConvolutionModule(nn.Module):
 
     """
 
-    def __init__(self, channels, kernel_size, activation=nn.ReLU(), bias=True):
+    def __init__(self, channels, kernel_size, activation=nn.ReLU(), bias=True, is_causal=False):
         """Construct an ConvolutionModule object."""
         super(ConvolutionModule, self).__init__()
         # kernerl_size should be a odd number for 'SAME' padding
         assert (kernel_size - 1) % 2 == 0
+
+        if is_causal:
+            self.lorder = kernel_size - 1
+            padding = 0
+        else:
+            self.lorder = 0
+            padding = (kernel_size - 1) // 2
 
         self.pointwise_conv1 = nn.Conv1d(
             channels,
@@ -38,7 +45,7 @@ class ConvolutionModule(nn.Module):
             channels,
             kernel_size,
             stride=1,
-            padding=(kernel_size - 1) // 2,
+            padding=padding,
             groups=channels,
             bias=bias,
         )
@@ -71,6 +78,8 @@ class ConvolutionModule(nn.Module):
         x = nn.functional.glu(x, dim=1)  # (batch, channel, dim)
 
         # 1D Depthwise Conv
+        if self.lorder > 0:
+            x = nn.functional.pad(x, (self.lorder, 0), "constant", 0.0)
         x = self.depthwise_conv(x)
         x = self.activation(self.norm(x))
 

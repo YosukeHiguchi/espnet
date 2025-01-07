@@ -2,6 +2,7 @@ import logging
 from contextlib import contextmanager
 from typing import Dict, List, Optional, Tuple, Union
 
+import numpy
 import torch
 from packaging.version import parse as V
 from typeguard import typechecked
@@ -64,12 +65,14 @@ class ESPnetASRModel(AbsESPnetModel):
         sym_blank: str = "<blank>",
         transducer_multi_blank_durations: List = [],
         transducer_multi_blank_sigma: float = 0.05,
+        transducer_loss_type: str = "warprnnt",
         # In a regular ESPnet recipe, <sos> and <eos> are both "<sos/eos>"
         # Pretrained HF Tokenizer needs custom sym_sos and sym_eos
         sym_sos: str = "<sos/eos>",
         sym_eos: str = "<sos/eos>",
         extract_feats_in_collect_stats: bool = True,
         lang_token_id: int = -1,
+        mask_type: str = "none",
     ):
         assert 0.0 <= ctc_weight <= 1.0, ctc_weight
         assert 0.0 <= interctc_weight < 1.0, interctc_weight
@@ -120,12 +123,18 @@ class ESPnetASRModel(AbsESPnetModel):
             self.joint_network = joint_network
 
             if not transducer_multi_blank_durations:
-                from warprnnt_pytorch import RNNTLoss
+                if transducer_loss_type == "torchaudio":
+                    from torchaudio.transforms import RNNTLoss
+                    self.criterion_transducer = RNNTLoss(
+                        blank=self.blank_id,
+                    )
+                else:
+                    from warprnnt_pytorch import RNNTLoss
 
-                self.criterion_transducer = RNNTLoss(
-                    blank=self.blank_id,
-                    fastemit_lambda=0.0,
-                )
+                    self.criterion_transducer = RNNTLoss(
+                        blank=self.blank_id,
+                        fastemit_lambda=0.0,
+                    )
             else:
                 from espnet2.asr.transducer.rnnt_multi_blank.rnnt_multi_blank import (
                     MultiblankRNNTLossNumba,
@@ -208,6 +217,8 @@ class ESPnetASRModel(AbsESPnetModel):
             self.lang_token_id = torch.tensor([[lang_token_id]])
         else:
             self.lang_token_id = None
+
+        self.mask_type = mask_type
 
     def forward(
         self,
@@ -398,6 +409,11 @@ class ESPnetASRModel(AbsESPnetModel):
             # 3. Normalization for feature: e.g. Global-CMVN, Utterance-CMVN
             if self.normalize is not None:
                 feats, feats_lengths = self.normalize(feats, feats_lengths)
+
+        if self.mask_type == "uniform":
+            for i in range(len(feats_lengths)):
+                idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
+                feats[i][idx:] *= 0
 
         # Pre-encoder, e.g. used for raw input data
         if self.preencoder is not None:
