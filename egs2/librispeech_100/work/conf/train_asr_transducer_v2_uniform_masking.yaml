@@ -31,9 +31,10 @@ joint_net_conf:
 
 model_conf:
     ctc_weight: 0.3
-    report_cer: False
-    report_wer: False
+    report_cer: True
+    report_wer: True
     transducer_loss_type: torchaudio #
+    mask_type: uniform #
 
 frontend_conf:
     n_fft: 512
@@ -45,7 +46,7 @@ num_workers: 4
 batch_type: numel
 batch_bins: 8000000
 accum_grad: 8
-max_epoch: 30
+max_epoch: 50
 patience: none
 init: none
 best_model_criterion:

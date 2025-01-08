@@ -410,10 +410,11 @@ class ESPnetASRModel(AbsESPnetModel):
             if self.normalize is not None:
                 feats, feats_lengths = self.normalize(feats, feats_lengths)
 
-        if self.mask_type == "uniform":
-            for i in range(len(feats_lengths)):
-                idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
-                feats[i][idx:] *= 0
+        if self.training:
+            if self.mask_type == "uniform":
+                for i in range(len(feats_lengths)):
+                    idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
+                    feats[i][idx:] *= 0
 
         # Pre-encoder, e.g. used for raw input data
         if self.preencoder is not None:
