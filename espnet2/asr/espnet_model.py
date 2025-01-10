@@ -390,7 +390,11 @@ class ESPnetASRModel(AbsESPnetModel):
         return {"feats": feats, "feats_lengths": feats_lengths}
 
     def encode(
-        self, speech: torch.Tensor, speech_lengths: torch.Tensor
+        self,
+        speech: torch.Tensor,
+        speech_lengths: torch.Tensor,
+        left_mask_duration: Optional[float] = None,
+        right_mask_duration: Optional[float] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Frontend + Encoder. Note that this method is used by asr_inference.py
 
@@ -415,6 +419,17 @@ class ESPnetASRModel(AbsESPnetModel):
                 for i in range(len(feats_lengths)):
                     idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
                     feats[i][idx:] *= 0
+        else:
+            if left_mask_duration is not None and right_mask_duration is not None:
+                logging.warning(
+                    "left_mask: {}, right_mask: {}".format(left_mask_duration, right_mask_duration)
+                )
+                logging.warning(feats.shape)
+                feats[0][-left_mask_duration:] *= 0
+                right_pad = torch.zeros(1, right_mask_duration, feats.shape[-1]).to(feats.device)
+                feats = torch.cat([feats, right_pad], 1)
+                feats_lengths += right_mask_duration
+                logging.warning(feats.shape)
 
         # Pre-encoder, e.g. used for raw input data
         if self.preencoder is not None:

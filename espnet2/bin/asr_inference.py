@@ -124,6 +124,8 @@ class Speech2Text:
         threshold_probability: float = 0.99,
         max_seq_len: int = 5,
         max_mask_parallel: int = -1,
+        left_mask_duration: float = 0.0,
+        right_mask_duration: float = 0.0,
     ):
 
         task = ASRTask if not enh_s2t_task else EnhS2TTask
@@ -489,6 +491,10 @@ class Speech2Text:
         self.enh_s2t_task = enh_s2t_task
         self.multi_asr = multi_asr
 
+        #
+        self.left_mask_duration = left_mask_duration
+        self.right_mask_duration = right_mask_duration
+
     @torch.no_grad()
     @typechecked
     def __call__(self, speech: Union[torch.Tensor, np.ndarray]) -> Union[
@@ -523,7 +529,14 @@ class Speech2Text:
         batch = to_device(batch, device=self.device)
 
         # b. Forward Encoder
-        enc, enc_olens = self.asr_model.encode(**batch)
+        if self.left_mask_duration != 0.0 or self.right_mask_duration != 0.0:
+            enc, enc_olens = self.asr_model.encode(
+                **batch,
+                left_mask_duration=self.left_mask_duration,
+                right_mask_duration=self.right_mask_duration,
+            )
+        else:
+            enc, enc_olens = self.asr_model.encode(**batch)
         if self.multi_asr:
             enc = enc.unbind(dim=1)  # (batch, num_inf, ...) -> num_inf x [batch, ...]
         if self.enh_s2t_task or self.multi_asr:
@@ -758,6 +771,8 @@ def inference(
     threshold_probability: float,
     max_seq_len: int,
     max_mask_parallel: int,
+    left_mask_duration: float,
+    right_mask_duration: float,
 ):
     if batch_size > 1:
         raise NotImplementedError("batch decoding is not implemented")
@@ -817,6 +832,8 @@ def inference(
         threshold_probability=threshold_probability,
         max_seq_len=max_seq_len,
         max_mask_parallel=max_mask_parallel,
+        left_mask_duration=left_mask_duration,
+        right_mask_duration=right_mask_duration,
     )
     speech2text = Speech2Text.from_pretrained(
         model_tag=model_tag,
@@ -1165,6 +1182,18 @@ def get_parser():
         help="Maximum number of masks to predict in parallel."
         + "If you got OOM error, try to decrease this value."
         + "Default to -1, which means always predict all masks simultaneously.",
+    )
+
+    #
+    group.add_argument(
+        "--left_mask_duration",
+        type=float,
+        default=0.0,
+    )
+    group.add_argument(
+        "--right_mask_duration",
+        type=float,
+        default=0.0,
     )
     return parser
 
