@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy
 import torch
+import random
 from packaging.version import parse as V
 from typeguard import typechecked
 
@@ -73,6 +74,7 @@ class ESPnetASRModel(AbsESPnetModel):
         extract_feats_in_collect_stats: bool = True,
         lang_token_id: int = -1,
         mask_type: str = "none",
+        mask_rate: float = 1.0,
     ):
         assert 0.0 <= ctc_weight <= 1.0, ctc_weight
         assert 0.0 <= interctc_weight < 1.0, interctc_weight
@@ -219,6 +221,7 @@ class ESPnetASRModel(AbsESPnetModel):
             self.lang_token_id = None
 
         self.mask_type = mask_type
+        self.mask_rate = mask_rate
 
     def forward(
         self,
@@ -419,6 +422,11 @@ class ESPnetASRModel(AbsESPnetModel):
                 for i in range(len(feats_lengths)):
                     idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
                     feats[i][idx:] *= 0
+            elif self.mask_type == "uniform_random":
+                for i in range(len(feats_lengths)):
+                    if random.random() < self.mask_rate:
+                        idx = numpy.random.randint(0, int(feats_lengths[i]) + 1)
+                        feats[i][idx:] *= 0
         else:
             if left_mask_duration is not None and right_mask_duration is not None:
                 logging.warning(
