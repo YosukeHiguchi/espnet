@@ -433,7 +433,8 @@ class ESPnetASRModel(AbsESPnetModel):
                     "left_mask: {}, right_mask: {}".format(left_mask_duration, right_mask_duration)
                 )
                 logging.warning(feats.shape)
-                feats[0][-left_mask_duration:] *= 0
+                if left_mask_duration > 0:
+                    feats[0][-left_mask_duration:] *= 0
                 right_pad = torch.zeros(1, right_mask_duration, feats.shape[-1]).to(feats.device)
                 feats = torch.cat([feats, right_pad], 1)
                 feats_lengths += right_mask_duration
