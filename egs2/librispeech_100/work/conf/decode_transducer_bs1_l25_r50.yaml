@@ -1,0 +1,7 @@
+beam_size: 1
+transducer_conf:
+    search_type: default
+    score_norm: true
+
+left_mask_duration: 25
+right_mask_duration: 50
